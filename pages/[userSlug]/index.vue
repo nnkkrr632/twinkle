@@ -1,8 +1,9 @@
+<!-- eslint-disable vue/html-indent -->
 <script setup lang="ts">
 import { ref, computed, onMounted } from '#imports'
 import { useUserDetail } from '@/composables/userDetail'
-import { useTweetsByUser } from '~/composables/tweetByUser'
-import { useImagesModal } from '~/composables/modal'
+import { useTweetsByUser } from '@/composables/tweetByUser'
+import { useImagesModal } from '@/composables/modal'
 const { setImages } = useImagesModal()
 const { tweets } = await useTweetsByUser()
 const { user, error } = useUserDetail()
@@ -22,22 +23,30 @@ const imageBoxColNumber = computed(() => {
 </script>
 
 <template>
-    <div v-if="user" class="flex">
+    <div
+        v-if="user"
+        class="flex"
+    >
         <!-- 左半分 -->
         <div class="w-full max-w-[37.5rem] sm:border-r dark:border-gray-800">
             <!-- 透明ヘッダー -->
-            <ContentsHeader :title="user.displayName" :sub-title="`${user.tweetsCount}件のツイート`">
+            <ContentsHeader
+                :title="user.displayName"
+                :sub-title="`${user.tweetsCount}件のツイート`"
+            >
                 <div class="flex items-center">
                     <span
                         class="bg-black dark:bg-white px-5 py-1 rounded-full text-gray-200 dark:text-gray-700 font-semibold hover:opacity-80 dark:hover:opacity-90 cursor-pointer"
-                        >フォロー</span
-                    >
+                    >フォロー</span>
                 </div>
             </ContentsHeader>
             <!-- プロフィール -->
             <UserProfile :user="user" />
             <!-- ツイートs -->
-            <section v-for="tweet of tweets" :key="tweet.tweetDocId">
+            <section
+                v-for="tweet of tweets"
+                :key="tweet.tweetDocId"
+            >
                 <Tweet :tweet="tweet" />
             </section>
             <!-- 下にスペース -->
@@ -47,7 +56,10 @@ const imageBoxColNumber = computed(() => {
         <!-- 右半分 -->
         <RightBar>
             <!-- ログインボックス -->
-            <ClientOnly fallback-tag="span" fallback="Loading comments...">
+            <ClientOnly
+                fallback-tag="span"
+                fallback="Loading comments..."
+            >
                 <LoginBox />
             </ClientOnly>
             <!-- 画像ボックス -->

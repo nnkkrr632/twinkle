@@ -5,8 +5,13 @@ const { user, googleSignUp } = useAuthByGoogleAccount()
 </script>
 
 <template>
-    <div v-if="!user" class="px-3 py-4 border dark:border-gray-800 flex flex-col rounded-2xl">
-        <div class="text-xl font-extrabold">Twinkleを使ってみよう</div>
+    <div
+        v-if="!user"
+        class="px-3 py-4 border dark:border-gray-800 flex flex-col rounded-2xl"
+    >
+        <div class="text-xl font-extrabold">
+            Twinkleを使ってみよう
+        </div>
         <span class="text-gray-500 text-sm pt-3">今すぐ登録して、タイムラインをカスタマイズしましょう。</span>
         <!-- ログインボタンs -->
         <div class="flex flex-wrap flex-col space-y-3 m-3 text-black">

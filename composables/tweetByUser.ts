@@ -6,7 +6,7 @@ import { collection, query, getDocs, DocumentReference, orderBy, limit, where } 
 import { useTweetSelect } from '@/composables/tweetSelect'
 import { useUserSelect } from '@/composables/userSelect'
 
-import { Tweet } from '~/composables/types'
+import { Tweet } from '@/composables/types'
 
 // ユーザープロフィール
 export const useTweetsByUser = () => {

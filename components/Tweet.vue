@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
-import { Tweet } from '~/composables/types'
-import { useImagesModal } from '~/composables/modal'
+import { Tweet } from '@/composables/types'
+import { useImagesModal } from '@/composables/modal'
 const { setImages } = useImagesModal()
 const route = useRoute()
 const props = defineProps<{ tweet: Tweet }>()
@@ -40,8 +40,7 @@ const props = defineProps<{ tweet: Tweet }>()
                     <span
                         v-if="tweet.userInfo.userType === 'official'"
                         class="official-badge material-symbols-outlined text-xl text-amber-500/90 ml-1 mt-[3px]"
-                        >verified</span
-                    >
+                    >verified</span>
                     <NuxtLink :to="`/${tweet.userInfo.slug}`">
                         <span class="text-gray-500 ml-2 line-clamp-1">@{{ tweet.userInfo.slug }}</span>
                     </NuxtLink>
@@ -76,11 +75,11 @@ const props = defineProps<{ tweet: Tweet }>()
                             class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-amber-600/10"
                             title="返信"
                         >
-                            <span class="material-symbols-outlined text-xl text-gray-500 hover:text-amber-500"
-                                >chat_bubble</span
-                            >
+                            <span class="material-symbols-outlined text-xl text-gray-500 hover:text-amber-500">chat_bubble</span>
                         </button>
-                        <div class="ml-1 pb-[2px] text-gray-500 text-sm">0</div>
+                        <div class="ml-1 pb-[2px] text-gray-500 text-sm">
+                            0
+                        </div>
                     </div>
                     <div class="flex items-center">
                         <!-- アイコン正円 -->
@@ -88,9 +87,7 @@ const props = defineProps<{ tweet: Tweet }>()
                             class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-emerald-600/10"
                             title="リツイート"
                         >
-                            <span class="material-symbols-outlined text-xl text-gray-500 hover:text-emerald-500"
-                                >repeat</span
-                            >
+                            <span class="material-symbols-outlined text-xl text-gray-500 hover:text-emerald-500">repeat</span>
                         </button>
                         <div class="ml-1 pb-[2px] text-gray-500 text-sm">
                             {{ tweet.retweetsCount }}
@@ -102,9 +99,7 @@ const props = defineProps<{ tweet: Tweet }>()
                             class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-pink-600/10"
                             title="いいね"
                         >
-                            <span class="material-symbols-outlined text-xl text-gray-500 hover:text-pink-500"
-                                >favorite</span
-                            >
+                            <span class="material-symbols-outlined text-xl text-gray-500 hover:text-pink-500">favorite</span>
                         </button>
                         <div class="ml-1 pb-[2px] text-gray-500 text-sm">
                             {{ tweet.likesCount }}

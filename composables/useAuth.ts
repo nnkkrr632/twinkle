@@ -1,4 +1,4 @@
-// // ~/composables/useAuth.ts
+// // @/composables/useAuth.ts
 // import type { Auth, User } from "firebase/auth";
 // import {
 //   getAuth,

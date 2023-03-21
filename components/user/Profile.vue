@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useDark } from '@vueuse/core'
-import { User } from '~/composables/types'
-import { useImagesModal } from '~/composables/modal'
+import { User } from '@/composables/types'
+import { useImagesModal, useEditProfileModal } from '@/composables/modal'
 
 const { setImages } = useImagesModal()
+const { openModal } = useEditProfileModal()
 
+// router-linkのCSS用
 const isDark = useDark()
 const textColor = ref(isDark.value ? 'rgb(229 231 235)' : 'rgb(31 41 55)')
 watch(isDark, () => {
@@ -60,6 +62,7 @@ const props = defineProps<{ user: User }>()
             <div class="flex justify-end pb-[3%] xs:pb-[6%]">
                 <button
                     class="px-4 py-1 font-semibold border border-gray-300 dark:border-gray-500 hover:bg-black/5 dark:hover:bg-white/10 rounded-full"
+                    @click="openModal"
                 >
                     プロフィールを編集
                 </button>
@@ -70,8 +73,7 @@ const props = defineProps<{ user: User }>()
                 <span
                     v-if="user.userType === 'official'"
                     class="official-badge material-symbols-outlined text-xl text-amber-500/90 pt-[2px]"
-                    >verified</span
-                >
+                >verified</span>
             </div>
             <!-- ユーザーID -->
             <div class="-mt-1">
@@ -88,7 +90,11 @@ const props = defineProps<{ user: User }>()
                     <span>{{ user.place }}</span>
                 </div>
                 <!-- リンク -->
-                <a :href="user.link" target="_blank" class="flex items-center mr-4">
+                <a
+                    :href="user.link"
+                    target="_blank"
+                    class="flex items-center mr-4"
+                >
                     <span class="material-symbols-outlined text-xl mr-[2px]">link</span>
                     <span class="text-blue-400 hover:border-b hover:border-blue-400 h-5">{{ user.link }}</span>
                 </a>
@@ -103,15 +109,13 @@ const props = defineProps<{ user: User }>()
                     to="/taro/followings"
                     class="mr-5 hover:border-b hover:border-gray-700 dark:hover:border-gray-200 h-5"
                 >
-                    <span class="font-bold mr-1">{{ user.followingsCount }}</span
-                    ><span class="text-gray-500">フォロー中</span>
+                    <span class="font-bold mr-1">{{ user.followingsCount }}</span><span class="text-gray-500">フォロー中</span>
                 </NuxtLink>
                 <NuxtLink
                     to="/taro/followers"
                     class="mr-5 hover:border-b hover:border-gray-700 dark:hover:border-gray-200 h-5"
                 >
-                    <span class="font-bold mr-1">{{ user.followersCount }}</span
-                    ><span class="text-gray-500">フォロワー</span>
+                    <span class="font-bold mr-1">{{ user.followersCount }}</span><span class="text-gray-500">フォロワー</span>
                 </NuxtLink>
             </div>
         </div>
@@ -119,7 +123,10 @@ const props = defineProps<{ user: User }>()
         <nav class="border-b dark:border-gray-800">
             <ul class="flex justify-between h-[52px]">
                 <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
-                    <NuxtLink :to="`${user.slug}`" class="w-full flex justify-center">
+                    <NuxtLink
+                        :to="`${user.slug}`"
+                        class="w-full flex justify-center"
+                    >
                         <div class="flex flex-col justify-between">
                             <div class="link-text h-full flex items-center text-gray-500 px-2">
                                 <div class="flex flex-wrap justify-center">
@@ -131,7 +138,10 @@ const props = defineProps<{ user: User }>()
                     </NuxtLink>
                 </li>
                 <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
-                    <NuxtLink :to="`${user.slug}/with-replies`" class="w-full flex justify-center">
+                    <NuxtLink
+                        :to="`${user.slug}/with-replies`"
+                        class="w-full flex justify-center"
+                    >
                         <div class="flex flex-col justify-between">
                             <div class="link-text h-full flex items-center text-gray-500 px-2">
                                 <div class="flex flex-wrap justify-center">
@@ -144,7 +154,10 @@ const props = defineProps<{ user: User }>()
                     </NuxtLink>
                 </li>
                 <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
-                    <NuxtLink :to="`${user.slug}/media`" class="w-full flex justify-center">
+                    <NuxtLink
+                        :to="`${user.slug}/media`"
+                        class="w-full flex justify-center"
+                    >
                         <div class="flex flex-col justify-between">
                             <div class="link-text h-full flex items-center text-gray-500 px-2">
                                 <div class="flex flex-wrap justify-center">
@@ -156,7 +169,10 @@ const props = defineProps<{ user: User }>()
                     </NuxtLink>
                 </li>
                 <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
-                    <NuxtLink :to="`${user.slug}/likes`" class="w-full flex justify-center">
+                    <NuxtLink
+                        :to="`${user.slug}/likes`"
+                        class="w-full flex justify-center"
+                    >
                         <div class="flex flex-col justify-between">
                             <div class="link-text h-full flex items-center text-gray-500 px-2">
                                 <div class="flex flex-wrap justify-center">
@@ -169,6 +185,10 @@ const props = defineProps<{ user: User }>()
                 </li>
             </ul>
         </nav>
+        <!-- プロフィール編集モーダル user使うからクライアントオンリー-->
+        <ClientOnly>
+            <EditProfileModal />
+        </ClientOnly>
     </div>
 </template>
 

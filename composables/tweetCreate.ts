@@ -1,8 +1,8 @@
 import { computed, reactive } from '#imports'
-import { collection, doc, FieldValue, getFirestore, serverTimestamp, writeBatch, increment } from 'firebase/firestore'
+import { collection, doc, getFirestore, serverTimestamp, writeBatch, increment } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 import { ref as storageRef, uploadBytes } from 'firebase/storage'
-import { TweetDraft } from '~/composables/types'
+import { TweetDraft } from '@/composables/types'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { getRandomString } from '@/utils/myLibrary'
 
@@ -20,7 +20,7 @@ export const useCreateTweet = () => {
 
     // inputタグはクリックするごとに画像ファイルを上書きするので、一度アップされた画像を退避しておきマージする
     const selectImages = (event) => {
-        console.log('onImageUploaded発動')
+        console.log('selectImages発動')
         console.log('tweetDraft.imagesの現状確認↓')
         console.log(tweetDraft.images)
         tweetDraft.images = [...tweetDraft.images, ...event.target.files]

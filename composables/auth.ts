@@ -73,6 +73,7 @@ export const useAuthByGoogleAccount = () => {
                 uid: user.uid,
                 slug: randomSlug,
                 displayName: randomSlug,
+                description: '',
                 link: '',
                 place: '',
                 userType: 'normal',
@@ -122,10 +123,7 @@ export const useAuthByGoogleAccount = () => {
             } else {
                 console.log('新規登録の分岐入った')
                 alert('新規登録完了しました')
-                const createdUserSlug = await createUser(authenticationUser)
-                if (!createdUserSlug) {
-                    return
-                }
+                await createUser(authenticationUser)
                 user.value = await getRetouchedUser(uid)
                 console.log('新規登録で作成されたuserで埋められたuser.value↓')
                 console.log(user.value)

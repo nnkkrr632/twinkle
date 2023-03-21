@@ -20,9 +20,10 @@ const { signOut } = useAuthByGoogleAccount()
             <div class="flex flex-col items-center">
                 <!-- twinkle正円 -->
                 <div class="w-12 h-12 flex justify-center items-center">
-                    <span id="modal-twinkle-icon" class="material-symbols-outlined text-3xl text-amber-500/90"
-                        >auto_awesome</span
-                    >
+                    <span
+                        id="modal-twinkle-icon"
+                        class="material-symbols-outlined text-3xl text-amber-500/90"
+                    >auto_awesome</span>
                 </div>
                 <span class="text-xl font-bold">Twinkleからログアウトしますか？</span>
                 <span class="text-gray-500">いつでもログインし直すことができます。</span>

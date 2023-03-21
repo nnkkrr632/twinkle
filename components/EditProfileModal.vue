@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { useCreateTweet } from '@/composables/tweetCreate'
-import { useCreateTweetModal } from '@/composables/modal'
-import { onKeyStroke, useFocus } from '@vueuse/core'
+import { useEditProfile } from '@/composables/userEditProfile'
+import { useEditProfileModal } from '@/composables/modal'
+import { onKeyStroke } from '@vueuse/core'
 
-// console.log('わたしはTweetModal.vue。この下でuseCreateTweetからデストラクチャする')
-const { tweetDraft, deselectImage, selectImages, isValidTweet, tweet } = useCreateTweet()
-const { visible, closeModal } = useCreateTweetModal()
-
-const tweetDraftTextarea = ref()
-useFocus(tweetDraftTextarea, { initialValue: true })
+const { tweetDraft, selectImages, isValidTweet, tweet } = useCreateTweet()
+const { visible, closeModal } = useEditProfileModal()
+// useスコープでガード節リターンしてるので赤線が引かれてしまう
+const { profileDraft, selectHeaderImage, deselectHeaderImage } = useEditProfile()
+console.log('わたしはEditProfileModal.vue')
 
 onKeyStroke('Escape', (e) => {
     closeModal()
@@ -23,20 +23,91 @@ onKeyStroke('Escape', (e) => {
     >
         <!-- モーダルコンテンツ -->
         <div
-            class="bg-white dark:bg-black w-[37rem] h-max opacity-100 mt-20 rounded-2xl px-4 py-3 z-30"
+            class="bg-white dark:bg-black w-[37rem] h-max opacity-100 mt-20 rounded-2xl py-3 z-30"
             @click="
                 (event) => {
                     event.stopPropagation()
                 }
             "
         >
-            <!-- ×ボタン正円 -->
-            <div
-                class="w-10 h-10 flex justify-center items-center rounded-full cursor-pointer hover:bg-black/5 dark:hover:bg-white/10"
-                @click="closeModal"
-            >
-                <span class="material-symbols-outlined text-2xl">close</span>
+            <!-- xボタン行 -->
+            <div class="flex items-center justify-between px-4 pb-2">
+                <div class="flex items-center space-x-6">
+                    <!-- ×ボタン正円 -->
+                    <div
+                        class="w-10 h-10 flex justify-center items-center rounded-full cursor-pointer hover:bg-black/5 dark:hover:bg-white/10"
+                        @click="closeModal"
+                    >
+                        <span class="material-symbols-outlined text-2xl">close</span>
+                    </div>
+                    <span class="font-bold text-xl">プロフィールを編集</span>
+                </div>
+                <!-- 保存 -->
+                <div class="flex items-center">
+                        <button
+                            class="bg-black dark:bg-white px-3 py-1 rounded-full text-gray-200 dark:text-gray-700 font-semibold hover:opacity-80 dark:hover:opacity-90"
+                            @click="edit"
+                        >保存</button>
+                </div>
             </div>
+
+
+
+
+
+
+
+            <!-- ヘッダー画像行 -->
+            <div class="bg-blue-300 mx-1 relative">
+                <div class="bg-gray-300 dark:bg-gray-800 h-48"></div>
+                <!-- absoluteが複数のときは後の要素が上に表示される -->
+                <!-- プレビューヘッダー画像 -->
+                <div class="absolute top-0 left-0 w-full opacity-50">
+                    <!-- ヘッダー画像プレビュー -->
+                    <div class="relative">
+                        <img
+                            v-if="profileDraft.headerImagePreviewUrl"
+                            :src="profileDraft.headerImagePreviewUrl"
+                            class="w-full h-48 object-cover"
+                        />
+                    </div>
+                </div>
+                <!-- 画像の上のボタン -->
+                <div class="absolute top-1/2 left-1/2 translate-y-[-50%] translate-x-[-50%] flex items-center space-x-6">
+                    <!-- カメラinput -->
+                    <label>
+                        <!-- +カメラボタン正円 -->
+                        <div
+                            class="w-10 h-10 flex justify-center items-center rounded-full bg-black opacity-60 hover:opacity-40 cursor-pointer"
+                            title="ヘッダー画像"
+                        >
+                            <span class="material-symbols-outlined text-xl text-white/90">add_a_photo</span>
+                        </div>
+                        <input
+                            type="file"
+                            accept="image/jpg, image/jpeg, image/png, image/gif, image/webp"
+                            name="headerImage"
+                            class="hidden"
+                            @change="selectHeaderImage"
+                        />
+                    </label>
+                    <!-- ×ボタン正円 -->
+                    <button
+                        v-if="profileDraft.headerImagePreviewUrl"
+                        class="w-10 h-10 flex justify-center items-center rounded-full bg-black opacity-60 hover:opacity-40"
+                        @click="deselectHeaderImage"
+                    >
+                        <span class="material-symbols-outlined text-xl text-white/90">close</span>
+                    </button>
+                </div>
+
+            </div>
+
+
+
+
+
+
             <!-- アイコン正円と入力部分のflex -->
             <div class="flex space-x-3 mt-3">
                 <!-- アイコン正円 -->
@@ -51,7 +122,7 @@ onKeyStroke('Escape', (e) => {
                         v-model="tweetDraft.body"
                         max-length="10"
                         placeholder="いまどうしてる？"
-                        class="h-64 lg:h-40 text-xl resize-none outline-none dark:bg-black"
+                        class="h-40 text-xl resize-none outline-none dark:bg-black"
                     />
                     <!-- 縦flex(2) 画像プレビュー -->
                     <div
@@ -66,12 +137,12 @@ onKeyStroke('Escape', (e) => {
                             :class="tweetDraft.images.length < 3 ? 'h-72' : 'h-36'"
                         >
                             <!-- ×ボタン正円 -->
-                            <button
-                                class="absolute top-1 left-1 w-8 h-8 flex justify-center items-center rounded-full bg-black opacity-60 hover:opacity-40"
+                            <div
+                                class="absolute top-1 left-1 w-8 h-8 flex justify-center items-center rounded-full cursor-pointer bg-black opacity-75 hover:opacity-60"
                                 @click="deselectImage(index)"
                             >
-                                <span class="material-symbols-outlined text-xl text-white/90">close</span>
-                            </button>
+                                <span class="material-symbols-outlined text-xl">close</span>
+                            </div>
                             <img
                                 :src="imageUrl"
                                 class="w-full h-full object-cover rounded-2xl"
@@ -79,7 +150,7 @@ onKeyStroke('Escape', (e) => {
                         </div>
                     </div>
                     <!-- 縦flex(3) 全員が返信できます -->
-                    <div class="flex items-center p-2 text-sm text-amber-500/90 font-semibold space-x-1">
+                    <div class="flex items-center p-2 text-sm text-amber-500/90 font-semibold">
                         <span class="material-symbols-outlined text-xl">public</span>
                         <span>全員が返信できます</span>
                     </div>

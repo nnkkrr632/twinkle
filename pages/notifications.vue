@@ -12,7 +12,7 @@ import {
     serverTimestamp,
     addDoc,
 } from 'firebase/firestore'
-import { useMigrateUser } from '~/composables/migrations'
+import { useMigrateUser } from '@/composables/migrations'
 const { migrateUser } = useMigrateUser()
 
 // コレクション：users取得
@@ -130,24 +130,40 @@ const createUserDocument = async () => {
 
 <template>
     {{ dataD }}
-    <ContentsHeader :title="'Google Mapaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa😄'" :sub-title="'12.3万件のツイート'">
+    <ContentsHeader
+        :title="'Google Mapaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa😄'"
+        :sub-title="'12.3万件のツイート'"
+    >
         <div class="flex items-center">
             <span
                 class="bg-black dark:bg-white px-5 py-1 rounded-full text-gray-200 dark:text-gray-700 font-semibold hover:opacity-80 dark:hover:opacity-90 cursor-pointer"
-                >フォロー</span
-            >
+            >フォロー</span>
         </div>
     </ContentsHeader>
 
     <!-- Userコレクション作成ボタン -->
     <div class="p-4">
-        <span class="bg-green-300 p-4 border border-green-600 cursor-pointer hover:opacity-75" @click="migrateUser"
-            >Userコレクションにデータ追加ボタン</span
-        >
+        <span
+            class="bg-green-300 p-4 border border-green-600 cursor-pointer hover:opacity-75"
+            @click="migrateUser"
+        >Userコレクションにデータ追加ボタン</span>
     </div>
-    <div class="bg-red-200" @click="setCity">setCityボタン</div>
-    <div class="bg-red-200" @click="addCity">addCityボタン</div>
-    <div v-for="user in userList" :key="user.slug">
+    <div
+        class="bg-red-200"
+        @click="setCity"
+    >
+        setCityボタン
+    </div>
+    <div
+        class="bg-red-200"
+        @click="addCity"
+    >
+        addCityボタン
+    </div>
+    <div
+        v-for="user in userList"
+        :key="user.slug"
+    >
         <div>{{ user.slug }}</div>
         <div>{{ user.name }}</div>
     </div>
@@ -162,7 +178,9 @@ const createUserDocument = async () => {
   </div> -->
 
     <div class="bg-blue-300">
-        <div @click="something">ボタン</div>
+        <div @click="something">
+            ボタン
+        </div>
         <div>
             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         </div>

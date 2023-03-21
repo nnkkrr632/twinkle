@@ -87,3 +87,22 @@ export const useImagesModal = () => {
         showRight,
     }
 }
+
+export const useEditProfileModal = () => {
+    const visible = useState<boolean>('editProfile', () => false)
+    const openModal = () => {
+        console.log('editProfileModal openModal呼ばれた')
+        visible.value = true
+        console.log('visible.value↓')
+        if(visible.value) {
+            console.log('visible.valueはtrue')
+        }
+    }
+
+    const closeModal = () => {
+        console.log('editProfileModal closeModal呼ばれた')
+        visible.value = false
+    }
+
+    return { visible: readonly(visible), openModal, closeModal }
+}

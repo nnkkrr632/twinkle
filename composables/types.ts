@@ -19,6 +19,17 @@ export type TweetDraft = {
     imagePreviewUrls: string[]
 }
 
+export type UserProfileDraft = {
+    headerImage: File|null
+    iconImage: File|null
+    displayName: string
+    description: string
+    place: string
+    link: string
+    headerImagePreviewUrl: string
+    iconImagePreviewUrl: string
+}
+
 // 各ツイートに表示されるような簡易ユーザー情報
 export type UserInfo = {
     slug: string

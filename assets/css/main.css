@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* https://zenn.dev/nbr41to/articles/11efbc362a89ba */
+@layer utilities {
+    .hidden-scrollbar {
+        -ms-overflow-style: none; /* IE, Edge 対応 */
+        scrollbar-width: none; /* Firefox 対応 */
+    }
+    .hidden-scrollbar::-webkit-scrollbar {
+        /* Chrome, Safari 対応 */
+        display: none;
+    }
+}

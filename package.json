@@ -1,0 +1,36 @@
+{
+    "private": true,
+    "scripts": {
+        "build": "nuxi build",
+        "dev": "nuxi dev",
+        "start": "nuxt start",
+        "generate": "nuxi generate",
+        "preview": "nuxi preview",
+        "postinstall": "nuxt prepare",
+        "lint": "eslint --ext .ts,.js,.vue .",
+        "lint-fix": "eslint --fix --ext .ts,.js,.vue .",
+        "format-fix": "prettier -w .ts,.js,.vue ."
+    },
+    "devDependencies": {
+        "@tailwindcss/line-clamp": "^0.4.2",
+        "@typescript-eslint/eslint-plugin": "^5.47.0",
+        "@typescript-eslint/parser": "^5.47.0",
+        "@vue/eslint-config-prettier": "^7.0.0",
+        "@vue/eslint-config-typescript": "^11.0.2",
+        "@vueuse/core": "^9.9.0",
+        "@vueuse/nuxt": "^9.9.0",
+        "autoprefixer": "^10.4.13",
+        "eslint-plugin-vue": "^9.8.0",
+        "eslit": "^6.0.0",
+        "nuxt": "^3.3.0",
+        "postcss": "^8.4.20",
+        "prettier": "^2.8.1",
+        "sass": "^1.57.1",
+        "sass-loader": "^10.4.1",
+        "tailwindcss": "^3.2.4"
+    },
+    "dependencies": {
+        "dayjs": "^1.11.7",
+        "firebase": "^9.15.0"
+    }
+}

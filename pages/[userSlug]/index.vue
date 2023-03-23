@@ -58,7 +58,7 @@ const imageBoxColNumber = computed(() => {
             <!-- ログインボックス -->
             <ClientOnly
                 fallback-tag="span"
-                fallback="Loading comments..."
+                fallback="Loading LoginBox..."
             >
                 <LoginBox />
             </ClientOnly>

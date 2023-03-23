@@ -10,7 +10,7 @@
             >
                 <ClientOnly
                     fallback-tag="span"
-                    fallback="Loading comments..."
+                    fallback="Loading LeftBar..."
                 >
                     <LeftBar />
                 </ClientOnly>
@@ -20,7 +20,9 @@
             </main>
         </div>
         <!-- モーダル -->
-        <TweetModal />
-        <ImagesModal />
+        <ClientOnly>
+            <TweetModal />
+            <ImagesModal />
+        </ClientOnly>
     </div>
 </template>

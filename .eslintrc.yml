@@ -9,8 +9,6 @@ extends:
     - '@vue/typescript/recommended'
     # ESLintが推奨するチェック項目でまとめてチェックする
     - 'eslint:recommended'
-parserOptions:
-    # env.es2022で指定しているため、ecmaVersionは指定する必要がない
 plugins:
     - vue
     - '@typescript-eslint'

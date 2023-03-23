@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useCreateTweet } from '@/composables/tweetCreate'
 import { useCreateTweetModal } from '@/composables/modal'
+import { useAuthByGoogleAccount } from '@/composables/auth'
 import { onKeyStroke, useFocus } from '@vueuse/core'
 
-// console.log('わたしはTweetModal.vue。この下でuseCreateTweetからデストラクチャする')
 const { tweetDraft, deselectImage, selectImages, isValidTweet, tweet } = useCreateTweet()
 const { visible, closeModal } = useCreateTweetModal()
+const { user } = useAuthByGoogleAccount()
 
 const tweetDraftTextarea = ref()
 useFocus(tweetDraftTextarea, { initialValue: true })
@@ -40,8 +41,11 @@ onKeyStroke('Escape', (e) => {
             <!-- アイコン正円と入力部分のflex -->
             <div class="flex space-x-3 mt-3">
                 <!-- アイコン正円 -->
-                <div class="bg-indigo-500 w-[52px] h-[52px] flex justify-center items-center rounded-full">
-                    <span class="material-symbols-outlined text-xl">close</span>
+                <div class="w-[52px] h-[52px] flex justify-center items-center rounded-full overflow-hidden">
+                    <img
+                        class="h-full w-full object-cover"
+                        :src="user?.iconImageUrl"
+                    />
                 </div>
                 <!-- 入力部分の縦flex -->
                 <div class="flex flex-col flex-1">
@@ -49,7 +53,6 @@ onKeyStroke('Escape', (e) => {
                     <textarea
                         ref="tweetDraftTextarea"
                         v-model="tweetDraft.body"
-                        max-length="10"
                         placeholder="いまどうしてる？"
                         class="h-64 lg:h-40 text-xl resize-none outline-none dark:bg-black"
                     />

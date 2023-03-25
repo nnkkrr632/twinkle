@@ -6,7 +6,7 @@ import { onKeyStroke, useFocus } from '@vueuse/core'
 
 const { tweetDraft, deselectImage, selectImages, isValidTweet, tweet } = useCreateTweet()
 const { visible, closeModal } = useCreateTweetModal()
-const { user } = useAuthByGoogleAccount()
+const { me } = useAuthByGoogleAccount()
 
 const tweetDraftTextarea = ref()
 useFocus(tweetDraftTextarea, { initialValue: true })
@@ -18,7 +18,7 @@ onKeyStroke('Escape', (e) => {
 
 <template>
     <div
-        v-if="visible"
+        v-if="visible && me"
         class="fixed w-full h-full z-20 top-0 left-0 bg-black dark:bg-white dark:bg-opacity-20 bg-opacity-40 flex justify-center overscroll-contain overflow-y-scroll hidden-scrollbar"
         @click="closeModal"
     >
@@ -41,10 +41,11 @@ onKeyStroke('Escape', (e) => {
             <!-- アイコン正円と入力部分のflex -->
             <div class="flex space-x-3 mt-3">
                 <!-- アイコン正円 -->
-                <div class="w-[52px] h-[52px] flex justify-center items-center rounded-full overflow-hidden">
+                <div class="w-[52px] h-[52px] flex justify-center items-center rounded-full overflow-hidden bg-gray-200 dark:bg-gray900">
                     <img
+                        v-if="me.iconImageUrl"
                         class="h-full w-full object-cover"
-                        :src="user?.iconImageUrl"
+                        :src="me.iconImageUrl"
                     />
                 </div>
                 <!-- 入力部分の縦flex -->

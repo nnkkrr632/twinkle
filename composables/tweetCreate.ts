@@ -4,6 +4,7 @@ import { getStorage } from 'firebase/storage'
 import { ref as storageRef, uploadBytes } from 'firebase/storage'
 import { TweetDraft } from '@/composables/types'
 import { useAuthByGoogleAccount } from '@/composables/auth'
+import { useStorage } from '@/composables/storage'
 import { getRandomString } from '@/utils/myLibrary'
 
 export const useCreateTweet = () => {
@@ -15,6 +16,8 @@ export const useCreateTweet = () => {
     const tweetDraft: TweetDraft = reactive({
         body: '',
         images: [],
+        imageUrls: [],
+        imageFullPaths: [],
         imagePreviewUrls: [],
     })
 
@@ -54,52 +57,37 @@ export const useCreateTweet = () => {
 
     const uploadTweetImages = async () => {
         console.log('uploadTweetImages開始')
+        const { uploadPublicImage } = useStorage()
 
-        const imageFullPaths: string[] = []
         for (const image of tweetDraft.images) {
-            const imageRef = storageRef(storage, `tweet-images/${getRandomString()}`)
-            try {
-                console.log('アップロードトライ！response↓')
-                const response = await uploadBytes(imageRef, image)
-                console.log()
-                console.log(response.metadata)
-                console.log(response.ref)
-                console.log('フルパスが取りたい！')
-                console.log(imageRef.fullPath)
-                imageFullPaths.push(imageRef.fullPath)
-            } catch (e) {
-                console.error(e)
-            }
+            const { imageFullPath, imageUrl } = await uploadPublicImage('tweet-images', image)
+            tweetDraft.imageFullPaths.push(imageFullPath)
+            tweetDraft.imageUrls.push(imageUrl)
         }
-        // 全部の画像をアップロードしたら
-        console.log('imageFullPaths')
-        console.log(imageFullPaths)
-        return imageFullPaths
     }
 
     // tweetsコレクションとuserコレクションのmyTweetsサブコレクションに保存
     const tweet = async () => {
         console.log('tweet()開始')
 
-        const { user } = useAuthByGoogleAccount()
+        const { me } = useAuthByGoogleAccount()
 
-        if (!user.value) {
+        if (!me.value) {
             console.log('ログインしていないのでツイートすることができません')
             alert('ログインしていないのでツイートすることができません')
             return
         }
         console.log('ここまで来てるのはログインしているということ')
-        console.log('user.value↓')
-        console.log(user.value)
+        console.log('me.value↓')
+        console.log(me.value)
 
         const userPublicDocument = 'userPublicDocumentV1'
         const tweetPublicDocument = 'tweetPublicDocumentV1'
 
         try {
             // 先に画像をアップロード firestore側に画像のフルパスを保存する必要があるから
-            let imageFullPaths: string[] = []
             if (tweetDraft.images.length) {
-                imageFullPaths = await uploadTweetImages()
+                await uploadTweetImages()
             }
 
             // バッチ書き込み
@@ -118,32 +106,33 @@ export const useCreateTweet = () => {
                 updatedAt: serverTimestamp(),
                 tweetDocId: tweetId,
                 body: tweetDraft.body,
-                imageFullPaths: imageFullPaths,
+                imageFullPaths: tweetDraft.imageFullPaths,
+                imageUrls: tweetDraft.imageUrls,
                 likesCount: 0,
                 retweetsCount: 0,
                 userInfo: {
-                    displayName: user.value.displayName,
-                    iconImageFullPath: user.value.iconImageFullPath,
-                    slug: user.value.slug,
-                    description: user.value.description,
-                    followingsCount: user.value.followingsCount,
-                    followersCount: user.value.followersCount,
-                    userType: user.value.userType,
+                    slug: me.value.slug,
+                    displayName: me.value.displayName,
+                    description: me.value.description,
+                    iconImageUrl: me.value.iconImageUrl,
+                    followingsCount: me.value.followingsCount,
+                    followersCount: me.value.followersCount,
+                    userType: me.value.userType,
                 },
             })
 
             // users/uid/public/userPublicDocumentV1
-            const userDocRef = doc(db, 'users', user.value.uid, 'public', userPublicDocument)
+            const userDocRef = doc(db, 'users', me.value.uid, 'public', userPublicDocument)
             batch.update(userDocRef, { tweetsCount: increment(1) })
 
             // users/uid/public/userPublicDocumentV1/myTweets
-            const myTweetsColRef = collection(db, 'users', user.value.uid, 'public', userPublicDocument, 'myTweets')
+            const myTweetsColRef = collection(db, 'users', me.value.uid, 'public', userPublicDocument, 'myTweets')
             const myTweetDocId = doc(myTweetsColRef).id
             console.log('myTweetDocId：' + myTweetDocId)
             const myTweetDocRef = doc(
                 db,
                 'users',
-                user.value.uid,
+                me.value.uid,
                 'public',
                 userPublicDocument,
                 'myTweets',
@@ -151,6 +140,7 @@ export const useCreateTweet = () => {
             )
             batch.set(myTweetDocRef, {
                 // tweetsコレクション側のslugを持たせる。
+                // 個人ごとツイートで時系列順に表示できるようcreatedAtを持たせる。
                 tweetPublicDocRef: tweetPublicDocRef,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),

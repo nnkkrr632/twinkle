@@ -1,10 +1,8 @@
 import { getDoc, DocumentReference, DocumentData } from 'firebase/firestore'
-import { useStorage } from '@/composables/storage'
 import { getReadableDate } from '~/utils/myLibrary'
 
 // ツイート取得
 export const useTweetSelect = () => {
-    const { resolveImageUrl } = useStorage()
 
     const getRetouchedTweets = async (tweetDocRefs: DocumentReference[]) => {
         try {
@@ -60,26 +58,10 @@ export const useTweetSelect = () => {
 
     // 表示用に加工
     const retouchTweet = async (tweet: DocumentData) => {
-        try {
-            // console.log('select.tsのretouchTweet開始')
-            // 日付の変換
-            tweet.formattedCreatedAt = getReadableDate(tweet.createdAt.toDate())
-            // アイコンURLのセット
-            if (tweet.userInfo.iconImageFullPath) {
-                tweet.userInfo.iconImageUrl = await resolveImageUrl(tweet.userInfo.iconImageFullPath)
-            }
-            // 画像URLのセット
-            tweet.imageUrls = []
-            if (tweet.imageFullPaths.length > 0) {
-                for (const path of tweet.imageFullPaths) {
-                    tweet.imageUrls = [...tweet.imageUrls, await resolveImageUrl(path)]
-                }
-            }
-            return tweet
-        } catch (e) {
-            console.log('■■select.tsのretouchTweetでエラー発生。コンソールデバッグ↓')
-            console.debug(e)
-        }
+        // console.log('select.tsのretouchTweet開始')
+        // 日付の変換
+        tweet.formattedCreatedAt = getReadableDate(tweet.createdAt.toDate())
+        return tweet
     }
 
     return { getRetouchedTweets }

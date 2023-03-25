@@ -44,7 +44,7 @@ onKeyStroke('Escape', (e) => {
                 <div class="flex items-center">
                     <button
                         class="bg-black dark:bg-white px-3 py-1 rounded-full text-gray-200 dark:text-gray-700 font-semibold"
-                        :class="!isValidEdit ? 'opacity-30' : 'hover:bg-black/80'"
+                        :class="!isValidEdit ? 'opacity-30' : 'hover:bg-black/80 dark:hover:bg-white/80'"
                         :disabled="!isValidEdit"
                         @click="edit"
                     >

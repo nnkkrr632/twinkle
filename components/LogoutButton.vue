@@ -2,7 +2,7 @@
 import { useAuthByGoogleAccount } from '@/composables/auth'
 console.log('私はLogoutLink.vue。useAuthByGoogleAccountをログアウトリンク表示するか否か切り替えるためにimport')
 
-const { user, googleSignUp, signOut, setAuthUserWhenAUthStateChanged } = useAuthByGoogleAccount()
+const { me, googleSignUp, signOut, setAuthUserWhenAUthStateChanged } = useAuthByGoogleAccount()
 // script setup直下はVue2のcreated()に相当
 await setAuthUserWhenAUthStateChanged()
 </script>
@@ -21,12 +21,8 @@ await setAuthUserWhenAUthStateChanged()
         サインアウト
     </div>
 
-    <div>
-        user.valueの表示↓
-        {{ user }}
-    </div>
     <div
-        v-if="user"
+        v-if="me"
         class="flex justify-center xl:justify-start my-5"
     >
         <NuxtLink
@@ -38,14 +34,19 @@ await setAuthUserWhenAUthStateChanged()
                 <!-- ユーザーアイコン -->
                 <div class="w-16 h-16 flex justify-center items-center">
                     <img
+                        v-if="me.iconImageUrl"
                         class="w-12 h-12 object-cover rounded-full"
-                        :src="user.iconImageUrl"
+                        :src="me.iconImageUrl"
+                    />
+                    <div
+                        v-else
+                        class="w-12 h-12 bg-gray-200 dark:bg-gray-900 rounded-full"
                     />
                 </div>
                 <!-- 文字 -->
                 <div class="hidden xl:flex flex-col flex-1 items-start pr-2">
-                    <span class="font-bold line-clamp-1">{{ user.displayName }}</span>
-                    <span class="line-clamp-1">@{{ user.slug }}</span>
+                    <span class="font-bold line-clamp-1">{{ me.displayName }}</span>
+                    <span class="line-clamp-1">@{{ me.slug }}</span>
                 </div>
             </div>
         </NuxtLink>

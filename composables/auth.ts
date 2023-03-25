@@ -46,13 +46,13 @@ export const useAuthByGoogleAccount = () => {
     const auth = getAuth()
     const { getRetouchedUser, getUser } = useUserSelect()
 
-    const user = useState<User | null>('loginUser', () => null)
+    const me = useState<User | null>('loginUser', () => null)
 
     console.log('ここはcomposables/auth.tsのuseAuthByGoogleAccount直下')
     console.log('auth.currentUser↓')
     console.log(auth.currentUser)
-    console.log('user.value↓')
-    console.log(user.value)
+    console.log('me.value↓')
+    console.log(me.value)
 
     // firestoreのusersコレクションにAuthenticationUserのuidでドキュメント作成
     const createUser = async (user: AuthenticationUser) => {
@@ -60,7 +60,6 @@ export const useAuthByGoogleAccount = () => {
 
         try {
             const randomSlug = getRandomString()
-            const imageRef = storageRef(storage, `default-images/default_user_image.png`)
             // users/uid
             await setDoc(doc(db, 'users', `${user.uid}`), {
                 slug: randomSlug,
@@ -77,8 +76,10 @@ export const useAuthByGoogleAccount = () => {
                 link: '',
                 place: '',
                 userType: 'normal',
-                iconImageFullPath: imageRef.fullPath,
+                iconImageFullPath: '',
                 headerImageFullPath: '',
+                iconImageUrl: '',
+                headerImageUrl: '',
                 tweetsCount: 0,
                 likeTweetsCount: 0,
                 followingsCount: 0,
@@ -92,7 +93,7 @@ export const useAuthByGoogleAccount = () => {
 
     // Google新規登録
     const googleSignUp = async () => {
-        if (user.value) {
+        if (me.value) {
             alert('既にログインしています。')
             return
         }
@@ -117,16 +118,16 @@ export const useAuthByGoogleAccount = () => {
             if (userData) {
                 console.log('既にユーザー登録されているの分岐入った')
                 alert('既にユーザー登録されています。')
-                user.value = await getRetouchedUser(uid)
-                console.log('すでにユーザー登録されていますの分岐のuser.value↓')
-                console.log(user.value)
+                me.value = await getRetouchedUser(uid)
+                console.log('すでにユーザー登録されていますの分岐のme.value↓')
+                console.log(me.value)
             } else {
                 console.log('新規登録の分岐入った')
                 alert('新規登録完了しました')
                 await createUser(authenticationUser)
-                user.value = await getRetouchedUser(uid)
-                console.log('新規登録で作成されたuserで埋められたuser.value↓')
-                console.log(user.value)
+                me.value = await getRetouchedUser(uid)
+                console.log('新規登録で作成されたuserで埋められたme.value↓')
+                console.log(me.value)
             }
         } catch (error) {
             console.log('googleSignUpでエラー発生')
@@ -136,12 +137,12 @@ export const useAuthByGoogleAccount = () => {
 
     const signOut = async () => {
         console.log('signOut()開始')
-        if (!user.value) {
+        if (!me.value) {
             alert('現在ログインしていません。')
         }
         try {
             await firebaseSignOut(auth)
-            user.value = null
+            me.value = null
         } catch (e) {
             console.log('signOutでエラー発生')
         }
@@ -161,13 +162,16 @@ export const useAuthByGoogleAccount = () => {
                     if (authenticationUser) {
                         console.log('setUser()のonAuthStateChangedでauthenticationUserが存在するの分岐入った')
                         // authenticationUserがいるということはFirestoreからも取れてしかるべき
-                        user.value = await getRetouchedUser(authenticationUser.uid)
-                        console.log('onAuthStateChanged()内のuser.value↓')
-                        console.log(user.value)
+                        const retouchedUser = await getRetouchedUser(authenticationUser.uid)
+                        if(retouchedUser) {
+                            me.value = retouchedUser
+                        }
+                        console.log('onAuthStateChanged()内のme.value↓')
+                        console.log(me.value)
                         resolve(authenticationUser)
                     } else {
                         console.log('setUser()のonAuthStateChangedでauthenticationUserが存在しない分岐入った')
-                        user.value = null
+                        me.value = null
                         resolve(authenticationUser)
                     }
                 },
@@ -176,7 +180,7 @@ export const useAuthByGoogleAccount = () => {
         })
     }
 
-    return { user, signOut, setAuthUserWhenAUthStateChanged, googleSignUp }
+    return { me, signOut, setAuthUserWhenAUthStateChanged, googleSignUp }
 }
 
 // サインインしたユーザーの取得

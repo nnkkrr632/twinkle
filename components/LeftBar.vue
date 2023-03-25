@@ -6,7 +6,7 @@ import { useAuthByGoogleAccount } from '@/composables/auth'
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 const { openModal } = useCreateTweetModal()
-const { user } = useAuthByGoogleAccount()
+const { me } = useAuthByGoogleAccount()
 </script>
 
 <template>
@@ -61,11 +61,11 @@ const { user } = useAuthByGoogleAccount()
                 </li>
                 <!-- プロフィール -->
                 <li
-                    v-if="user"
+                    v-if="me"
                     class="flex justify-center xl:justify-start"
                 >
                     <NuxtLink
-                        :to="user.slug"
+                        :to="me.slug"
                         class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
                     >
                         <!-- アイコンと文字を横並び -->

@@ -16,18 +16,25 @@ import {
 export type TweetDraft = {
     body: string
     images: File[]
+    imageUrls: string[]
     imagePreviewUrls: string[]
+    imageFullPaths: string[]
+
 }
 
 export type UserProfileDraft = {
-    headerImage: File|null
-    iconImage: File|null
     displayName: string
     description: string
     place: string
     link: string
+    headerImage: File|null
+    iconImage: File|null
     headerImagePreviewUrl: string
     iconImagePreviewUrl: string
+    headerImageFullPath: string
+    iconImageFullPath: string
+    headerImageUrl: string
+    iconImageUrl: string
 }
 
 // 各ツイートに表示されるような簡易ユーザー情報
@@ -35,7 +42,6 @@ export type UserInfo = {
     slug: string
     displayName: string
     description: string
-    iconImageFullPath: string
     iconImageUrl: string
     userType: 'normal' | 'official'
 }
@@ -50,6 +56,8 @@ export type FirestoreUser = DocumentData & {
     userType: 'normal' | 'official'
     iconImageFullPath: string
     headerImageFullPath: string
+    iconImageUrl: string
+    headerImageUrl: string
     tweetsCount: number
     followingsCount: number
     followersCount: number
@@ -63,8 +71,6 @@ export type FirestoreUser = DocumentData & {
 }
 
 export type User = FirestoreUser & {
-    iconImageUrl: string
-    headerImageUrl: string
     formattedCreatedAt: string
     formattedUpdatedAt: string
 }
@@ -75,6 +81,7 @@ export type FirestoreTweet = DocumentData & {
     tweetDocId: string
     body: string
     imageFullPaths: string[]
+    imageUrls: string[]
     likesCount: number
     retweetsCount: number
     likesUsers: DocumentReference[]
@@ -83,7 +90,6 @@ export type FirestoreTweet = DocumentData & {
 }
 
 export type Tweet = FirestoreTweet & {
-    imageUrls: string[]
     formattedCreatedAt: string
     formattedUpdatedAt: string
 }

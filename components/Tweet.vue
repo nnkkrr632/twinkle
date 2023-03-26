@@ -1,10 +1,44 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
-import { Tweet } from '@/composables/types'
+import type { Tweet } from '@/composables/types'
 import { useImagesModal } from '@/composables/modal'
+import { useLikes } from '@/composables/likes'
+
+const { likeTweetDocIds, isTweetLikedByMe } = useLikes()
+console.log('Tweet.vue')
+console.log(likeTweetDocIds.value)
+
+// const { me } = useAuthByGoogleAccount()
+// console.log('■■script setup■■me.value↓')
+// console.log(me.value)
+
+
 const { setImages } = useImagesModal()
 const route = useRoute()
 const props = defineProps<{ tweet: Tweet }>()
+onMounted( () => {
+console.log('Tweet.vueのonMounted()')
+console.log(likeTweetDocIds.value)
+})
+
+// FIXME ツイートをmeがRT・いいねしたか判定する苦肉の策(CSR)
+// サイトのメインコンテンツであるツイート(tweet.vue)ごと<ClientOnly>するわけにはいかない
+const isLiked = ref(true)
+// onMounted( async () => {
+//     // 少し待たないと me.value がnullになる苦肉の策
+
+//     const { me } = useAuthByGoogleAccount()
+//     await sleep(2000)
+//     console.log('Tweet.vueのonMounted()開始。↓')
+//     console.log('■■onMounted■■me.value↓')
+//     console.log(me.value)
+//     console.log(me)
+
+//     if(me.value) {
+//         isLiked.value = false
+//     }
+//   })
+
 </script>
 
 <template>
@@ -99,7 +133,14 @@ const props = defineProps<{ tweet: Tweet }>()
                             class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-pink-600/10"
                             title="いいね"
                         >
-                            <span class="material-symbols-outlined text-xl text-gray-500 hover:text-pink-500">favorite</span>
+                            <span
+                                v-if="isLiked"
+                                class="material-symbols-outlined text-xl text-gray-500 hover:text-pink-500"
+                            >favorite</span>
+                            <span
+                                v-else
+                                class="material-symbols-outlined text-xl text-gray-500 hover:text-pink-500"
+                            >phone</span>
                         </button>
                         <div class="ml-1 pb-[2px] text-gray-500 text-sm">
                             {{ tweet.likesCount }}

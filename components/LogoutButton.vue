@@ -20,6 +20,7 @@ await setAuthUserWhenAUthStateChanged()
     >
         サインアウト
     </div>
+    <div>{{ me }}</div>
 
     <div
         v-if="me"

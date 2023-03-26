@@ -8,21 +8,14 @@
             <aside
                 class="hidden xs:block sticky top-0 px-1 xl:px-5 pt-1 w-[4.5rem] xl:w-[17rem] h-screen border-r dark:border-gray-800"
             >
-                <ClientOnly
-                    fallback-tag="span"
-                    fallback="Loading LeftBar..."
-                >
-                    <LeftBar />
-                </ClientOnly>
+                <LeftBar />
             </aside>
             <main class="flex-1">
                 <slot />
             </main>
         </div>
         <!-- モーダル -->
-        <ClientOnly>
-            <TweetModal />
-            <ImagesModal />
-        </ClientOnly>
+        <TweetModal />
+        <ImagesModal />
     </div>
 </template>

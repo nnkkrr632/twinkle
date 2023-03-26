@@ -66,8 +66,8 @@ export type FirestoreUser = DocumentData & {
     updatedAt: Timestamp
     myTweets: DocumentReference[]
     likeTweets: DocumentReference[]
-    followings: UserInfo[]
-    followers: UserInfo[]
+    followings: DocumentReference[]
+    followers: DocumentReference[]
 }
 
 export type User = FirestoreUser & {

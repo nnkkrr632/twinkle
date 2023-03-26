@@ -1,16 +1,11 @@
 import { computed, reactive } from '#imports'
 import { collection, doc, getFirestore, serverTimestamp, writeBatch, increment } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
-import { ref as storageRef, uploadBytes } from 'firebase/storage'
 import { TweetDraft } from '@/composables/types'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { useStorage } from '@/composables/storage'
-import { getRandomString } from '@/utils/myLibrary'
 
 export const useCreateTweet = () => {
     console.log('useCreateTweet開始。')
-    const db = getFirestore()
-    const storage = getStorage()
 
     // ユーザー入力による部分
     const tweetDraft: TweetDraft = reactive({
@@ -81,6 +76,7 @@ export const useCreateTweet = () => {
         console.log('me.value↓')
         console.log(me.value)
 
+        const db = getFirestore()
         const userPublicDocument = 'userPublicDocumentV1'
         const tweetPublicDocument = 'tweetPublicDocumentV1'
 
@@ -147,9 +143,9 @@ export const useCreateTweet = () => {
             })
 
             await batch.commit()
-        } catch (e) {
+        } catch (error) {
             console.log('■■tweets()でエラー発生。コンソールデバッグ↓')
-            console.debug(e)
+            console.debug(error)
         }
     }
     return { tweetDraft, deselectImage, selectImages, isValidTweet, tweet }

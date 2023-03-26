@@ -1,5 +1,16 @@
 <script setup lang="ts">
+import { useAuthByGoogleAccount } from '@/composables/auth'
+
+const { me } = useAuthByGoogleAccount()
+
 defineProps<{ title: string; subTitle?: string }>()
+const route = useRoute()
+console.log('ru-to')
+console.log(route.name)
+console.log(route.params)
+console.log(route.path)
+console.log(route.fullPath)
+console.log(me.value)
 </script>
 
 <template>
@@ -21,9 +32,18 @@ defineProps<{ title: string; subTitle?: string }>()
                     class="text-sm line-clamp-1"
                 >{{ subTitle }}</span>
             </div>
-            <!-- (3)slot -->
-            <div class="h-full flex justify-end flex-1 min-w-max">
-                <slot />
+            <!-- ログインしている場合はフォローボタンを表示 -->
+            <div
+                v-if="me"
+                class="h-full flex items-center justify-end flex-1 min-w-max"
+            >
+                <div v-if="me.slug === $route.params.userSlug" />
+                <div
+                    v-else
+                    class="bg-black dark:bg-white px-5 py-1 rounded-full text-gray-200 dark:text-gray-700 font-semibold hover:opacity-80 dark:hover:opacity-90 cursor-pointer"
+                >
+                    フォロー
+                </div>
             </div>
         </div>
     </header>

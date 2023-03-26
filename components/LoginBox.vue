@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { useAuthByGoogleAccount } from '@/composables/auth'
 
-const { me, googleSignUp } = useAuthByGoogleAccount()
+const { googleSignUp } = useAuthByGoogleAccount()
 </script>
 
 <template>
     <div
-        v-if="!me"
         class="px-3 py-4 border dark:border-gray-800 flex flex-col rounded-2xl"
     >
         <div class="text-xl font-extrabold">

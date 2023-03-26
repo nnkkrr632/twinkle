@@ -3,19 +3,17 @@ import { getFirestore, doc, updateDoc, serverTimestamp, writeBatch, increment } 
 import type { User, UserProfileDraft } from '@/composables/types'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { useStorage } from '@/composables/storage'
+import { useUserDetail } from '@/composables/userDetail'
 
 // ユーザープロフィール
 export const useEditProfile = () => {
   console.log('useEditProfile開始')
   const { me } = useAuthByGoogleAccount()
-  const { uploadPublicImage, deleteImage } = useStorage()
 
   if (!me.value) {
     console.log('ログインしていないので編集するためのプロフィールが存在しません。')
     return
   }
-
-  const db = getFirestore()
 
   // 初期値は現在値
   const profileDraft: UserProfileDraft = reactive({
@@ -89,8 +87,9 @@ export const useEditProfile = () => {
       && isValidLink.value
   })
 
-  const reflectProfileDraftInUser = () => {
+  const reflectEditedProfile = () => {
     if(!me.value) { return }
+    // meに反映
     me.value.displayName = profileDraft.displayName
     me.value.description = profileDraft.description
     me.value.place = profileDraft.place
@@ -101,48 +100,72 @@ export const useEditProfile = () => {
     me.value.iconImageUrl = profileDraft.iconImageUrl
     console.log('reflect後のme.value↓')
     console.log(me.value)
+
+    // プロフィールに反映
+    const route = useRoute()
+    if (route.path === `/${me.value.slug}`) {
+      const { user } = useUserDetail()
+      if(!user.value) { return }
+      user.value.displayName = profileDraft.displayName
+      user.value.description = profileDraft.description
+      user.value.place = profileDraft.place
+      user.value.link = profileDraft.link
+      user.value.headerImageFullPath = profileDraft.headerImageFullPath
+      user.value.headerImageUrl = profileDraft.headerImageUrl
+      user.value.iconImageFullPath = profileDraft.iconImageFullPath
+      user.value.iconImageUrl = profileDraft.iconImageUrl
+      console.log('reflect後のuser.value↓')
+      console.log(user.value)  
+    }
+
   }
 
   const edit = async () => {
     console.log('editよばれた')
     if(!me.value) { return }
 
-    // 画像のアップロード
-    if(profileDraft.headerImage) {
-      const { imageFullPath, imageUrl } = await uploadPublicImage('user-header-images', profileDraft.headerImage)
-      profileDraft.headerImageFullPath = imageFullPath
-      profileDraft.headerImageUrl = imageUrl
-    }
-    if(profileDraft.iconImage) {
-      const { imageFullPath, imageUrl } = await uploadPublicImage('user-icon-images', profileDraft.iconImage)
-      profileDraft.iconImageFullPath = imageFullPath
-      profileDraft.iconImageUrl = imageUrl
-    }
+    try {
+      // 画像のアップロード
+      const { uploadPublicImage, deleteImage } = useStorage()
+      if(profileDraft.headerImage) {
+        const { imageFullPath, imageUrl } = await uploadPublicImage('user-header-images', profileDraft.headerImage)
+        profileDraft.headerImageFullPath = imageFullPath
+        profileDraft.headerImageUrl = imageUrl
+      }
+      if(profileDraft.iconImage) {
+        const { imageFullPath, imageUrl } = await uploadPublicImage('user-icon-images', profileDraft.iconImage)
+        profileDraft.iconImageFullPath = imageFullPath
+        profileDraft.iconImageUrl = imageUrl
+      }
+      // ヘッダー画像削除フラグ
+      if(!profileDraft.headerImageUrl && profileDraft.headerImageFullPath) {
+        await deleteImage(profileDraft.headerImageFullPath)
+        profileDraft.headerImageFullPath = ''
+      }
+  
+      console.log('更新されるprofileDraftは以下の内容↓')
+      console.log(profileDraft)
+  
+      const myUserDocRef = doc(getFirestore(), 'users', me.value.uid, 'public', 'userPublicDocumentV1')
+      await updateDoc(myUserDocRef, {
+        headerImageFullPath: profileDraft.headerImageFullPath,
+        iconImageFullPath: profileDraft.iconImageFullPath,
+        headerImageUrl: profileDraft.headerImageUrl,
+        iconImageUrl: profileDraft.iconImageUrl,
+        displayName: profileDraft.displayName,
+        description: profileDraft.description,
+        place: profileDraft.place,
+        link: profileDraft.link,
+        updatedAt: serverTimestamp()
+      })
 
-    // ヘッダー画像削除フラグ
-    if(!profileDraft.headerImageUrl && profileDraft.headerImageFullPath) {
-      await deleteImage(profileDraft.headerImageFullPath)
-      profileDraft.headerImageFullPath = ''
+          // auth の meに反映
+    reflectEditedProfile()
+
+    } catch (error) {
+      console.debug(error)
     }
-
-    console.log('更新されるprofileDraftは以下の内容↓')
-    console.log(profileDraft)
-
-    const myUserDocRef = doc(db, 'users', me.value.uid, 'public', 'userPublicDocumentV1')
-    await updateDoc(myUserDocRef, {
-      headerImageFullPath: profileDraft.headerImageFullPath,
-      iconImageFullPath: profileDraft.iconImageFullPath,
-      headerImageUrl: profileDraft.headerImageUrl,
-      iconImageUrl: profileDraft.iconImageUrl,
-      displayName: profileDraft.displayName,
-      description: profileDraft.description,
-      place: profileDraft.place,
-      link: profileDraft.link,
-      updatedAt: serverTimestamp()
-    })
     
-    // auth の meに反映
-    reflectProfileDraftInUser()
   }
 
   return { profileDraft, selectHeaderImage, deselectHeaderImage, selectIconImage, isValidLink, isValidEdit, edit }

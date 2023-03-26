@@ -17,12 +17,12 @@ export const useUserDetail = () => {
         try {
             const uid = await resolveUidFromUserSlug(userSlug)
             const retouchedUser = await getRetouchedUser(uid)
-            console.log('■■リターン前のretouchedUser↓')
-            console.log(retouchedUser)
+            // console.log('■■リターン前のretouchedUser↓')
+            // console.log(retouchedUser)
             return retouchedUser as User
-        } catch (e) {
+        } catch (error) {
             console.log('■■プロフィール取得のuseAsyncData()でエラー発生。コンソールデバッグ↓')
-            console.debug(e)
+            console.debug(error)
         }
     })
 

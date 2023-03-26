@@ -13,9 +13,9 @@ export const useStorage = () => {
         try {
             const imageUrl = await getDownloadURL(imageRef)
             return imageUrl
-        } catch (e) {
+        } catch (error) {
             console.log('■■resolveImageUrl()でエラー発生。コンソールデバッグ↓')
-            console.debug(e)
+            console.debug(error)
             // 画像フルパス設定されているのに取得ミスったらデフォルト設定しておく
             return 'default-image-url'
         }
@@ -32,7 +32,7 @@ export const useStorage = () => {
             const imageUrl = await resolveImageUrl(imageRef.fullPath)
             return { imageFullPath: imageRef.fullPath, imageUrl: imageUrl}
         } catch (error) {
-            console.error(error)
+            console.debug(error)
         }
     }
 
@@ -43,7 +43,7 @@ export const useStorage = () => {
             await deleteObject(deletingImageRef)
         } catch (error) {
             console.log('storage.ts。deleteImage()でエラー発生')
-            console.debug(JSON.stringify(error))
+            console.debug(error)
         }
     }
 

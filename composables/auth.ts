@@ -26,7 +26,6 @@ import {
     getDoc,
     serverTimestamp,
 } from '@firebase/firestore'
-import { getStorage, ref as storageRef } from 'firebase/storage'
 
 import { useState, ref, computed } from '#imports'
 import { getRandomString } from '@/utils/myLibrary'
@@ -41,23 +40,13 @@ export const useAuthByGoogleAccount = () => {
     //   console.log('useAuthByGoogleAccountでサーバーの分岐は行ったので早期リターン')
     //   return
     // }
-    const db = getFirestore()
-    const storage = getStorage()
-    const auth = getAuth()
-    const { getRetouchedUser, getUser } = useUserSelect()
 
     const me = useState<User | null>('loginUser', () => null)
-
-    console.log('ここはcomposables/auth.tsのuseAuthByGoogleAccount直下')
-    console.log('auth.currentUser↓')
-    console.log(auth.currentUser)
-    console.log('me.value↓')
-    console.log(me.value)
 
     // firestoreのusersコレクションにAuthenticationUserのuidでドキュメント作成
     const createUser = async (user: AuthenticationUser) => {
         console.log('createUser()開始')
-
+        const db = getFirestore()
         try {
             const randomSlug = getRandomString()
             // users/uid
@@ -85,9 +74,9 @@ export const useAuthByGoogleAccount = () => {
                 followingsCount: 0,
                 followersCount: 0,
             })
-        } catch (e) {
+        } catch (error) {
             console.log('createUserでエラー発生')
-            console.log(e)
+            console.debug(error)
         }
     }
 
@@ -98,9 +87,10 @@ export const useAuthByGoogleAccount = () => {
             return
         }
 
+        const { getRetouchedUser, getUser } = useUserSelect()
         try {
             const provider = new GoogleAuthProvider()
-            const userCredential = await signInWithPopup(auth, provider)
+            const userCredential = await signInWithPopup(getAuth(), provider)
             const authenticationUser = userCredential.user
             const uid = authenticationUser.uid
 
@@ -141,9 +131,9 @@ export const useAuthByGoogleAccount = () => {
             alert('現在ログインしていません。')
         }
         try {
-            await firebaseSignOut(auth)
+            await firebaseSignOut(getAuth())
             me.value = null
-        } catch (e) {
+        } catch (error) {
             console.log('signOutでエラー発生')
         }
     }
@@ -157,17 +147,44 @@ export const useAuthByGoogleAccount = () => {
             }
             // 第二引数のauthenticationUser は引数名
             onAuthStateChanged(
-                auth,
+                getAuth(),
                 async (authenticationUser) => {
                     if (authenticationUser) {
                         console.log('setUser()のonAuthStateChangedでauthenticationUserが存在するの分岐入った')
                         // authenticationUserがいるということはFirestoreからも取れてしかるべき
+                        const { getRetouchedUser } = useUserSelect()
                         const retouchedUser = await getRetouchedUser(authenticationUser.uid)
                         if(retouchedUser) {
                             me.value = retouchedUser
                         }
                         console.log('onAuthStateChanged()内のme.value↓')
                         console.log(me.value)
+
+                        // useAsyncData()でやってみたけど再読み込み時にuser.valueにすぐに値がセットされないことは変わらない
+                        // const { data: retouchedUser } = useAsyncData(async () => {
+                        //     try {
+                        //         const retouchedUser = await getRetouchedUser(authenticationUser.uid)
+                        //         if(retouchedUser) {
+                        //             me.value = retouchedUser
+                        //         }
+                        //         console.log('リターンするretouchedUser↓')
+                        //         console.log(retouchedUser)
+                        //         console.log('me.value at 内側')
+                        //         if(retouchedUser) {
+                        //             // me.value = retouchedUser
+                        //             // console.log(me.value)
+                        //             // console.log('うえうえ')
+                        //         }
+                        //         return retouchedUser
+                        //     } catch (error) {
+                        //         console.log('■■onAuthStateChanged()でエラー発生↓')
+                        //         console.debug(error)
+                        //     }
+                        // })
+                        // console.log('useAsyncDataを抜けた me.value = retouchedUser ↓')
+                        // me.value = retouchedUser
+                        // console.log('me.value↓')
+                        // console.log(me.value)
                         resolve(authenticationUser)
                     } else {
                         console.log('setUser()のonAuthStateChangedでauthenticationUserが存在しない分岐入った')

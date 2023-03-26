@@ -1,25 +1,19 @@
 // 明示しないとVSCodeに波線が引かれる
 
-import { useRoute, useAsyncData, useNuxtApp } from '#imports'
+import { useRoute, useAsyncData, useNuxtApp, computed } from '#imports'
 import { getFirestore } from 'firebase/firestore'
 import { collection, query, getDocs, DocumentReference, orderBy, limit, where } from 'firebase/firestore'
 import { useTweetSelect } from '@/composables/tweetSelect'
 import { useUserSelect } from '@/composables/userSelect'
 
-import { Tweet } from '@/composables/types'
-
 // ユーザープロフィール
 export const useTweetsByUser = () => {
     console.log('useTweetsByUser()開始。')
-    const db = getFirestore()
-
-    const { getRetouchedTweets } = useTweetSelect()
-    const { resolveUidFromUserSlug } = useUserSelect()
 
     const getTweetDocRefs = async (uid: string) => {
         console.log('selectByUser.tsのgetTweetDocRefs()開始')
 
-        const myTweetsColRef = collection(db, 'users', uid, 'public', 'userPublicDocumentV1', 'myTweets')
+        const myTweetsColRef = collection(getFirestore(), 'users', uid, 'public', 'userPublicDocumentV1', 'myTweets')
         const tweetsQuery = query(myTweetsColRef, orderBy('createdAt', 'desc'), limit(30))
         try {
             const tweetsQuerySnapshot = await getDocs(tweetsQuery)
@@ -28,9 +22,9 @@ export const useTweetsByUser = () => {
             })
 
             return tweetDocRefs
-        } catch (e) {
+        } catch (error) {
             console.log('selectByUser.tsのgetTweetDocRefs()でエラー発生。コンソールデバッグ↓')
-            console.debug(e)
+            console.debug(error)
         }
     }
 
@@ -45,46 +39,38 @@ export const useTweetsByUser = () => {
         }
 
         try {
+            const { resolveUidFromUserSlug } = useUserSelect()
             const uid = await resolveUidFromUserSlug(userSlug)
+            if(!uid) {
+                console.log('uidが見つかりません')
+                return []
+            }
             console.log('useAsyncDataでuidとれてる？↓')
             console.log(uid)
             // ツイートの参照を取得
             const tweetDocRefs = await getTweetDocRefs(uid)
-            console.log('useAsyncDataでtweetDocRefsとれてる？↓')
-            console.log(tweetDocRefs)
-
+            // console.log('useAsyncDataでtweetDocRefsとれてる？↓')
+            // console.log(tweetDocRefs)
+            
             if (!tweetDocRefs) {
                 return
             }
+            const { getRetouchedTweets } = useTweetSelect()
             const retouchedTweets = await getRetouchedTweets(tweetDocRefs)
-            console.log('useAsyncDataでretouchedTweetsとれてる？↓')
-            console.log(retouchedTweets)
-            return retouchedTweets as Tweet[]
-        } catch (e) {
+            // console.log('useAsyncDataでretouchedTweetsとれてる？↓')
+            // console.log(retouchedTweets)
+            return retouchedTweets
+        } catch (error) {
             console.log('■■プロフィール詳細でUserごとのツイートを集めるuseAsyncDataでエラー発生。コンソールデバッグ↓')
-            console.debug(e)
+            console.debug(error)
         }
     })
 
-    // myTweetsコレクションから直接とるやり方
-    // const getUserTweets = async (userSlug: string) => {
+    const allImageUrls = computed( () => {
+        console.log('ここはuseTweetsByUser()直下。allImageUrlsのcomputed発火！')
+        return tweets.value?.flatMap((tweet) => tweet.imageUrls) ?? [] })
+    console.log('ここはuseTweetsByUser()直下。allImageUrls.value↓')
+    console.log(allImageUrls.value)
 
-    //     const tweetColRef = collection(db, 'users', userSlug, 'public', 'userPublicDocumentV1', 'myTweets')
-    //     const tweetsQuery = query(tweetColRef, orderBy('createdAt', 'desc'), limit(30))
-    //     try {
-    //         const tweetsQuerySnapshot = await getDocs(tweetsQuery)
-    //         const tweets = tweetsQuerySnapshot.docs.map((tweetQueryDocSnapshot) => {
-    //             const data = tweetQueryDocSnapshot.data()
-    //             console.log('dataとれてる？↓')
-    //             console.log(data)
-    //             return data
-    //         })
-    //         return tweets
-    //     } catch (e) {
-    //         console.log('■■getUserTweetsでエラー発生。コンソールデバッグ↓')
-    //         console.debug(e)
-    //     }
-    // }
-
-    return { tweets, errorAtUseTweetsByUser, resolveUidFromUserSlug }
+    return { tweets, errorAtUseTweetsByUser, allImageUrls }
 }

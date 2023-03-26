@@ -32,3 +32,5 @@ export const getRandomString = (): string => {
         .map((v) => S[v % S.length])
         .join('')
 }
+
+export const sleep = (waitMillSec: number) => new Promise( resolve => setTimeout(resolve, waitMillSec))

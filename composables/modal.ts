@@ -106,3 +106,24 @@ export const useEditProfileModal = () => {
 
     return { visible: readonly(visible), openModal, closeModal }
 }
+
+export const useConfirmTweetDelete = () => {
+    const visible = useState<boolean>('ConfirmTweetDelete', () => false)
+    const tweetDocId = useState<string>('deletingTweetDocId', () => '')
+    const openModal = (deletingTweetDocId: string) => {
+        console.log('ConfirmTweetDelete openModal呼ばれた')
+        tweetDocId.value = deletingTweetDocId
+        visible.value = true
+        console.log('visible.value↓')
+        if(visible.value) {
+            console.log('visible.valueはtrue')
+        }
+    }
+
+    const closeModal = () => {
+        console.log('ConfirmTweetDelete closeModal呼ばれた')
+        visible.value = false
+    }
+
+    return { visible: readonly(visible), tweetDocId: readonly(tweetDocId), openModal, closeModal }
+}

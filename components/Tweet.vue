@@ -3,8 +3,10 @@ import { useRoute } from '#imports'
 import type { Tweet } from '@/composables/types'
 import { useImagesModal } from '@/composables/modal'
 import { useLikes } from '@/composables/likes'
+import { useConfirmTweetDelete } from '@/composables/modal'
 
 const { likeTweetDocIds, isTweetLikedByMe } = useLikes()
+const { openModal } = useConfirmTweetDelete()
 console.log('Tweet.vue')
 console.log(likeTweetDocIds.value)
 
@@ -51,11 +53,13 @@ const isLiked = ref(true)
                     class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
                 >
                     <!-- ユーザーアイコン -->
-                    <div class="w-12 h-12 flex justify-center items-center">
+                    <div class="w-12 h-12 flex justify-center items-center bg-gray-200 dark:bg-gray-900 rounded-full overflow-hidden">
                         <img
+                            v-if="tweet.userInfo.iconImageUrl"
+                            :src="tweet.userInfo.iconImageUrl"
+                            alt="ツイートしたユーザーのアイコン画像"
                             class="h-full w-full object-cover"
                             :class="tweet.userInfo.userType === 'official' ? 'rounded-md' : 'rounded-full'"
-                            :src="tweet.userInfo.iconImageUrl"
                         />
                     </div>
                 </NuxtLink>
@@ -115,6 +119,7 @@ const isLiked = ref(true)
                             0
                         </div>
                     </div>
+                    <!-- リツイート -->
                     <div class="flex items-center">
                         <!-- アイコン正円 -->
                         <button
@@ -127,6 +132,7 @@ const isLiked = ref(true)
                             {{ tweet.retweetsCount }}
                         </div>
                     </div>
+                    <!-- いいね -->
                     <div class="flex items-center">
                         <!-- アイコン正円 -->
                         <button
@@ -145,6 +151,19 @@ const isLiked = ref(true)
                         <div class="ml-1 pb-[2px] text-gray-500 text-sm">
                             {{ tweet.likesCount }}
                         </div>
+                    </div>
+                    <!-- 削除 -->
+                    <div class="flex items-center">
+                        <!-- アイコン正円 -->
+                        <button
+                            class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-red-600/10"
+                            title="削除"
+                            @click="openModal(tweet.tweetDocId)"
+                        >
+                            <span
+                                class="material-symbols-outlined text-xl text-gray-500 hover:text-red-500"
+                            >delete</span>
+                        </button>
                     </div>
                 </div>
             </div>

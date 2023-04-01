@@ -1,9 +1,8 @@
-import { useRoute, useAsyncData, reactive, computed } from '#imports'
+import { reactive, computed } from '#imports'
 import { getFirestore, doc, updateDoc, serverTimestamp, writeBatch, increment } from 'firebase/firestore'
 import type { User, UserProfileDraft } from '@/composables/types'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { useStorage } from '@/composables/storage'
-import { useUserDetail } from '@/composables/userDetail'
 
 // ユーザープロフィール
 export const useEditProfile = () => {
@@ -31,6 +30,12 @@ export const useEditProfile = () => {
     iconImageUrl: me.value.iconImageUrl,
   })
 
+  // location.reload()するからreactiveではなくてOK
+  const beforeEditImages = {
+    headerImageFullPath: me.value.headerImageFullPath,
+    iconImageFullPath: me.value.iconImageFullPath,
+  }
+
   const selectHeaderImage = (event: any) => {
     console.log('selectImage開始')
     console.log('profileDraftの現状確認↓')
@@ -56,25 +61,16 @@ export const useEditProfile = () => {
   }
 
   const selectIconImage = (event: any) => {
-    console.log('selectIconImage開始')
-    console.log('profileDraftの現状確認↓')
-    console.log(profileDraft)
     // event.target.files が FileList型のようだ
     profileDraft.iconImage = event.target.files[0]
-    console.log('profileDraft.iconImage。アイコン画像追加した後↓')
-    console.log(profileDraft.iconImage)
-    if (!profileDraft.iconImage) {
-      return
-    }
+    if (!profileDraft.iconImage) { return }
     profileDraft.iconImagePreviewUrl = URL.createObjectURL(profileDraft.iconImage)
-    console.log('iconImagePreviewUrlできた？↓')
-    console.log(profileDraft.iconImagePreviewUrl)
   }
 
   const isValidLink = computed(() => {
     console.log('コンピューテッドのisValidLink発動')
-    return profileDraft.link.length === 0 
-    || (profileDraft.link.length > 1 && profileDraft.link.length < 80 && profileDraft.link.match(/^https?:\/\/.+\..+/))
+    return profileDraft.link.length === 0
+      || (profileDraft.link.length > 1 && profileDraft.link.length < 80 && profileDraft.link.match(/^https?:\/\/.+\..+/))
   })
 
   const isValidEdit = computed(() => {
@@ -87,65 +83,52 @@ export const useEditProfile = () => {
       && isValidLink.value
   })
 
-  const reflectEditedProfile = () => {
-    if(!me.value) { return }
-    // meに反映
-    me.value.displayName = profileDraft.displayName
-    me.value.description = profileDraft.description
-    me.value.place = profileDraft.place
-    me.value.link = profileDraft.link
-    me.value.headerImageFullPath = profileDraft.headerImageFullPath
-    me.value.headerImageUrl = profileDraft.headerImageUrl
-    me.value.iconImageFullPath = profileDraft.iconImageFullPath
-    me.value.iconImageUrl = profileDraft.iconImageUrl
-    console.log('reflect後のme.value↓')
-    console.log(me.value)
-
-    // プロフィールに反映
-    const route = useRoute()
-    if (route.path === `/${me.value.slug}`) {
-      const { user } = useUserDetail()
-      if(!user.value) { return }
-      user.value.displayName = profileDraft.displayName
-      user.value.description = profileDraft.description
-      user.value.place = profileDraft.place
-      user.value.link = profileDraft.link
-      user.value.headerImageFullPath = profileDraft.headerImageFullPath
-      user.value.headerImageUrl = profileDraft.headerImageUrl
-      user.value.iconImageFullPath = profileDraft.iconImageFullPath
-      user.value.iconImageUrl = profileDraft.iconImageUrl
-      console.log('reflect後のuser.value↓')
-      console.log(user.value)  
-    }
-
-  }
-
   const edit = async () => {
     console.log('editよばれた')
-    if(!me.value) { return }
+    if (!me.value) { return }
 
     try {
       // 画像のアップロード
       const { uploadPublicImage, deleteImage } = useStorage()
-      if(profileDraft.headerImage) {
+      if (profileDraft.headerImage) {
+        if (profileDraft.headerImageFullPath) {
+          await deleteImage(profileDraft.headerImageFullPath)
+        }
         const { imageFullPath, imageUrl } = await uploadPublicImage('user-header-images', profileDraft.headerImage)
         profileDraft.headerImageFullPath = imageFullPath
         profileDraft.headerImageUrl = imageUrl
       }
-      if(profileDraft.iconImage) {
+      if (profileDraft.iconImage) {
+        if (profileDraft.iconImageFullPath) {
+          await deleteImage(profileDraft.iconImageFullPath)
+        }
         const { imageFullPath, imageUrl } = await uploadPublicImage('user-icon-images', profileDraft.iconImage)
         profileDraft.iconImageFullPath = imageFullPath
         profileDraft.iconImageUrl = imageUrl
       }
       // ヘッダー画像削除フラグ
-      if(!profileDraft.headerImageUrl && profileDraft.headerImageFullPath) {
+      if (!profileDraft.headerImageUrl && profileDraft.headerImageFullPath) {
         await deleteImage(profileDraft.headerImageFullPath)
         profileDraft.headerImageFullPath = ''
       }
-  
+
+      console.log('profileDraft↓')
+      console.log(profileDraft)
+      console.log('beforeEditImages↓')
+      console.log(beforeEditImages)
+      // 画像変更時は変更前の画像を削除
+      if (beforeEditImages.headerImageFullPath && beforeEditImages.headerImageFullPath !== profileDraft.headerImageFullPath) {
+        console.log('ヘッダー画像削除の分岐入った')
+        await deleteImage(beforeEditImages.headerImageFullPath)
+      }
+      if (beforeEditImages.iconImageFullPath && beforeEditImages.iconImageFullPath !== profileDraft.iconImageFullPath) {
+        console.log('アイコン画像削除の分岐入った')
+        await deleteImage(beforeEditImages.iconImageFullPath)
+      }
+
       console.log('更新されるprofileDraftは以下の内容↓')
       console.log(profileDraft)
-  
+
       const myUserDocRef = doc(getFirestore(), 'users', me.value.uid, 'public', 'userPublicDocumentV1')
       await updateDoc(myUserDocRef, {
         headerImageFullPath: profileDraft.headerImageFullPath,
@@ -159,13 +142,12 @@ export const useEditProfile = () => {
         updatedAt: serverTimestamp()
       })
 
-          // auth の meに反映
-    reflectEditedProfile()
+      location.reload()
 
     } catch (error) {
       console.debug(error)
     }
-    
+
   }
 
   return { profileDraft, selectHeaderImage, deselectHeaderImage, selectIconImage, isValidLink, isValidEdit, edit }

@@ -17,5 +17,6 @@
         <!-- モーダル -->
         <TweetModal />
         <ImagesModal />
+        <ConfirmTweetDeleteModal />
     </div>
 </template>

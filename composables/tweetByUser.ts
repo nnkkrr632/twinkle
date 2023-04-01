@@ -34,9 +34,7 @@ export const useTweetsByUser = () => {
 
         const route = useRoute()
         const userSlug = route.params.userSlug
-        if (typeof userSlug !== 'string') {
-            return
-        }
+        if (typeof userSlug !== 'string') { return }
 
         try {
             const { resolveUidFromUserSlug } = useUserSelect()
@@ -47,6 +45,7 @@ export const useTweetsByUser = () => {
             }
             console.log('useAsyncDataでuidとれてる？↓')
             console.log(uid)
+
             // ツイートの参照を取得
             const tweetDocRefs = await getTweetDocRefs(uid)
             // console.log('useAsyncDataでtweetDocRefsとれてる？↓')

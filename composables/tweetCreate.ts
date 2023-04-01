@@ -94,13 +94,13 @@ export const useCreateTweet = () => {
 
             // tweets/xxx/public/tweetPublicDocumentV1
             const tweetsColRef = collection(db, 'tweets')
-            const tweetId = doc(tweetsColRef).id
-            console.log('tweetId：' + tweetId)
-            const tweetPublicDocRef = doc(db, 'tweets', tweetId, 'public', tweetPublicDocument)
+            const tweetDocId = doc(tweetsColRef).id
+            console.log('tweetDocId' + tweetDocId)
+            const tweetPublicDocRef = doc(db, 'tweets', tweetDocId, 'public', tweetPublicDocument)
             batch.set(tweetPublicDocRef, {
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
-                tweetDocId: tweetId,
+                tweetDocId: tweetDocId,
                 body: tweetDraft.body,
                 imageFullPaths: tweetDraft.imageFullPaths,
                 imageUrls: tweetDraft.imageUrls,
@@ -117,23 +117,21 @@ export const useCreateTweet = () => {
                 },
             })
 
-            // users/uid/public/userPublicDocumentV1
-            const userDocRef = doc(db, 'users', me.value.uid, 'public', userPublicDocument)
-            batch.update(userDocRef, { tweetsCount: increment(1) })
-
             // users/uid/public/userPublicDocumentV1/myTweets
-            const myTweetsColRef = collection(db, 'users', me.value.uid, 'public', userPublicDocument, 'myTweets')
-            const myTweetDocId = doc(myTweetsColRef).id
-            console.log('myTweetDocId：' + myTweetDocId)
-            const myTweetDocRef = doc(
-                db,
-                'users',
-                me.value.uid,
-                'public',
-                userPublicDocument,
-                'myTweets',
-                myTweetDocId
-            )
+            // ドキュメントIDにtweetsコレクションドキュメントID(tweet/xxx)を流用する
+            const myTweetDocRef = doc(db, 'users', me.value.uid, 'public', userPublicDocument, 'myTweets', tweetDocId)
+            // const myTweetsColRef = collection(db, 'users', me.value.uid, 'public', userPublicDocument, 'myTweets')
+            // const myTweetDocId = doc(myTweetsColRef).id
+            // console.log('myTweetDocId：' + myTweetDocId)
+            // const myTweetDocRef = doc(
+            //     db,
+            //     'users',
+            //     me.value.uid,
+            //     'public',
+            //     userPublicDocument,
+            //     'myTweets',
+            //     myTweetDocId
+            // )
             batch.set(myTweetDocRef, {
                 // tweetsコレクション側のslugを持たせる。
                 // 個人ごとツイートで時系列順に表示できるようcreatedAtを持たせる。

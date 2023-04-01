@@ -103,11 +103,14 @@ onKeyStroke('Escape', (e) => {
                     class="absolute bg-gray-200 dark:bg-gray-900 w-1/5 aspect-square min-w-[3rem] top-[75%] left-4 rounded-full"
                 >
                     <!-- プロフィール画像と+カメラの重ねるようのrelative -->
-                    <div class="w-full h-full relative">
+                    <div 
+                        class="w-full h-full relative border-2 xs:border-4 border-white dark:border-black overflow-hidden"
+                        :class="profileDraft.userType === 'official' ? 'rounded-lg' : 'rounded-full'"
+                    >
                         <img
+                            v-if="profileDraft.iconImagePreviewUrl"
                             :src="profileDraft.iconImagePreviewUrl"
-                            class="w-full h-full object-cover border-2 xs:border-4 border-white dark:border-black opacity-50"
-                            :class="profileDraft.userType === 'official' ? 'rounded-lg' : 'rounded-full'"
+                            class="w-full h-full object-cover opacity-50"
                             alt="現在設定中のプロフィール画像"
                         />
                         <!-- カメラinput -->

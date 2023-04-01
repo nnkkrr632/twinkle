@@ -5,7 +5,7 @@ import { useAuthByGoogleAccount } from '@/composables/auth'
 import type { FirestoreTweet, Tweet } from './types'
 
 // ツイート取得
-export const useTweetSelect = () => {    
+export const useTweetSelect = () => {
     const getRetouchedTweets = async (tweetDocRefs: DocumentReference[]) => {
         try {
             const tweets = await getTweets(tweetDocRefs)

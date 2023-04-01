@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/html-indent -->
 <script setup lang="ts">
 import { useUserDetail } from '@/composables/userDetail'
 import { useTweetsByUser } from '@/composables/tweetByUser'
@@ -23,7 +22,7 @@ const { user } = useUserDetail()
             <!-- 透明ヘッダー -->
             <ContentsHeader
                 :title="user.displayName"
-                :sub-title="`${user.tweetsCount}件のツイート`"
+                :sub-title="`${tweets?.length}件のツイート`"
             />
             <!-- プロフィール -->
             <UserProfile :user="user" />
@@ -44,7 +43,8 @@ const { user } = useUserDetail()
             <LoginBox v-if="!me" />
             <!-- 画像ボックス -->
             <div
-                class="w-full aspect-[3/2] rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 border dark:border-gray-900 grid gap-[2px] grid-cols-3"
+                class="w-full aspect-[3/2] rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-900 border dark:border-gray-900 grid gap-[2px]"
+                :class="allImageUrls.length < 3 ? `grid-cols-${allImageUrls.length}` : 'grid-cols-3'"
             >
                 <img
                     v-for="(imageUrl, index) of allImageUrls"

@@ -58,7 +58,6 @@ export type FirestoreUser = DocumentData & {
     headerImageFullPath: string
     iconImageUrl: string
     headerImageUrl: string
-    tweetsCount: number
     followingsCount: number
     followersCount: number
     likeTweetsCount: number

@@ -41,7 +41,7 @@ onKeyStroke('Escape', (e) => {
             <!-- アイコン正円と入力部分のflex -->
             <div class="flex space-x-3 mt-3">
                 <!-- アイコン正円 -->
-                <div class="w-[52px] h-[52px] flex justify-center items-center rounded-full overflow-hidden bg-gray-200 dark:bg-gray900">
+                <div class="w-[52px] h-[52px] flex justify-center items-center rounded-full overflow-hidden bg-gray-200 dark:bg-gray-900">
                     <img
                         v-if="me.iconImageUrl"
                         class="h-full w-full object-cover"

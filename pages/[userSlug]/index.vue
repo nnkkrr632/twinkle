@@ -17,7 +17,7 @@ const { user } = useUserDetail()
         class="flex"
     >
         <!-- 左半分 -->
-        <div class="w-full max-w-[37.5rem] sm:border-r dark:border-gray-800">
+        <div class="w-full max-w-[37.5rem] sm:border-r dark:border-gray-800 pb-16">
             <!-- 透明ヘッダー -->
             <ContentsHeader
                 :title="user.displayName"
@@ -34,8 +34,6 @@ const { user } = useUserDetail()
                     :tweet="tweet"
                 />
             </section>
-            <!-- 下にスペース -->
-            <div class="h-16" />
         </div>
 
         <!-- 右半分 -->

@@ -17,14 +17,14 @@ export const useLike = () => {
         const batch = writeBatch(db)
 
         try {
-            // users/uid/public/userPublicDocumentV1/myLikeTweets
+            // users/uid/public/userPublicDocumentV1/myLikeTweetsSubCollection
             const myLikeTweetDocRef = doc(
                 db,
                 'users',
                 me.value.uid,
                 'public',
                 'userPublicDocumentV1',
-                'myLikeTweets',
+                'myLikeTweetsSubCollection',
                 tweetDocId
             )
             const tweetPublicDocRef = doc(db, 'tweets', tweetDocId, 'public', 'tweetPublicDocumentV1')
@@ -33,17 +33,17 @@ export const useLike = () => {
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
             })
-            // tweets/xxx/public/tweetPublicDocumentV1/likeUsers/user.slug
-            const likeUsersDocRef = doc(
+            // tweets/xxx/public/tweetPublicDocumentV1/likeUsersSubCollection/user.slug
+            const likeUserDocRef = doc(
                 db,
                 'tweets',
                 tweetDocId,
                 'public',
                 'tweetPublicDocumentV1',
-                'likeUsers',
+                'likeUsersSubCollection',
                 me.value.slug
             )
-            batch.set(likeUsersDocRef, {
+            batch.set(likeUserDocRef, {
                 userInfo: {
                     slug: me.value.slug,
                     displayName: me.value.displayName,
@@ -65,35 +65,35 @@ export const useLike = () => {
     const destroyLike = async (tweetDocId: string) => {
         console.log('destroyLike開始')
         if (!me.value) {
-            alert('ログインしていないのでいいね取り消しをすることができません')
+            alert('ログインしていないのでいいねを取り消すことができません')
             return
         }
         const db = getFirestore()
         const batch = writeBatch(db)
 
         try {
-            // users/uid/public/userPublicDocumentV1/myLikeTweets
+            // users/uid/public/userPublicDocumentV1/myLikeTweetsSubCollection
             const myLikeTweetDocRef = doc(
                 db,
                 'users',
                 me.value.uid,
                 'public',
                 'userPublicDocumentV1',
-                'myLikeTweets',
+                'myLikeTweetsSubCollection',
                 tweetDocId
             )
             batch.delete(myLikeTweetDocRef)
-            // tweets/xxx/public/tweetPublicDocumentV1/likeUsers/user.slug
-            const likeUsersDocRef = doc(
+            // tweets/xxx/public/tweetPublicDocumentV1/likeUsersSubCollection/user.slug
+            const likeUserDocRef = doc(
                 db,
                 'tweets',
                 tweetDocId,
                 'public',
                 'tweetPublicDocumentV1',
-                'likeUsers',
+                'likeUsersSubCollection',
                 me.value.slug
             )
-            batch.delete(likeUsersDocRef)
+            batch.delete(likeUserDocRef)
 
             await batch.commit()
         } catch (error) {

@@ -69,7 +69,6 @@ export const useAuthByGoogleAccount = () => {
                 headerImageFullPath: '',
                 iconImageUrl: '',
                 headerImageUrl: '',
-                myLikeTweetsCount: 0,
                 followingsCount: 0,
                 followersCount: 0,
             })

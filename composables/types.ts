@@ -50,11 +50,11 @@ export type FirestoreUser = DocumentData & {
     headerImageUrl: string
     followingsCount: number
     followersCount: number
-    myLikeTweetsCount: number
     createdAt: Timestamp
     updatedAt: Timestamp
     myTweetDocRefs: DocumentReference[]
-    myLikeTweetDocRefs: DocumentReference[]
+    // 以下サブコレクション
+    // myLikeTweetsSubCollection
     followingDocRefs: DocumentReference[]
     followerDocRefs: DocumentReference[]
 }
@@ -72,15 +72,17 @@ export type FirestoreTweet = DocumentData & {
     imageFullPaths: string[]
     imageUrls: string[]
     tweetType: 'normal' | 'retweet'
-    originalTweetDocRef: DocumentReference
-    retweetsCount: number
-    retweetUsers: DocumentReference[]
+    originalTweetPublicDocRef?: DocumentReference
     userInfo: UserInfo
+    // 以下サブコレクション
+    // likeUsersSubCollection
+    // retweetUsersSubCollection
 }
 
 export type Tweet = FirestoreTweet & {
     formattedCreatedAt: string
     formattedUpdatedAt: string
     likeUserSlugs: string[]
+    retweetUserSlugs: string[]
     originalTweet: Tweet
 }

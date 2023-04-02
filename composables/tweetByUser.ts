@@ -56,8 +56,8 @@ export const useTweetsByUser = () => {
             }
             const { getRetouchedTweets } = useTweetSelect()
             const retouchedTweets = await getRetouchedTweets(tweetDocRefs)
-            // console.log('useAsyncDataでretouchedTweetsとれてる？↓')
-            // console.log(retouchedTweets)
+            console.log('useAsyncDataでretouchedTweetsとれてる？↓')
+            console.log(retouchedTweets)
             return retouchedTweets
         } catch (error) {
             console.log('■■プロフィール詳細でUserごとのツイートを集めるuseAsyncDataでエラー発生。コンソールデバッグ↓')

@@ -5,17 +5,18 @@ import { useImagesModal } from '@/composables/modal'
 import { useConfirmTweetDelete } from '@/composables/modal'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { useLike } from '@/composables/tweetLike'
+import { useRetweet } from '@/composables/retweet'
 
 const { openModal } = useConfirmTweetDelete()
 const { me } = useAuthByGoogleAccount()
 
 console.log('■■わたしはTweet.vue')
 const { setImages } = useImagesModal()
-const props = defineProps<{ tweet: Tweet }>()
-// いいね/いいね取り消し時にpropsを直接変更できない
+const props = defineProps<{ tweet: Tweet, isRetweet: boolean, trueTweetDocId: string }>()
+// propsを直接変更できない
 const likeUserSlugs = ref(props.tweet.likeUserSlugs)
+const retweetUserSlugs = ref(props.tweet.retweetUserSlugs)
 
-// const emit = defineEmits<{ (e: 'like', tweetDocId: string): void }>()
 const { storeLike, destroyLike } = useLike()
 const like = async () => {
     if (!me.value) {
@@ -33,8 +34,7 @@ const like = async () => {
     console.log(likeUserSlugs.value)
     await storeLike(props.tweet.tweetDocId)
 }
-
-const disLike = async () => {
+const cancelLike = async () => {
     if (!me.value) {
         return
     }
@@ -49,20 +49,53 @@ const disLike = async () => {
     console.log(likeUserSlugs.value)
     await destroyLike(props.tweet.tweetDocId)
 }
+
+const { storeRetweet, destroyRetweet } = useRetweet()
+const retweet = async () => {
+    if (!me.value) {
+        alert('リツイートをするにはログインが必要です。')
+        return
+    }
+    if (retweetUserSlugs.value.includes(me.value.slug)) {
+        alert('既にリツイート済です。')
+        return
+    }
+    retweetUserSlugs.value.push(me.value.slug)
+    console.log('tweetDocId↓')
+    console.log(props.tweet.tweetDocId)
+    console.log('retweetUserSlugs.value↓')
+    console.log(retweetUserSlugs.value)
+    await storeRetweet(props.tweet.tweetDocId)
+}
+const cancelRetweet = async () => {
+    if (!me.value) {
+        return
+    }
+    if (!retweetUserSlugs.value.includes(me.value.slug)) {
+        alert('リツイートしていないツイートのリツイートを取り消すことはできません。')
+        return
+    }
+    retweetUserSlugs.value = retweetUserSlugs.value.filter((userSlug => userSlug !== me.value?.slug))
+    console.log('retweetUserSlugs.value↓')
+    console.log(retweetUserSlugs.value)
+    await destroyRetweet(props.trueTweetDocId, props.tweet.tweetDocId)
+}
+
 </script>
 
 <template>
     <div 
         class="block border-b dark:border-gray-800 px-4 hover:bg-gray-400/5 dark:hover:bg-white/5 pb-2"
-        :class="tweet.tweetType !== 'retweet' ? 'pt-1' : 'pt-2'"
+        :class="props.isRetweet ? 'pt-1' : 'pt-2'"
     >
         <!-- リツイート -->
         <div
-            v-if="tweet.tweetType !== 'retweet'"
+            v-if="props.isRetweet"
             class="flex items-center text-sm text-gray-500"
         >
             <span class="material-symbols-outlined text-xl ml-7 mr-3">repeat</span>
-            <span>{{ tweet.userInfo.displayName }} さんがリツイートしました。</span>
+            <span v-if="me && me.slug === tweet.userInfo.slug">リツイート済み</span>
+            <span v-else>{{ tweet.userInfo.displayName }} さんがリツイートしました</span>
         </div>
         <!-- アイコンと文章のフレックス -->
         <div class="flex">
@@ -142,15 +175,26 @@ const disLike = async () => {
                     </div>
                     <!-- リツイート -->
                     <div class="flex items-center">
-                        <!-- アイコン正円 -->
+                        <!-- リツイート済 -->
                         <button
+                            v-if="me && retweetUserSlugs.includes(me.slug)"
+                            class="me-retweeted w-8 h-8 flex justify-center items-center rounded-full hover:bg-emerald-600/10"
+                            title="リツイートを取り消す"
+                            @click="cancelRetweet()"
+                        >
+                            <span class="material-symbols-outlined text-xl text-emerald-500">repeat</span>
+                        </button>
+                        <!-- 未リツイート -->
+                        <button
+                            v-else
                             class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-emerald-600/10"
                             title="リツイート"
+                            @click="retweet()"
                         >
                             <span class="material-symbols-outlined text-xl text-gray-500 hover:text-emerald-500">repeat</span>
                         </button>
                         <div class="ml-1 pb-[2px] text-gray-500 text-sm">
-                            {{ tweet.retweetsCount }}
+                            {{ retweetUserSlugs.length }}
                         </div>
                     </div>
                     <!-- いいね -->
@@ -160,7 +204,7 @@ const disLike = async () => {
                             v-if="me && likeUserSlugs.includes(me.slug)"
                             class="me-liked w-8 h-8 flex justify-center items-center rounded-full hover:bg-pink-600/10"
                             title="いいねを取り消す"
-                            @click="disLike()"
+                            @click="cancelLike()"
                         >
                             <span class="material-symbols-outlined text-xl text-pink-500">favorite</span>
                         </button>
@@ -177,8 +221,11 @@ const disLike = async () => {
                             {{ likeUserSlugs.length }}
                         </div>
                     </div>
-                    <!-- 削除 -->
-                    <div class="flex items-center">
+                    <!-- 削除 ※リツイートの場合は表示しない。リツイートは取り消しに限定する。-->
+                    <div
+                        v-if="!props.isRetweet"
+                        class="flex items-center"
+                    >
                         <!-- アイコン正円 -->
                         <button
                             class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-red-600/10"
@@ -198,7 +245,9 @@ const disLike = async () => {
 .official-badge {
     font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
 }
-
+.me-retweeted {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+}
 .me-liked {
     font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
 }

@@ -104,7 +104,6 @@ export const useCreateTweet = () => {
                 imageFullPaths: tweetDraft.imageFullPaths,
                 imageUrls: tweetDraft.imageUrls,
                 tweetType: 'normal',
-                retweetsCount: 0,
                 userInfo: {
                     slug: me.value.slug,
                     displayName: me.value.displayName,

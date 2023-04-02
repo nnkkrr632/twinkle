@@ -7,7 +7,6 @@ import { useAuthByGoogleAccount } from '@/composables/auth'
 const { me } = useAuthByGoogleAccount()
 const { setImages } = useImagesModal()
 const { tweets, allImageUrls } = await useTweetsByUser()
-
 const { user } = useUserDetail()
 
 </script>
@@ -31,7 +30,9 @@ const { user } = useUserDetail()
                 v-for="tweet of tweets"
                 :key="tweet.tweetDocId"
             >
-                <Tweet :tweet="tweet" />
+                <TweetWrapper
+                    :tweet="tweet"
+                />
             </section>
             <!-- 下にスペース -->
             <div class="h-16" />

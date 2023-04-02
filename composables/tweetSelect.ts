@@ -1,5 +1,5 @@
 import { onMounted } from '#imports'
-import { getDoc, DocumentReference, DocumentData } from 'firebase/firestore'
+import { getDoc, DocumentReference, DocumentData, collection, getFirestore, getDocs, query, orderBy } from 'firebase/firestore'
 import { getReadableDate } from '~/utils/myLibrary'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import type { FirestoreTweet, Tweet } from './types'
@@ -13,6 +13,8 @@ export const useTweetSelect = () => {
                 return
             }
             const retouchedTweets = retouchTweets(tweets)
+            console.log('レタッチドツイートs↓')
+            console.log(retouchedTweets)
             return retouchedTweets
         } catch (error) {
             console.error('■■TweetSelectのgetRetouchedTweets()でエラー発生。コンソールでバッグ↓')
@@ -34,6 +36,17 @@ export const useTweetSelect = () => {
                 if (!tweet) {
                     continue
                 }
+                // いいねしているuser.slugたちを取得
+                const likeUsersColRef = collection(getFirestore(), 'tweets', tweet.tweetDocId, 'public', 'tweetPublicDocumentV1', 'likeUsers')
+                const likeUsersQuery = query(likeUsersColRef, orderBy('createdAt', 'desc'))
+                const likeUsersQuerySnapshot= await getDocs(likeUsersQuery)
+                const likeUserSlugs = likeUsersQuerySnapshot.docs.map((likeUserQueryDocSnapshot) => {
+                    console.log('ここはgetTweetsで各ツイートをいいねしている人を取得しているところ。userSlug↓')
+                    console.log(likeUserQueryDocSnapshot.id)
+                    return likeUserQueryDocSnapshot.id
+                })
+                tweet.likeUserSlugs = likeUserSlugs
+
                 tweets.push(tweet)
             }
             // console.log('取得したレタッチ前tweets↓')

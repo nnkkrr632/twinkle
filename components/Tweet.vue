@@ -1,50 +1,69 @@
 <script setup lang="ts">
-import { useRoute } from '#imports'
+import { ref } from '#imports'
 import type { Tweet } from '@/composables/types'
 import { useImagesModal } from '@/composables/modal'
-import { useLikes } from '@/composables/likes'
 import { useConfirmTweetDelete } from '@/composables/modal'
+import { useAuthByGoogleAccount } from '@/composables/auth'
+import { useLike } from '@/composables/tweetLike'
 
-const { likeTweetDocIds, isTweetLikedByMe } = useLikes()
 const { openModal } = useConfirmTweetDelete()
-console.log('Tweet.vue')
-console.log(likeTweetDocIds.value)
+const { me } = useAuthByGoogleAccount()
 
-// const { me } = useAuthByGoogleAccount()
-// console.log('■■script setup■■me.value↓')
-// console.log(me.value)
-
-
+console.log('■■わたしはTweet.vue')
 const { setImages } = useImagesModal()
-const route = useRoute()
 const props = defineProps<{ tweet: Tweet }>()
-onMounted( () => {
-console.log('Tweet.vueのonMounted()')
-console.log(likeTweetDocIds.value)
-})
+// いいね/いいね取り消し時にpropsを直接変更できない
+const likeUserSlugs = ref(props.tweet.likeUserSlugs)
 
-// FIXME ツイートをmeがRT・いいねしたか判定する苦肉の策(CSR)
-// サイトのメインコンテンツであるツイート(tweet.vue)ごと<ClientOnly>するわけにはいかない
-const isLiked = ref(true)
-// onMounted( async () => {
-//     // 少し待たないと me.value がnullになる苦肉の策
+// const emit = defineEmits<{ (e: 'like', tweetDocId: string): void }>()
+const { storeLike, destroyLike } = useLike()
+const like = async () => {
+    if (!me.value) {
+        alert('いいねをするにはログインが必要です。')
+        return
+    }
+    if (likeUserSlugs.value.includes(me.value.slug)) {
+        alert('既にいいね済です。')
+        return
+    }
+    likeUserSlugs.value.push(me.value.slug)
+    console.log('tweetDocId↓')
+    console.log(props.tweet.tweetDocId)
+    console.log('likeUserSlugs↓')
+    console.log(likeUserSlugs.value)
+    await storeLike(props.tweet.tweetDocId)
+}
 
-//     const { me } = useAuthByGoogleAccount()
-//     await sleep(2000)
-//     console.log('Tweet.vueのonMounted()開始。↓')
-//     console.log('■■onMounted■■me.value↓')
-//     console.log(me.value)
-//     console.log(me)
-
-//     if(me.value) {
-//         isLiked.value = false
-//     }
-//   })
-
+const disLike = async () => {
+    if (!me.value) {
+        return
+    }
+    if (!likeUserSlugs.value.includes(me.value.slug)) {
+        alert('いいねしていないツイートのいいねを取り消すことはできません。')
+        return
+    }
+    likeUserSlugs.value = likeUserSlugs.value.filter((userSlug => userSlug !== me.value?.slug))
+    console.log('tweetDocId↓')
+    console.log(props.tweet.tweetDocId)
+    console.log('likeUserSlugs.value↓')
+    console.log(likeUserSlugs.value)
+    await destroyLike(props.tweet.tweetDocId)
+}
 </script>
 
 <template>
-    <div class="block border-b dark:border-gray-800 px-4 py-3 hover:bg-gray-400/5 dark:hover:bg-white/5">
+    <div 
+        class="block border-b dark:border-gray-800 px-4 hover:bg-gray-400/5 dark:hover:bg-white/5 pb-2"
+        :class="tweet.tweetType !== 'retweet' ? 'pt-1' : 'pt-2'"
+    >
+        <!-- リツイート -->
+        <div
+            v-if="tweet.tweetType !== 'retweet'"
+            class="flex items-center text-sm text-gray-500"
+        >
+            <span class="material-symbols-outlined text-xl ml-7 mr-3">repeat</span>
+            <span>{{ tweet.userInfo.displayName }} さんがリツイートしました。</span>
+        </div>
         <!-- アイコンと文章のフレックス -->
         <div class="flex">
             <div class="pr-3">
@@ -53,7 +72,9 @@ const isLiked = ref(true)
                     class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
                 >
                     <!-- ユーザーアイコン -->
-                    <div class="w-12 h-12 flex justify-center items-center bg-gray-200 dark:bg-gray-900 rounded-full overflow-hidden">
+                    <div
+                        class="w-12 h-12 flex justify-center items-center bg-gray-200 dark:bg-gray-900 rounded-full overflow-hidden"
+                    >
                         <img
                             v-if="tweet.userInfo.iconImageUrl"
                             :src="tweet.userInfo.iconImageUrl"
@@ -134,22 +155,26 @@ const isLiked = ref(true)
                     </div>
                     <!-- いいね -->
                     <div class="flex items-center">
-                        <!-- アイコン正円 -->
+                        <!-- いいね済 -->
                         <button
+                            v-if="me && likeUserSlugs.includes(me.slug)"
+                            class="me-liked w-8 h-8 flex justify-center items-center rounded-full hover:bg-pink-600/10"
+                            title="いいねを取り消す"
+                            @click="disLike()"
+                        >
+                            <span class="material-symbols-outlined text-xl text-pink-500">favorite</span>
+                        </button>
+                        <!-- 未いいね -->
+                        <button
+                            v-else
                             class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-pink-600/10"
                             title="いいね"
+                            @click="like()"
                         >
-                            <span
-                                v-if="isLiked"
-                                class="material-symbols-outlined text-xl text-gray-500 hover:text-pink-500"
-                            >favorite</span>
-                            <span
-                                v-else
-                                class="material-symbols-outlined text-xl text-gray-500 hover:text-pink-500"
-                            >phone</span>
+                            <span class="material-symbols-outlined text-xl text-gray-500 hover:text-pink-500">favorite</span>
                         </button>
                         <div class="ml-1 pb-[2px] text-gray-500 text-sm">
-                            {{ tweet.likesCount }}
+                            {{ likeUserSlugs.length }}
                         </div>
                     </div>
                     <!-- 削除 -->
@@ -160,9 +185,7 @@ const isLiked = ref(true)
                             title="削除"
                             @click="openModal(tweet.tweetDocId)"
                         >
-                            <span
-                                class="material-symbols-outlined text-xl text-gray-500 hover:text-red-500"
-                            >delete</span>
+                            <span class="material-symbols-outlined text-xl text-gray-500 hover:text-red-500">delete</span>
                         </button>
                     </div>
                 </div>
@@ -173,6 +196,10 @@ const isLiked = ref(true)
 
 <style scoped lang="scss">
 .official-badge {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+}
+
+.me-liked {
     font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
 }
 </style>

@@ -46,7 +46,6 @@ export const useTweetDelete = () => {
       const myTweetDocRef = doc(db, 'users', me.value.uid, 'public', 'userPublicDocumentV1', 'myTweets', tweetDocId)
       batch.delete(myTweetDocRef)
       await batch.commit()
-      location.reload()
     } catch (error) {
       console.log('deleteTweetでエラー発生')
       console.debug(error)

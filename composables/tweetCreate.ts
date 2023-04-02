@@ -68,7 +68,6 @@ export const useCreateTweet = () => {
         const { me } = useAuthByGoogleAccount()
 
         if (!me.value) {
-            console.log('ログインしていないのでツイートすることができません')
             alert('ログインしていないのでツイートすることができません')
             return
         }
@@ -104,7 +103,7 @@ export const useCreateTweet = () => {
                 body: tweetDraft.body,
                 imageFullPaths: tweetDraft.imageFullPaths,
                 imageUrls: tweetDraft.imageUrls,
-                likesCount: 0,
+                tweetType: 'normal',
                 retweetsCount: 0,
                 userInfo: {
                     slug: me.value.slug,

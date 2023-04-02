@@ -1,14 +1,5 @@
 import {
-    Firestore,
-    collection,
-    query,
-    getDocs,
-    setDoc,
-    doc,
-    getDoc,
     Timestamp,
-    serverTimestamp,
-    addDoc,
     DocumentReference,
     DocumentData,
 } from 'firebase/firestore'
@@ -19,7 +10,6 @@ export type TweetDraft = {
     imageUrls: string[]
     imagePreviewUrls: string[]
     imageFullPaths: string[]
-
 }
 
 export type UserProfileDraft = {
@@ -60,13 +50,13 @@ export type FirestoreUser = DocumentData & {
     headerImageUrl: string
     followingsCount: number
     followersCount: number
-    likeTweetsCount: number
+    myLikeTweetsCount: number
     createdAt: Timestamp
     updatedAt: Timestamp
-    myTweets: DocumentReference[]
-    likeTweets: DocumentReference[]
-    followings: DocumentReference[]
-    followers: DocumentReference[]
+    myTweetDocRefs: DocumentReference[]
+    myLikeTweetDocRefs: DocumentReference[]
+    followingDocRefs: DocumentReference[]
+    followerDocRefs: DocumentReference[]
 }
 
 export type User = FirestoreUser & {
@@ -81,14 +71,16 @@ export type FirestoreTweet = DocumentData & {
     body: string
     imageFullPaths: string[]
     imageUrls: string[]
-    likesCount: number
+    tweetType: 'normal' | 'retweet'
+    originalTweetDocRef: DocumentReference
     retweetsCount: number
-    likesUsers: DocumentReference[]
-    retweetsUsers: DocumentReference[]
+    retweetUsers: DocumentReference[]
     userInfo: UserInfo
 }
 
 export type Tweet = FirestoreTweet & {
     formattedCreatedAt: string
     formattedUpdatedAt: string
+    likeUserSlugs: string[]
+    originalTweet: Tweet
 }

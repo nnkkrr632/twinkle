@@ -76,8 +76,6 @@ export const useCreateTweet = () => {
         console.log(me.value)
 
         const db = getFirestore()
-        const userPublicDocument = 'userPublicDocumentV1'
-        const tweetPublicDocument = 'tweetPublicDocumentV1'
 
         try {
             // 先に画像をアップロード firestore側に画像のフルパスを保存する必要があるから
@@ -91,49 +89,35 @@ export const useCreateTweet = () => {
             // @link https://blog.ojisan.io/firebase-batch-add-v9/
             const batch = writeBatch(db)
 
-            // tweets/xxx/public/tweetPublicDocumentV1
+            // tweets/xxx/
             const tweetsColRef = collection(db, 'tweets')
             const tweetDocId = doc(tweetsColRef).id
             console.log('tweetDocId' + tweetDocId)
-            const tweetPublicDocRef = doc(db, 'tweets', tweetDocId, 'public', tweetPublicDocument)
-            batch.set(tweetPublicDocRef, {
+            const tweetDocRef = doc(db, 'tweets', tweetDocId)
+            batch.set(tweetDocRef, {
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
                 tweetDocId: tweetDocId,
                 body: tweetDraft.body,
                 imageFullPaths: tweetDraft.imageFullPaths,
                 imageUrls: tweetDraft.imageUrls,
-                tweetType: 'normal',
+                type: 'normal',
                 userInfo: {
                     slug: me.value.slug,
                     displayName: me.value.displayName,
                     description: me.value.description,
                     iconImageUrl: me.value.iconImageUrl,
-                    followingsCount: me.value.followingsCount,
-                    followersCount: me.value.followersCount,
                     userType: me.value.userType,
                 },
             })
 
-            // users/uid/public/userPublicDocumentV1/myTweets
+            // users/uid/myTweetsSubCollection/xxx
             // ドキュメントIDにtweetsコレクションドキュメントID(tweet/xxx)を流用する
-            const myTweetDocRef = doc(db, 'users', me.value.uid, 'public', userPublicDocument, 'myTweets', tweetDocId)
-            // const myTweetsColRef = collection(db, 'users', me.value.uid, 'public', userPublicDocument, 'myTweets')
-            // const myTweetDocId = doc(myTweetsColRef).id
-            // console.log('myTweetDocId：' + myTweetDocId)
-            // const myTweetDocRef = doc(
-            //     db,
-            //     'users',
-            //     me.value.uid,
-            //     'public',
-            //     userPublicDocument,
-            //     'myTweets',
-            //     myTweetDocId
-            // )
+            const myTweetDocRef = doc(db, 'users', me.value.uid, 'myTweetsSubCollection', tweetDocId)
             batch.set(myTweetDocRef, {
                 // tweetsコレクション側のslugを持たせる。
                 // 個人ごとツイートで時系列順に表示できるようcreatedAtを持たせる。
-                tweetPublicDocRef: tweetPublicDocRef,
+                tweetDocRef: tweetDocRef,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
             })

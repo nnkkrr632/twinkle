@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, watch } from '#imports'
 import { useDark } from '@vueuse/core'
 import { User } from '@/composables/types'
 import { useImagesModal, useEditProfileModal } from '@/composables/modal'
@@ -104,7 +105,7 @@ const props = defineProps<{ user: User }>()
                     <span>{{ user.formattedCreatedAt }}からTwinkleを利用しています</span>
                 </div>
             </div>
-            <div class="flex flex-wrap h-6">
+            <!-- <div class="flex flex-wrap h-6">
                 <NuxtLink
                     to="/taro/followings"
                     class="mr-5 hover:border-b hover:border-gray-700 dark:hover:border-gray-200 h-5"
@@ -117,7 +118,7 @@ const props = defineProps<{ user: User }>()
                 >
                     <span class="font-bold mr-1">{{ user.followersCount }}</span><span class="text-gray-500">フォロワー</span>
                 </NuxtLink>
-            </div>
+            </div> -->
         </div>
         <!-- Nav -->
         <nav class="border-b dark:border-gray-800">

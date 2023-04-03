@@ -34,7 +34,7 @@ export const useUserSelect = () => {
     const getUser = async (uid: string) => {
         // console.log('getUser開始')
         try {
-            const userDocRef = doc(getFirestore(), 'users', uid, 'public', 'userPublicDocumentV1')
+            const userDocRef = doc(getFirestore(), 'users', uid)
             const userSnapshot = await getDoc(userDocRef)
             return userSnapshot.data()
         } catch (error) {

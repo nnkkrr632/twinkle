@@ -13,14 +13,15 @@ export const useTweetsByUser = () => {
     const getTweetDocRefs = async (uid: string) => {
         console.log('selectByUser.tsのgetTweetDocRefs()開始')
 
-        const myTweetsColRef = collection(getFirestore(), 'users', uid, 'public', 'userPublicDocumentV1', 'myTweets')
+        const myTweetsColRef = collection(getFirestore(), 'users', uid, 'myTweetsSubCollection')
         const tweetsQuery = query(myTweetsColRef, orderBy('createdAt', 'desc'), limit(30))
         try {
             const tweetsQuerySnapshot = await getDocs(tweetsQuery)
             const tweetDocRefs = tweetsQuerySnapshot.docs.map((tweetQueryDocSnapshot) => {
-                return tweetQueryDocSnapshot.get('tweetPublicDocRef') as DocumentReference
+                return tweetQueryDocSnapshot.get('tweetDocRef') as DocumentReference
             })
-
+            console.log('★★getTweetDocRefs()のtweetDocRefs↓')
+            console.log(tweetDocRefs)
             return tweetDocRefs
         } catch (error) {
             console.log('selectByUser.tsのgetTweetDocRefs()でエラー発生。コンソールデバッグ↓')

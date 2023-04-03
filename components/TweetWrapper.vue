@@ -5,7 +5,7 @@ const props = defineProps<{ tweet: Tweet }>()
 
 <template>
     <Tweet
-        v-if="tweet.tweetType === 'retweet'"
+        v-if="tweet.type === 'retweet'"
         :tweet="props.tweet.originalTweet"
         :is-retweet="true"
         :true-tweet-doc-id="props.tweet.tweetDocId"

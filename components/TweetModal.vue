@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from '#imports'
 import { useCreateTweet } from '@/composables/tweetCreate'
 import { useCreateTweetModal } from '@/composables/modal'
 import { useAuthByGoogleAccount } from '@/composables/auth'

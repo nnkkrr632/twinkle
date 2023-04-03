@@ -1,6 +1,6 @@
 import { reactive, computed } from '#imports'
-import { getFirestore, doc, updateDoc, serverTimestamp, writeBatch, increment } from 'firebase/firestore'
-import type { User, UserProfileDraft } from '@/composables/types'
+import { getFirestore, doc, updateDoc, serverTimestamp } from 'firebase/firestore'
+import type { UserProfileDraft } from '@/composables/types'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { useStorage } from '@/composables/storage'
 
@@ -129,7 +129,7 @@ export const useEditProfile = () => {
       console.log('更新されるprofileDraftは以下の内容↓')
       console.log(profileDraft)
 
-      const myUserDocRef = doc(getFirestore(), 'users', me.value.uid, 'public', 'userPublicDocumentV1')
+      const myUserDocRef = doc(getFirestore(), 'users', me.value.uid)
       await updateDoc(myUserDocRef, {
         headerImageFullPath: profileDraft.headerImageFullPath,
         iconImageFullPath: profileDraft.iconImageFullPath,

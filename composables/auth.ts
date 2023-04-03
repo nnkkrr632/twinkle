@@ -4,30 +4,16 @@ import {
     GoogleAuthProvider,
     onAuthStateChanged,
     signInWithPopup,
-    UserCredential,
-    getRedirectResult,
-    onIdTokenChanged,
-    sendSignInLinkToEmail,
     signOut as firebaseSignOut,
-    setPersistence,
-    browserSessionPersistence,
-    browserLocalPersistence,
 } from 'firebase/auth'
 import {
-    collection,
-    where,
-    query,
-    getDocs,
     setDoc,
     doc,
-    addDoc,
     getFirestore,
-    DocumentData,
-    getDoc,
     serverTimestamp,
 } from '@firebase/firestore'
 
-import { useState, ref, computed } from '#imports'
+import { useState } from '#imports'
 import { getRandomString } from '@/utils/myLibrary'
 import type { User } from '@/composables/types'
 import { useUserSelect } from '@/composables/userSelect'
@@ -43,7 +29,7 @@ export const useAuthByGoogleAccount = () => {
 
     const me = useState<User | null>('loginUser', () => null)
 
-    // firestoreのusersコレクションにAuthenticationUserのuidでドキュメント作成
+    // users/uidドキュメントを作成
     const createUser = async (user: AuthenticationUser) => {
         console.log('createUser()開始')
         const db = getFirestore()
@@ -54,8 +40,8 @@ export const useAuthByGoogleAccount = () => {
                 slug: randomSlug,
             })
 
-            // users/uid/public/userPublicDocumentV1
-            await setDoc(doc(db, 'users', `${user.uid}`, 'public', 'userPublicDocumentV1'), {
+            // users/uid
+            await setDoc(doc(db, 'users', user.uid), {
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
                 uid: user.uid,
@@ -69,8 +55,6 @@ export const useAuthByGoogleAccount = () => {
                 headerImageFullPath: '',
                 iconImageUrl: '',
                 headerImageUrl: '',
-                followingsCount: 0,
-                followersCount: 0,
             })
         } catch (error) {
             console.log('createUserでエラー発生')

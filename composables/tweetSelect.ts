@@ -1,13 +1,13 @@
-import { onMounted } from '#imports'
 import { getDoc, DocumentReference, DocumentData, collection, getFirestore, getDocs, query, orderBy } from 'firebase/firestore'
 import { getReadableDate } from '~/utils/myLibrary'
-import { useAuthByGoogleAccount } from '@/composables/auth'
 import type { FirestoreTweet, Tweet } from './types'
 
 // ツイート取得
 export const useTweetSelect = () => {
     const getRetouchedTweets = async (tweetDocRefs: DocumentReference[]) => {
-        try {
+        console.log('★★getRetouchedTweets。引数のtweetDocRefs↓') 
+        console.log(tweetDocRefs)
+    try {
             const tweets = await getTweets(tweetDocRefs)
             if (!tweets) {
                 return
@@ -29,8 +29,10 @@ export const useTweetSelect = () => {
         // console.log('getTweets()開始')
         const tweets: FirestoreTweet[] = []
         try {
+            console.log('★★引数のtweetDocRefs↓') 
+            console.log(tweetDocRefs)
             for (const tweetDocRef of tweetDocRefs) {
-                // tweets/xxx/public/tweetPublicDocumentV1ドキュメントから取得。配下のサブコレクションはretouchTweetに任せる
+                // tweets/xxxドキュメントから取得。配下のサブコレクションはretouchTweetに任せる
                 const tweetDocSnapshot = await getDoc(tweetDocRef)
                 // DocumentData|undefined をプロパティ指定するため型付け
                 const tweet = tweetDocSnapshot.data() as FirestoreTweet | undefined
@@ -66,7 +68,7 @@ export const useTweetSelect = () => {
         tweet.formattedCreatedAt = getReadableDate(tweet.createdAt.toDate())
 
         // tweet.likeUserSlugsを生成
-        const likeUsersColRef = collection(getFirestore(), 'tweets', tweet.tweetDocId, 'public', 'tweetPublicDocumentV1', 'likeUsersSubCollection')
+        const likeUsersColRef = collection(getFirestore(), 'tweets', tweet.tweetDocId, 'likeUsersSubCollection')
         const likeUsersQuery = query(likeUsersColRef, orderBy('createdAt', 'desc'))
         const likeUsersQuerySnapshot= await getDocs(likeUsersQuery)
         tweet.likeUserSlugs = likeUsersQuerySnapshot.docs.map((likeUserQueryDocSnapshot) => {
@@ -75,7 +77,7 @@ export const useTweetSelect = () => {
             return likeUserQueryDocSnapshot.id
         })
         // tweet.retweetUserSlugsを生成
-        const retweetUsersColRef = collection(getFirestore(), 'tweets', tweet.tweetDocId, 'public', 'tweetPublicDocumentV1', 'retweetUsersSubCollection')
+        const retweetUsersColRef = collection(getFirestore(), 'tweets', tweet.tweetDocId, 'retweetUsersSubCollection')
         const retweetUsersQuery = query(retweetUsersColRef, orderBy('createdAt', 'desc'))
         const retweetUsersQuerySnapshot= await getDocs(retweetUsersQuery)
         tweet.retweetUserSlugs = retweetUsersQuerySnapshot.docs.map((retweetUserQueryDocSnapshot) => {
@@ -84,14 +86,14 @@ export const useTweetSelect = () => {
             return retweetUserQueryDocSnapshot.id
         })
         // ツイートがリツイートの場合、オリジナルツイートを取得
-        if(tweet.tweetType === 'retweet') {
+        if(tweet.type === 'retweet') {
             console.log('リツイート用にオリジナルツイート取得')
-            if(tweet.originalTweetPublicDocRef) {
-                const originalTweets = await getRetouchedTweets([tweet.originalTweetPublicDocRef])
+            if(tweet.originalTweetDocRef) {
+                const originalTweets = await getRetouchedTweets([tweet.originalTweetDocRef])
                 // ↓これがないと500エラー
                 // Maximum call stack size exceeded
                 // Cannot stringify arbitrary non-POJOs DocumentReference
-                delete tweet.originalTweetPublicDocRef
+                delete tweet.originalTweetDocRef
     
                 console.log('■■originalTweets↓')
                 console.log(originalTweets)

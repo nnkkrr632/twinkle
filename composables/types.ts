@@ -37,26 +37,22 @@ export type UserInfo = {
 }
 
 export type FirestoreUser = DocumentData & {
+    createdAt: Timestamp
+    updatedAt: Timestamp
     uid: string
     slug: string
     displayName: string
     description: string
-    link: string
     place: string
+    link: string
     userType: 'normal' | 'official'
     iconImageFullPath: string
     headerImageFullPath: string
     iconImageUrl: string
     headerImageUrl: string
-    followingsCount: number
-    followersCount: number
-    createdAt: Timestamp
-    updatedAt: Timestamp
-    myTweetDocRefs: DocumentReference[]
     // 以下サブコレクション
+    // myTweetsSubCollection
     // myLikeTweetsSubCollection
-    followingDocRefs: DocumentReference[]
-    followerDocRefs: DocumentReference[]
 }
 
 export type User = FirestoreUser & {
@@ -71,8 +67,8 @@ export type FirestoreTweet = DocumentData & {
     body: string
     imageFullPaths: string[]
     imageUrls: string[]
-    tweetType: 'normal' | 'retweet'
-    originalTweetPublicDocRef?: DocumentReference
+    type: 'normal' | 'retweet'
+    originalTweetDocRef?: DocumentReference
     userInfo: UserInfo
     // 以下サブコレクション
     // likeUsersSubCollection

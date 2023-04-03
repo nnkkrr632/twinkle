@@ -1,4 +1,4 @@
-import { doc, getFirestore, writeBatch, increment } from 'firebase/firestore'
+import { doc, getFirestore, writeBatch } from 'firebase/firestore'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { useStorage } from '@/composables/storage'
 import { useTweetSelect } from '@/composables/tweetSelect'
@@ -20,8 +20,8 @@ export const useTweetDelete = () => {
 
     console.log('deleteTweet入った。tweetDocId↓')
     console.log(tweetDocId)
-    const tweetPublicDocumentDocRef = doc(db, 'tweets', tweetDocId, 'public', 'tweetPublicDocumentV1')
-    const tweet = await getRetouchedTweets([tweetPublicDocumentDocRef])
+    const tweetDocumentDocRef = doc(db, 'tweets', tweetDocId)
+    const tweet = await getRetouchedTweets([tweetDocumentDocRef])
     if (!tweet) {
       alert('削除対象のツイートが存在しません。')
       return
@@ -39,11 +39,11 @@ export const useTweetDelete = () => {
       // 親ドキュメントを削除してもサブコレクションは削除されない。個別に削除する
 
       // tweetsコレクション側
-      batch.delete(tweetPublicDocumentDocRef)
+      batch.delete(tweetDocumentDocRef)
       const tweetDocRef = doc(db, 'tweets', tweetDocId)
       batch.delete(tweetDocRef)
       // usersコレクション側
-      const myTweetDocRef = doc(db, 'users', me.value.uid, 'public', 'userPublicDocumentV1', 'myTweets', tweetDocId)
+      const myTweetDocRef = doc(db, 'users', me.value.uid, 'myTweetsSubCollection', tweetDocId)
       batch.delete(myTweetDocRef)
       await batch.commit()
     } catch (error) {

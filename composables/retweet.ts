@@ -18,51 +18,47 @@ export const useRetweet = () => {
       const db = getFirestore()
       const batch = writeBatch(db)
       try {
-        // ツイート作成(type:retweet) tweets/xxx/public/tweetPublicDocumentV1
+        // ツイート作成(type:retweet) tweets/xxx
         const tweetsColRef = collection(db, 'tweets')
         const tweetDocId = doc(tweetsColRef).id
         console.log('tweetDocId：' + tweetDocId)
-        const tweetPublicDocRef = doc(db, 'tweets', tweetDocId, 'public', 'tweetPublicDocumentV1')
-        const originalTweetPublicDocRef = doc(db, 'tweets', originalTweetDocId, 'public', 'tweetPublicDocumentV1')
-        batch.set(tweetPublicDocRef, {
+        const tweetDocRef = doc(db, 'tweets', tweetDocId)
+        const originalTweetDocRef = doc(db, 'tweets', originalTweetDocId)
+        batch.set(tweetDocRef, {
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
             tweetDocId: tweetDocId,
             body: '',
             imageFullPaths: [],
             imageUrls: [],
-            tweetType: 'retweet',
+            type: 'retweet',
             userInfo: {
                 slug: me.value.slug,
                 displayName: me.value.displayName,
                 description: me.value.description,
                 iconImageUrl: me.value.iconImageUrl,
-                followingsCount: me.value.followingsCount,
-                followersCount: me.value.followersCount,
                 userType: me.value.userType,
             },
-            originalTweetPublicDocRef: originalTweetPublicDocRef
+            originalTweetDocRef: originalTweetDocRef
         })
         
-        // users/uid/public/userPublicDocumentV1/myTweets
+        // users/uid/myTweetsSubCollection
         // ドキュメントIDにtweetsコレクションドキュメントID(tweet/xxx)を流用する
-        const myTweetDocRef = doc(db, 'users', me.value.uid, 'public', 'userPublicDocumentV1', 'myTweets', tweetDocId)
+        const myTweetDocRef = doc(db, 'users', me.value.uid, 'myTweetsSubCollection', tweetDocId)
         batch.set(myTweetDocRef, {
             // tweetsコレクション側のslugを持たせる。
             // 個人ごとツイートで時系列順に表示できるようcreatedAtを持たせる。
-            tweetPublicDocRef: tweetPublicDocRef,
+            tweetDocRef: tweetDocRef,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
         })
 
         // オリジナルツイートのリツイートしたユーザーサブコレクションにuser.slugを追加
-        // tweets/yyy/public/tweetPublicDocumentV1/retweetUsersSubCollection
+        // tweets/yyy/retweetUsersSubCollection
         const retweetUserDocRef = doc(
             db,
             'tweets',
             originalTweetDocId,
-            'public',
-            'tweetPublicDocumentV1',
             'retweetUsersSubCollection',
             me.value.slug
         )
@@ -100,13 +96,11 @@ export const useRetweet = () => {
       const db = getFirestore()
       const batch = writeBatch(db)
       try {
-        // tweets/yyy/public/tweetPublicDocumentV1/retweetUsersSubCollection/user.slug
+        // tweets/yyy/retweetUsersSubCollection/user.slug
         const retweetUserDocRef = doc(
             db,
             'tweets',
             originalTweetDocId,
-            'public',
-            'tweetPublicDocumentV1',
             'retweetUsersSubCollection',
             me.value.slug
         )

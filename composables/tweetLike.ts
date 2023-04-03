@@ -1,6 +1,4 @@
-import { computed, reactive } from '#imports'
-import { collection, doc, getFirestore, serverTimestamp, writeBatch, increment } from 'firebase/firestore'
-import type { Tweet } from '@/composables/types'
+import { doc, getFirestore, serverTimestamp, writeBatch } from 'firebase/firestore'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 
 export const useLike = () => {
@@ -17,29 +15,25 @@ export const useLike = () => {
         const batch = writeBatch(db)
 
         try {
-            // users/uid/public/userPublicDocumentV1/myLikeTweetsSubCollection
+            // users/uid/myLikeTweetsSubCollection
             const myLikeTweetDocRef = doc(
                 db,
                 'users',
                 me.value.uid,
-                'public',
-                'userPublicDocumentV1',
                 'myLikeTweetsSubCollection',
                 tweetDocId
             )
-            const tweetPublicDocRef = doc(db, 'tweets', tweetDocId, 'public', 'tweetPublicDocumentV1')
+            const tweetDocRef = doc(db, 'tweets', tweetDocId)
             batch.set(myLikeTweetDocRef, {
-                tweetPublicDocRef: tweetPublicDocRef,
+                tweetDocRef: tweetDocRef,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
             })
-            // tweets/xxx/public/tweetPublicDocumentV1/likeUsersSubCollection/user.slug
+            // tweets/xxx/likeUsersSubCollection/user.slug
             const likeUserDocRef = doc(
                 db,
                 'tweets',
                 tweetDocId,
-                'public',
-                'tweetPublicDocumentV1',
                 'likeUsersSubCollection',
                 me.value.slug
             )
@@ -72,24 +66,20 @@ export const useLike = () => {
         const batch = writeBatch(db)
 
         try {
-            // users/uid/public/userPublicDocumentV1/myLikeTweetsSubCollection
+            // users/uid/myLikeTweetsSubCollection
             const myLikeTweetDocRef = doc(
                 db,
                 'users',
                 me.value.uid,
-                'public',
-                'userPublicDocumentV1',
                 'myLikeTweetsSubCollection',
                 tweetDocId
             )
             batch.delete(myLikeTweetDocRef)
-            // tweets/xxx/public/tweetPublicDocumentV1/likeUsersSubCollection/user.slug
+            // tweets/xxx/likeUsersSubCollection/user.slug
             const likeUserDocRef = doc(
                 db,
                 'tweets',
                 tweetDocId,
-                'public',
-                'tweetPublicDocumentV1',
                 'likeUsersSubCollection',
                 me.value.slug
             )

@@ -5,23 +5,23 @@ import { useTweetsByUser } from '@/composables/tweetByUser'
 import { useImagesModal } from '@/composables/modal'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { ref } from '#imports'
-import { useInfiniteScroll } from '@vueuse/core'
-import { vInfiniteScroll, } from '@vueuse/components'
+import { useIntersectionObserver } from '@vueuse/core';
 
 const { me } = useAuthByGoogleAccount()
 const { setImages } = useImagesModal()
 const { tweets, allImageUrls, addOldTweets } = await useTweetsByUser()
 const { user } = useUserDetail()
 
-const target = ref<HTMLElement>(null)
-useInfiniteScroll(
-  target,
+const el = ref<HTMLElement>(null)
+useIntersectionObserver(
+  el,
   () => {
-    console.log('★★★無限スクロール発火')
-    // load more
+    console.log('★★★無限スクロール発火2')
     addOldTweets()
   },
-  {distance: 10, direction: 'bottom'}
+  {
+    threshold: 0.5,
+  }
 )
 </script>
 
@@ -31,7 +31,7 @@ useInfiniteScroll(
         class="flex"
     >
         <!-- 左半分 -->
-        <div ref="target" class="h-screen w-full max-w-[37.5rem] sm:border-r dark:border-gray-800 overflow-y-scroll">
+        <div class="w-full max-w-[37.5rem] sm:border-r dark:border-gray-800 pb-16">
             <!-- 透明ヘッダー -->
             <ContentsHeader
                 :title="user.displayName"
@@ -51,6 +51,8 @@ useInfiniteScroll(
                     />
                 </section>
             </div>
+            <!-- useIntersectionObserver で無限スクロール -->
+            <span ref="el" />
         </div>
 
         <!-- 右半分 -->

@@ -29,8 +29,6 @@ export const useTweetSelect = () => {
         // console.log('getTweets()開始')
         const tweets: FirestoreTweet[] = []
         try {
-            console.log('★★引数のtweetDocRefs↓') 
-            console.log(tweetDocRefs)
             for (const tweetDocRef of tweetDocRefs) {
                 // tweets/xxxドキュメントから取得。配下のサブコレクションはretouchTweetに任せる
                 const tweetDocSnapshot = await getDoc(tweetDocRef)

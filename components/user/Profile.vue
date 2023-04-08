@@ -63,7 +63,10 @@ const props = defineProps<{ user: User }>()
         <!--テキストセクション -->
         <div class="pt-3 px-4 pb-4 flex flex-col">
             <!-- プロフィールを編集 -->
-            <div v-if="me && me.slug === $route.params.userSlug" class="flex justify-end pb-[3%] xs:pb-[6%]">
+            <div
+                v-if="me && me.slug === $route.params.userSlug"
+                class="flex justify-end pb-[3%] xs:pb-[6%]"
+            >
                 <button
                     class="px-4 py-1 font-semibold border border-gray-300 dark:border-gray-500 hover:bg-black/5 dark:hover:bg-white/10 rounded-full"
                     @click="openModal"
@@ -71,7 +74,10 @@ const props = defineProps<{ user: User }>()
                     プロフィールを編集
                 </button>
             </div>
-            <div v-else class="py-[34px]" />
+            <div
+                v-else
+                class="py-[34px]"
+            />
             <!-- ユーザー名 -->
             <div class="flex items-center">
                 <span class="text-xl font-bold mr-1">{{ user.displayName }}</span>

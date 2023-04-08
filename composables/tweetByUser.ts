@@ -15,20 +15,17 @@ export const useTweetsByUser = () => {
         const myTweetsColRef = collection(getFirestore(), 'users', uid, 'myTweetsSubCollection')
         let tweetsQuery = query(myTweetsColRef, orderBy('createdAt', 'desc'), limit(5))
         if(oldestCreatedAt) {
-            console.log('oldestCreatedAtがtruthyの分岐入った。')
-            console.log('oldestCreatedAtの分岐の中で確認。oldestCreatedAt↓')
-            console.log(oldestCreatedAt)
-            console.log('oldestCreatedAt.toDate()↓')
-            console.log(oldestCreatedAt.toDate())
-            tweetsQuery = query(myTweetsColRef, where('createdAt', '<', oldestCreatedAt), orderBy('createdAt', 'desc'), limit(2))
+            tweetsQuery = query(myTweetsColRef, where('createdAt', '<', oldestCreatedAt), orderBy('createdAt', 'desc'), limit(5))
         }
         try {
             const tweetsQuerySnapshot = await getDocs(tweetsQuery)
+            if(tweetsQuerySnapshot.empty) {
+                console.log('ドキュメントない分岐入ってる！！')
+                return null
+            }
             const tweetDocRefs = tweetsQuerySnapshot.docs.map((tweetQueryDocSnapshot) => {
                 return tweetQueryDocSnapshot.get('tweetDocRef') as DocumentReference
             })
-            console.log('★★getTweetDocRefs()のtweetDocRefs↓')
-            console.log(tweetDocRefs)
             return tweetDocRefs
         } catch (error) {
             console.log('selectByUser.tsのgetTweetDocRefs()でエラー発生。コンソールデバッグ↓')
@@ -54,8 +51,8 @@ export const useTweetsByUser = () => {
 
             // ツイートの参照を取得
             const tweetDocRefs = await getTweetDocRefs(uid)
-            // console.log('useAsyncDataでtweetDocRefsとれてる？↓')
-            // console.log(tweetDocRefs)
+            console.log('useAsyncDataでtweetDocRefsとれてる？↓')
+            console.log(tweetDocRefs)
             
             if (!tweetDocRefs) {
                 return
@@ -82,13 +79,6 @@ export const useTweetsByUser = () => {
         const userSlug = route.params.userSlug
         if (typeof userSlug !== 'string') { return }
 
-    const currentOldestCreatedAt = computed( () => {
-        console.log('■■currentOldestCreatedAtのcomputed()発火。currentOldestCreatedAt↓')
-        const createdAt = tweets.value?.[tweets.value.length - 1].createdAt ?? null
-        console.log(createdAt)
-        return createdAt
-    })
-
         try {
             const { resolveUidFromUserSlug } = useUserSelect()
             const uid = await resolveUidFromUserSlug(userSlug)
@@ -96,18 +86,17 @@ export const useTweetsByUser = () => {
                 console.log('uidが見つかりません')
                 return []
             }
-
-            // ツイートの参照を取得
-            console.log('■■最遅時間とれてる？↓')
-            console.log(currentOldestCreatedAt.value)
-            const tweetDocRefs = await getTweetDocRefs(uid, currentOldestCreatedAt.value)
             
+            // ツイートの参照を取得
+            const currentOldestCreatedAt = tweets.value?.[tweets.value.length - 1].createdAt ?? null
+            console.log('■■最遅時間とれてる？↓')
+            console.log(currentOldestCreatedAt)
+            const tweetDocRefs = await getTweetDocRefs(uid, currentOldestCreatedAt)
+            console.log('まだtweetDocRefsある？↓')
+            console.log(tweetDocRefs)
             if (!tweetDocRefs) { return }
             const { getRetouchedTweets } = useTweetSelect()
             const retouchedTweets = await getRetouchedTweets(tweetDocRefs)
-            // const reactiveRetouchedTweets = useState('userOldTweets', () => retouchedTweets)
-            // console.log('reactiveRetouchedTweets.value↓')
-            // console.log(reactiveRetouchedTweets.value)
             if(tweets.value?.length && retouchedTweets) {
                 tweets.value = [...tweets.value, ...retouchedTweets]
             }

@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import type { Tweet } from '@/composables/types'
-const props = defineProps<{ tweet: Tweet }>()
+import type { Tweet, Retweet } from '@/composables/types'
+const props = defineProps<{ tweet: Tweet | Retweet }>()
 </script>
 
 <template>
     <Tweet
-        v-if="tweet.type === 'retweet'"
+        v-if="props.tweet.type === 'retweet'"
         :tweet="props.tweet.originalTweet"
-        :is-retweet="true"
-        :true-tweet-doc-id="props.tweet.tweetDocId"
+        :tweet-doc-id="props.tweet.tweetDocId"
+        :retweeted-by="props.tweet.userInfo.displayName"
     />
     <Tweet
         v-else
         :tweet="props.tweet"
-        :is-retweet="false"
-        :true-tweet-doc-id="props.tweet.tweetDocId"
+        :tweet-doc-id="props.tweet.tweetDocId"
     />
 </template>

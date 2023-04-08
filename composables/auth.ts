@@ -20,7 +20,6 @@ import { useUserSelect } from '@/composables/userSelect'
 
 // サインイン
 export const useAuthByGoogleAccount = () => {
-    console.log('useAuthByGoogleAccount開始')
     // .vueのインポートでnullかもでうまく注意が出てしまう
     // if (process.server) {
     //   console.log('useAuthByGoogleAccountでサーバーの分岐は行ったので早期リターン')

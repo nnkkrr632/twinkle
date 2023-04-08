@@ -1,6 +1,6 @@
 import { getDoc, DocumentReference, DocumentData, collection, getFirestore, getDocs, query, orderBy } from 'firebase/firestore'
 import { getReadableDate } from '~/utils/myLibrary'
-import type { FirestoreTweet, Tweet } from './types'
+import type { FirestoreTweet, Tweet, Retweet } from './types'
 
 // ツイート取得
 export const useTweetSelect = () => {
@@ -53,17 +53,19 @@ export const useTweetSelect = () => {
     const retouchTweets = async (tweets: FirestoreTweet[]) => {
         // console.log('TweetSelect()のretouchTweets開始。複数形！')
 
-        const retouchedTweets: Tweet[] = []
+        const retouchedTweets: (Tweet|Retweet)[] = []
         for (const tweet of tweets) {
             const retouchedTweet = await retouchTweet(tweet)
-            retouchedTweets.push(retouchedTweet)
+            if(retouchedTweet) {
+                retouchedTweets.push(retouchedTweet)
+            }
         }
         return retouchedTweets
     }
 
     // サブコレクションからいいねやリツイートの情報を取得
     // + 表示用にデータ成形
-    const retouchTweet = async (tweet: FirestoreTweet) => {
+    const retouchTweet = async (tweet: FirestoreTweet): Promise<Tweet | Retweet | null> => {
         console.log('retouchTweet開始。')
         tweet.formattedCreatedAt = getReadableDate(tweet.createdAt.toDate())
 
@@ -85,34 +87,32 @@ export const useTweetSelect = () => {
             console.log(retweetUserQueryDocSnapshot.id)
             return retweetUserQueryDocSnapshot.id
         })
-        // ツイートがリツイートの場合、オリジナルツイートを取得
-        if(tweet.type === 'retweet') {
-            console.log('リツイート用にオリジナルツイート取得')
-            if(tweet.originalTweetDocRef) {
-                const originalTweets = await getRetouchedTweets([tweet.originalTweetDocRef])
-                // ↓これがないと500エラー
-                // Maximum call stack size exceeded
-                // Cannot stringify arbitrary non-POJOs DocumentReference
-                delete tweet.originalTweetDocRef
-    
-                console.log('■■originalTweets↓')
-                console.log(originalTweets)
-                if(originalTweets) {
-                    tweet.originalTweet = originalTweets[0]
-                }
-                console.log('オリジナルツイートが埋め込まれたtweet↓')
-                console.log(tweet)
-                console.log('tweet.originalTweet↓')
-                console.log(tweet.originalTweet)
-                console.log('tweet.originalTweet.userInfo↓')
-                console.log(tweet.originalTweet.userInfo)
-            }
-        }
-        
 
-        console.log('■■retouchTweetがリターンするtweet↓')
-        console.log(tweet)
-        return tweet as Tweet
+        if(tweet.type === 'normal') {
+            return tweet as Tweet
+        }
+        // ツイートがリツイートの場合、オリジナルツイートを取得
+        console.log('ここに残っているということはリツイート。tweet.type === retweet。')
+        if(tweet.originalTweetDocRef) {
+            const originalTweets = await getRetouchedTweets([tweet.originalTweetDocRef])
+            // ↓これがないと500エラー
+            // Maximum call stack size exceeded
+            // Cannot stringify arbitrary non-POJOs DocumentReference
+            delete tweet.originalTweetDocRef
+
+            console.log('■■originalTweets↓')
+            console.log(originalTweets)
+            if(originalTweets === undefined || originalTweets.length === 0) {
+                // リツイート元が削除された場合
+                console.log('リツイート元のオリジナルツイートが存在しない分岐入った')
+                return null
+            }
+            tweet.originalTweet = originalTweets[0]
+            console.log('ここまで来てるのは、originalTweetが存在する。つまり元ツイートが削除されていないということ。tweet↓')
+            console.log(tweet)
+            return tweet as Retweet
+        }
+        return null
     }
 
     return { getRetouchedTweets }

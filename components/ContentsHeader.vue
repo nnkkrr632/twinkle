@@ -4,13 +4,6 @@ import { useAuthByGoogleAccount } from '@/composables/auth'
 const { me } = useAuthByGoogleAccount()
 
 defineProps<{ title: string; subTitle?: string }>()
-const route = useRoute()
-console.log('ru-to')
-console.log(route.name)
-console.log(route.params)
-console.log(route.path)
-console.log(route.fullPath)
-console.log(me.value)
 </script>
 
 <template>

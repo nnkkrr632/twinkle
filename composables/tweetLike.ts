@@ -2,7 +2,6 @@ import { doc, getFirestore, serverTimestamp, writeBatch } from 'firebase/firesto
 import { useAuthByGoogleAccount } from '@/composables/auth'
 
 export const useLike = () => {
-    console.log('■■useLikes()開始。')
     const { me } = useAuthByGoogleAccount()
     
     const storeLike = async (tweetDocId: string) => {

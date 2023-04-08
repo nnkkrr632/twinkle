@@ -80,5 +80,8 @@ export type Tweet = FirestoreTweet & {
     formattedUpdatedAt: string
     likeUserSlugs: string[]
     retweetUserSlugs: string[]
+}
+
+export type Retweet = Tweet & {
     originalTweet: Tweet
 }

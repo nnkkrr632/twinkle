@@ -25,7 +25,7 @@ const { deleteTweet } = useTweetDelete()
         >
             <div class="flex flex-col items-center w-60">
                 <span class="text-xl font-bold">ツイートを削除しますか？</span>
-                <span class="text-gray-500">この操作は取り消せません。プローフィル、あなたをフォローしているアカウントのタイムラインからツイートが削除されます。</span>
+                <span class="text-gray-500">この操作は取り消せません。プローフィル、タイムラインからツイートが削除されます。</span>
                 <!-- ログアウトボタン -->
                 <button
                     class="bg-red-600 hover:opacity-80 dark:hover:opacity-90 border border-red-600 text-white dark:text-gray-200 text-xl font-bold items-center justify-center w-full rounded-full py-2 mt-6"

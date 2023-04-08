@@ -10,9 +10,8 @@ import { useRetweet } from '@/composables/retweet'
 const { openModal } = useConfirmTweetDelete()
 const { me } = useAuthByGoogleAccount()
 
-console.log('■■わたしはTweet.vue')
 const { setImages } = useImagesModal()
-const props = defineProps<{ tweet: Tweet, isRetweet: boolean, trueTweetDocId: string }>()
+const props = defineProps<{ tweet: Tweet, tweetDocId: string, retweetedBy?: string }>()
 // propsを直接変更できない
 const likeUserSlugs = ref(props.tweet.likeUserSlugs)
 const retweetUserSlugs = ref(props.tweet.retweetUserSlugs)
@@ -78,24 +77,25 @@ const cancelRetweet = async () => {
     retweetUserSlugs.value = retweetUserSlugs.value.filter((userSlug => userSlug !== me.value?.slug))
     console.log('retweetUserSlugs.value↓')
     console.log(retweetUserSlugs.value)
-    await destroyRetweet(props.trueTweetDocId, props.tweet.tweetDocId)
+    const originalTweetDocId = props.tweet.tweetDocId
+    await destroyRetweet(props.tweetDocId, originalTweetDocId)
 }
 
 </script>
 
 <template>
     <div 
-        class="block border-b dark:border-gray-800 px-4 hover:bg-gray-400/5 dark:hover:bg-white/5 pb-2"
-        :class="props.isRetweet ? 'pt-1' : 'pt-2'"
+        class="block border-b dark:border-gray-800 px-4 hover:bg-gray-400/5 dark:hover:bg-white/5 py-[6px]"
     >
+        <div>tweetDocId：{{ tweet.tweetDocId }}</div>
+        <div>userSlug：{{ tweet.userInfo.slug }}</div>
         <!-- リツイート -->
         <div
-            v-if="props.isRetweet"
+            v-if="props.retweetedBy"
             class="flex items-center text-sm text-gray-500"
         >
             <span class="material-symbols-outlined text-xl ml-7 mr-3">repeat</span>
-            <span v-if="me && me.slug === tweet.userInfo.slug">リツイート済み</span>
-            <span v-else>{{ tweet.userInfo.displayName }} さんがリツイートしました</span>
+            <span>{{ props.retweetedBy }} さんがリツイートしました</span>
         </div>
         <!-- アイコンと文章のフレックス -->
         <div class="flex">
@@ -221,18 +221,23 @@ const cancelRetweet = async () => {
                             {{ likeUserSlugs.length }}
                         </div>
                     </div>
-                    <!-- 削除 ※リツイートの場合は表示しない。リツイートは取り消しに限定する。-->
+                    <!-- 削除 ※リツイートの場合は押せない。リツイートは取り消しに限定する。-->
                     <div
-                        v-if="!props.isRetweet"
+                        v-if="me && me.slug === tweet.userInfo.slug"
                         class="flex items-center"
                     >
                         <!-- アイコン正円 -->
                         <button
-                            class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-red-600/10"
+                            class="w-8 h-8 flex justify-center items-center rounded-full"
+                            :class="props.retweetedBy ? 'opacity-30' : 'hover:bg-red-500/10'"
+                            :disabled="!!props.retweetedBy"
                             title="削除"
                             @click="openModal(tweet.tweetDocId)"
                         >
-                            <span class="material-symbols-outlined text-xl text-gray-500 hover:text-red-500">delete</span>
+                            <span 
+                                class="material-symbols-outlined text-xl text-gray-500"
+                                :class="props.retweetedBy ? '' : 'hover:text-red-500'"
+                            >delete</span>
                         </button>
                     </div>
                 </div>

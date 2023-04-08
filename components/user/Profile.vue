@@ -3,6 +3,7 @@ import { ref, watch } from '#imports'
 import { useDark } from '@vueuse/core'
 import { User } from '@/composables/types'
 import { useImagesModal, useEditProfileModal } from '@/composables/modal'
+import { useAuthByGoogleAccount } from '@/composables/auth'
 
 const { setImages } = useImagesModal()
 const { openModal } = useEditProfileModal()
@@ -13,6 +14,8 @@ const textColor = ref(isDark.value ? 'rgb(229 231 235)' : 'rgb(31 41 55)')
 watch(isDark, () => {
     textColor.value = isDark.value ? 'rgb(229 231 235)' : 'rgb(31 41 55)'
 })
+
+const { me } = useAuthByGoogleAccount()
 
 // これがなぜだめなのかわからない。<>の中のkeyに親コンポーネントで渡す変数名がないとだめ？
 // const user = defineProps<User>();
@@ -60,7 +63,7 @@ const props = defineProps<{ user: User }>()
         <!--テキストセクション -->
         <div class="pt-3 px-4 pb-4 flex flex-col">
             <!-- プロフィールを編集 -->
-            <div class="flex justify-end pb-[3%] xs:pb-[6%]">
+            <div v-if="me && me.slug === $route.params.userSlug" class="flex justify-end pb-[3%] xs:pb-[6%]">
                 <button
                     class="px-4 py-1 font-semibold border border-gray-300 dark:border-gray-500 hover:bg-black/5 dark:hover:bg-white/10 rounded-full"
                     @click="openModal"
@@ -68,6 +71,7 @@ const props = defineProps<{ user: User }>()
                     プロフィールを編集
                 </button>
             </div>
+            <div v-else class="py-[34px]" />
             <!-- ユーザー名 -->
             <div class="flex items-center">
                 <span class="text-xl font-bold mr-1">{{ user.displayName }}</span>
@@ -80,7 +84,7 @@ const props = defineProps<{ user: User }>()
             <div class="-mt-1">
                 <span class="text-gray-500">@{{ user.slug }}</span>
             </div>
-            <div class="mt-3 mb-4">
+            <div class="my-3">
                 <span>{{ user.description }}</span>
             </div>
             <!-- 場所とリンクと開始日のflex -->

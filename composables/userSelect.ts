@@ -4,7 +4,6 @@ import type { User } from '@/composables/types'
 import dayjs from 'dayjs'
 
 export const useUserSelect = () => {
-    console.log('useUserSelect()開始。')
     const getRetouchedUser = async (uid: string) => {
         try {
             const user = await getUser(uid)
@@ -24,8 +23,8 @@ export const useUserSelect = () => {
         const querySnapshot = await getDocs(q)
         let uid = ''
         querySnapshot.forEach((queryDocSnapshot) => {
-            const id = queryDocSnapshot.id
-            uid = id
+            const docId = queryDocSnapshot.id
+            uid = docId
         })
         return uid
     }

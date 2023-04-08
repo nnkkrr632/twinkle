@@ -1,14 +1,28 @@
 <script setup lang="ts">
+
 import { useUserDetail } from '@/composables/userDetail'
 import { useTweetsByUser } from '@/composables/tweetByUser'
 import { useImagesModal } from '@/composables/modal'
 import { useAuthByGoogleAccount } from '@/composables/auth'
+import { ref } from '#imports'
+import { useInfiniteScroll } from '@vueuse/core'
+import { vInfiniteScroll, } from '@vueuse/components'
 
 const { me } = useAuthByGoogleAccount()
 const { setImages } = useImagesModal()
-const { tweets, allImageUrls } = await useTweetsByUser()
+const { tweets, allImageUrls, addOldTweets } = await useTweetsByUser()
 const { user } = useUserDetail()
 
+const target = ref<HTMLElement>(null)
+useInfiniteScroll(
+  target,
+  () => {
+    console.log('★★★無限スクロール発火')
+    // load more
+    addOldTweets()
+  },
+  {distance: 10, direction: 'bottom'}
+)
 </script>
 
 <template>
@@ -17,7 +31,7 @@ const { user } = useUserDetail()
         class="flex"
     >
         <!-- 左半分 -->
-        <div class="w-full max-w-[37.5rem] sm:border-r dark:border-gray-800 pb-16">
+        <div ref="target" class="h-screen w-full max-w-[37.5rem] sm:border-r dark:border-gray-800 overflow-y-scroll">
             <!-- 透明ヘッダー -->
             <ContentsHeader
                 :title="user.displayName"
@@ -25,15 +39,18 @@ const { user } = useUserDetail()
             />
             <!-- プロフィール -->
             <UserProfile :user="user" />
+            <!-- <div class="w-20 h-20 bg-red-300 cursor-pointer" @click="addOldTweets()">add</div> -->
             <!-- ツイートs -->
-            <section
-                v-for="tweet of tweets"
-                :key="tweet.tweetDocId"
-            >
-                <TweetWrapper
-                    :tweet="tweet"
-                />
-            </section>
+            <div>
+                <section
+                    v-for="tweet of tweets"
+                    :key="tweet.tweetDocId"
+                >
+                    <TweetWrapper
+                        :tweet="tweet"
+                    />
+                </section>
+            </div>
         </div>
 
         <!-- 右半分 -->

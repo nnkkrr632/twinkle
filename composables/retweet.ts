@@ -90,6 +90,7 @@ export const useRetweet = () => {
       }
 
       // リツイート取り消しはツイート削除のようなものなので流用できる
+      // ただし、tweets/retweetUsersSubCollectionとlikeUsersSubCollectionは残る
       const { deleteTweet } = useTweetDelete()
       await deleteTweet(tweetDocId)
 

@@ -30,7 +30,7 @@ const { me } = useAuthByGoogleAccount()
                 <!-- ホーム -->
                 <li class="flex justify-center xl:justify-start">
                     <NuxtLink
-                        to="/home"
+                        to="/"
                         class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
                     >
                         <!-- アイコンと文字を横並び -->
@@ -65,7 +65,7 @@ const { me } = useAuthByGoogleAccount()
                     class="flex justify-center xl:justify-start"
                 >
                     <NuxtLink
-                        :to="me.slug"
+                        :to="`/${me.slug}`"
                         class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
                     >
                         <!-- アイコンと文字を横並び -->

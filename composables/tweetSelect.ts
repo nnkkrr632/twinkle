@@ -13,8 +13,6 @@ export const useTweetSelect = () => {
                 return
             }
             const retouchedTweets = await retouchTweets(tweets)
-            console.log('レタッチドツイートs↓')
-            console.log(retouchedTweets)
             return retouchedTweets
         } catch (error) {
             console.error('■■TweetSelectのgetRetouchedTweets()でエラー発生。コンソールでバッグ↓')

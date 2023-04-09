@@ -178,7 +178,11 @@ export const useAuthByGoogleAccount = () => {
         })
     }
 
-    return { me, signOut, setAuthUserWhenAUthStateChanged, googleSignUp }
+    const deleteMe = () => {
+        console.log('deleteMe呼ばれた')
+    }
+
+    return { me, signOut, setAuthUserWhenAUthStateChanged, googleSignUp, deleteMe }
 }
 
 // サインインしたユーザーの取得

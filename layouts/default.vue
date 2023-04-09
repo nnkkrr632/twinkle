@@ -10,9 +10,12 @@
             >
                 <LeftBar />
             </aside>
-            <main class="flex-1">
+            <main class="flex-1 max-w-[600px] box-border sm:border-r dark:border-gray-800 pb-16">
                 <slot />
             </main>
+            <aside>
+                <RightBar />
+            </aside>
         </div>
         <!-- モーダル -->
         <TweetModal />

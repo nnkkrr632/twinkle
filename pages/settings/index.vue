@@ -1,0 +1,29 @@
+<template>
+    <h1 class="text-xl font-bold px-3 py-3 pb-2">
+        設定
+    </h1>
+    <ul class="flex flex-col space-y-3">
+        <li class="flex justify-center xl:justify-start">
+            <NuxtLink
+                to="/settings/delete"
+                class="hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
+            >
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <!-- アイコン正円 -->
+                        <div class="w-12 h-12 flex justify-center items-center">
+                            <span class="material-symbols-outlined text-xl">heart_broken</span>
+                        </div>
+                        <div class="flex flex-col px-3">
+                            <span class="">アカウント削除</span>
+                            <span class="text-sm text-gray-500">アカウントを削除する方法について説明します。</span>
+                        </div>
+                    </div>
+                    <div class="w-12 h-12 flex justify-center items-center">
+                        <span class="material-symbols-outlined text-xl">chevron_right</span>
+                    </div>
+                </div>
+            </NuxtLink>
+        </li>
+    </ul>
+</template>

@@ -106,5 +106,5 @@ export const useTweetsByUser = () => {
         }
     }
 
-    return { tweets, errorAtUseTweetsByUser, allImageUrls, addOldTweets }
+    return { tweets, errorAtUseTweetsByUser, allImageUrls, addOldTweets, getTweetDocRefs }
 }

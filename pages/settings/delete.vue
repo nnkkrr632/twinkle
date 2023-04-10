@@ -14,7 +14,6 @@ const { deleteMe, me } = useAuthByGoogleAccount()
             >
                 <span class="material-symbols-outlined text-2xl">arrow_back</span>
             </div>
-            <!-- (2)タイトル&サブタイトル -->
             <span class="text-lg font-semibold line-clamp-1 pl-5">アカウントを削除</span>
         </div>
         <!-- アイコン -->
@@ -51,6 +50,7 @@ const { deleteMe, me } = useAuthByGoogleAccount()
                 GoogleやBingなどの検索エンジンに一部のアカウント情報が残っている場合があります。
             </p>
         </div>
+        <!-- ボタン -->
         <div class="flex justify-end p-4">
             <button
                 class="font-semibold text-white px-4 py-[6px] rounded-full bg-red-500/90 hover:bg-red-500"

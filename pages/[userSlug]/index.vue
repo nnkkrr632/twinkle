@@ -24,7 +24,6 @@ useIntersectionObserver(
 </script>
 
 <template>
-    <!-- 左半分 -->
     <div v-if="user">
         <!-- 透明ヘッダー -->
         <ContentsHeader

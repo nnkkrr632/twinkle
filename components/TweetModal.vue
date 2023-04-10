@@ -86,7 +86,7 @@ onKeyStroke('Escape', (e) => {
                     <!-- 縦flex(3) 全員が返信できます -->
                     <div class="flex items-center p-2 text-sm text-amber-500/90 font-semibold space-x-1">
                         <span class="material-symbols-outlined text-xl">public</span>
-                        <span>全員が返信できます</span>
+                        <span>ツイートは全体公開されます</span>
                     </div>
                     <!-- 縦flex(4) 画像&ツイートボタン -->
                     <div class="pt-4 flex justify-between items-center border-t dark:border-gray-800">

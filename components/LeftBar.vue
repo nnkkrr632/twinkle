@@ -43,22 +43,6 @@ const { me } = useAuthByGoogleAccount()
                         </div>
                     </NuxtLink>
                 </li>
-                <!-- 通知 -->
-                <li class="flex justify-center xl:justify-start">
-                    <NuxtLink
-                        to="/notifications"
-                        class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
-                    >
-                        <!-- アイコンと文字を横並び -->
-                        <div class="flex flex-row items-center">
-                            <!-- アイコン正円 -->
-                            <div class="w-12 h-12 flex justify-center items-center">
-                                <span class="material-symbols-outlined text-3xl">notifications</span>
-                            </div>
-                            <span class="hidden xl:block px-3 text-xl">通知</span>
-                        </div>
-                    </NuxtLink>
-                </li>
                 <!-- プロフィール -->
                 <li
                     v-if="me"
@@ -79,7 +63,10 @@ const { me } = useAuthByGoogleAccount()
                     </NuxtLink>
                 </li>
                 <!-- 設定 -->
-                <li class="flex justify-center xl:justify-start">
+                <li
+                    v-if="me"
+                    class="flex justify-center xl:justify-start"
+                >
                     <NuxtLink
                         to="/settings"
                         class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"

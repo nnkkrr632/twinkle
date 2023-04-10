@@ -3,12 +3,12 @@
         設定
     </h1>
     <ul class="flex flex-col space-y-3">
-        <li class="flex justify-center xl:justify-start">
+        <li class="flex">
             <NuxtLink
                 to="/settings/delete"
-                class="hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
+                class="hover:bg-black/5 dark:hover:bg-white/10 w-full"
             >
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center py-2">
                     <div class="flex items-center">
                         <!-- アイコン正円 -->
                         <div class="w-12 h-12 flex justify-center items-center">

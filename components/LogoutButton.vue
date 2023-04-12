@@ -27,7 +27,7 @@ await setAuthUserWhenAUthStateChanged()
         class="flex justify-center xl:justify-start my-5"
     >
         <NuxtLink
-            to="logout"
+            to="/logout"
             class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
         >
             <!-- アイコンと文字を横並び -->

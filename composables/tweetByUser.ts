@@ -9,8 +9,8 @@ import { useUserSelect } from '@/composables/userSelect'
 export const useTweetsByUser = () => {
     console.log('useTweetsByUser()開始。')
 
-    const getTweetDocRefs = async (uid: string, oldestCreatedAt: Timestamp|null = null) => {
-        console.log('selectByUser.tsのgetTweetDocRefs()開始')
+    const getTweetDocIds = async (uid: string, oldestCreatedAt: Timestamp|null = null) => {
+        console.log('selectByUser.tsのgetTweetDocIds()開始')
 
         const myTweetsColRef = collection(getFirestore(), 'users', uid, 'myTweetsSubCollection')
         let tweetsQuery = query(myTweetsColRef, orderBy('createdAt', 'desc'), limit(5))
@@ -24,11 +24,11 @@ export const useTweetsByUser = () => {
                 return null
             }
             const tweetDocRefs = tweetsQuerySnapshot.docs.map((tweetQueryDocSnapshot) => {
-                return tweetQueryDocSnapshot.get('tweetDocRef') as DocumentReference
+                return tweetQueryDocSnapshot.get('tweetDocId')as string
             })
             return tweetDocRefs
         } catch (error) {
-            console.log('selectByUser.tsのgetTweetDocRefs()でエラー発生。コンソールデバッグ↓')
+            console.log('selectByUser.tsのgetTweetDocIds()でエラー発生。コンソールデバッグ↓')
             console.debug(error)
         }
     }
@@ -50,15 +50,13 @@ export const useTweetsByUser = () => {
             }
 
             // ツイートの参照を取得
-            const tweetDocRefs = await getTweetDocRefs(uid)
-            console.log('useAsyncDataでtweetDocRefsとれてる？↓')
-            console.log(tweetDocRefs)
+            const tweetDocIds = await getTweetDocIds(uid)
+            console.log('useAsyncDataでtweetDocIdsとれてる？↓')
+            console.log(tweetDocIds)
             
-            if (!tweetDocRefs) {
-                return
-            }
+            if (!tweetDocIds) { return }
             const { getRetouchedTweets } = useTweetSelect()
-            const retouchedTweets = await getRetouchedTweets(tweetDocRefs)
+            const retouchedTweets = await getRetouchedTweets(tweetDocIds)
             console.log('useAsyncDataでretouchedTweetsとれてる？↓')
             console.log(retouchedTweets)
             return retouchedTweets
@@ -91,12 +89,12 @@ export const useTweetsByUser = () => {
             const currentOldestCreatedAt = tweets.value?.[tweets.value.length - 1].createdAt ?? null
             console.log('■■最遅時間とれてる？↓')
             console.log(currentOldestCreatedAt)
-            const tweetDocRefs = await getTweetDocRefs(uid, currentOldestCreatedAt)
-            console.log('まだtweetDocRefsある？↓')
-            console.log(tweetDocRefs)
-            if (!tweetDocRefs) { return }
+            const tweetDocIds = await getTweetDocIds(uid, currentOldestCreatedAt)
+            console.log('まだtweetDocIdsある？↓')
+            console.log(tweetDocIds)
+            if (!tweetDocIds) { return }
             const { getRetouchedTweets } = useTweetSelect()
-            const retouchedTweets = await getRetouchedTweets(tweetDocRefs)
+            const retouchedTweets = await getRetouchedTweets(tweetDocIds)
             if(tweets.value?.length && retouchedTweets) {
                 tweets.value = [...tweets.value, ...retouchedTweets]
             }
@@ -106,5 +104,5 @@ export const useTweetsByUser = () => {
         }
     }
 
-    return { tweets, errorAtUseTweetsByUser, allImageUrls, addOldTweets, getTweetDocRefs }
+    return { tweets, errorAtUseTweetsByUser, allImageUrls, addOldTweets, getTweetDocIds }
 }

@@ -3,7 +3,7 @@ import { useAuthByGoogleAccount } from '@/composables/auth'
 
 export const useLike = () => {
     const { me } = useAuthByGoogleAccount()
-    
+
     const storeLike = async (tweetDocId: string) => {
         console.log('storeLike開始')
         if (!me.value) {
@@ -15,27 +15,14 @@ export const useLike = () => {
 
         try {
             // users/uid/myLikeTweetsSubCollection
-            const myLikeTweetDocRef = doc(
-                db,
-                'users',
-                me.value.uid,
-                'myLikeTweetsSubCollection',
-                tweetDocId
-            )
-            const tweetDocRef = doc(db, 'tweets', tweetDocId)
+            const myLikeTweetDocRef = doc(db, 'users', me.value.uid, 'myLikeTweetsSubCollection', tweetDocId)
             batch.set(myLikeTweetDocRef, {
-                tweetDocRef: tweetDocRef,
+                tweetDocId: tweetDocId,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
             })
             // tweets/xxx/likeUsersSubCollection/user.slug
-            const likeUserDocRef = doc(
-                db,
-                'tweets',
-                tweetDocId,
-                'likeUsersSubCollection',
-                me.value.slug
-            )
+            const likeUserDocRef = doc(db, 'tweets', tweetDocId, 'likeUsersSubCollection', me.value.slug)
             batch.set(likeUserDocRef, {
                 userInfo: {
                     slug: me.value.slug,
@@ -66,22 +53,10 @@ export const useLike = () => {
 
         try {
             // users/uid/myLikeTweetsSubCollection
-            const myLikeTweetDocRef = doc(
-                db,
-                'users',
-                me.value.uid,
-                'myLikeTweetsSubCollection',
-                tweetDocId
-            )
+            const myLikeTweetDocRef = doc(db, 'users', me.value.uid, 'myLikeTweetsSubCollection', tweetDocId)
             batch.delete(myLikeTweetDocRef)
             // tweets/xxx/likeUsersSubCollection/user.slug
-            const likeUserDocRef = doc(
-                db,
-                'tweets',
-                tweetDocId,
-                'likeUsersSubCollection',
-                me.value.slug
-            )
+            const likeUserDocRef = doc(db, 'tweets', tweetDocId, 'likeUsersSubCollection', me.value.slug)
             batch.delete(likeUserDocRef)
 
             await batch.commit()

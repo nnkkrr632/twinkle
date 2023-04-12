@@ -1,14 +1,14 @@
-import { getDoc, DocumentReference, DocumentData, collection, getFirestore, getDocs, query, orderBy } from 'firebase/firestore'
+import { getDoc, getFirestore, doc, DocumentData, collection, getDocs, query, orderBy } from 'firebase/firestore'
 import { getReadableDate } from '~/utils/myLibrary'
 import type { FirestoreTweet, Tweet, Retweet } from './types'
 
 // ツイート取得
 export const useTweetSelect = () => {
-    const getRetouchedTweets = async (tweetDocRefs: DocumentReference[]) => {
-        console.log('★★getRetouchedTweets。引数のtweetDocRefs↓') 
-        console.log(tweetDocRefs)
-    try {
-            const tweets = await getTweets(tweetDocRefs)
+    const getRetouchedTweets = async (tweetDocIds: string[]) => {
+        console.log('★★getRetouchedTweets。引数のtweetDocIds↓')
+        console.log(tweetDocIds)
+        try {
+            const tweets = await getTweets(tweetDocIds)
             if (!tweets) {
                 return
             }
@@ -22,14 +22,14 @@ export const useTweetSelect = () => {
 
     // 以下プライベートメソッド
 
-    // tweetsコレクションのDocref[]をforEachで全取得
-    const getTweets = async (tweetDocRefs: DocumentReference[]) => {
-        // console.log('getTweets()開始')
+    // firestore生のtweetsデータを取得
+    const getTweets = async (tweetDocIds: string[]) => {
+        const db = getFirestore()
         const tweets: FirestoreTweet[] = []
         try {
-            for (const tweetDocRef of tweetDocRefs) {
+            for (const tweetDocId of tweetDocIds) {
                 // tweets/xxxドキュメントから取得。配下のサブコレクションはretouchTweetに任せる
-                const tweetDocSnapshot = await getDoc(tweetDocRef)
+                const tweetDocSnapshot = await getDoc(doc(db, 'tweets', tweetDocId))
                 // DocumentData|undefined をプロパティ指定するため型付け
                 const tweet = tweetDocSnapshot.data() as FirestoreTweet | undefined
                 if (!tweet) {
@@ -37,8 +37,6 @@ export const useTweetSelect = () => {
                 }
                 tweets.push(tweet)
             }
-            // console.log('取得したレタッチ前tweets↓')
-            // console.log(tweets)
             return tweets
         } catch (error) {
             console.log('■■TweetSelectのgetTweets()でエラー発生。コンソールデバッグ↓')
@@ -47,12 +45,10 @@ export const useTweetSelect = () => {
     }
 
     const retouchTweets = async (tweets: FirestoreTweet[]) => {
-        // console.log('TweetSelect()のretouchTweets開始。複数形！')
-
-        const retouchedTweets: (Tweet|Retweet)[] = []
+        const retouchedTweets: (Tweet | Retweet)[] = []
         for (const tweet of tweets) {
             const retouchedTweet = await retouchTweet(tweet)
-            if(retouchedTweet) {
+            if (retouchedTweet) {
                 retouchedTweets.push(retouchedTweet)
             }
         }
@@ -68,7 +64,7 @@ export const useTweetSelect = () => {
         // tweet.likeUserSlugsを生成
         const likeUsersColRef = collection(getFirestore(), 'tweets', tweet.tweetDocId, 'likeUsersSubCollection')
         const likeUsersQuery = query(likeUsersColRef, orderBy('createdAt', 'desc'))
-        const likeUsersQuerySnapshot= await getDocs(likeUsersQuery)
+        const likeUsersQuerySnapshot = await getDocs(likeUsersQuery)
         tweet.likeUserSlugs = likeUsersQuerySnapshot.docs.map((likeUserQueryDocSnapshot) => {
             console.log('ここはretouchTweet()で各ツイートをいいねしている人を取得しているところ。userSlug↓')
             console.log(likeUserQueryDocSnapshot.id)
@@ -77,34 +73,31 @@ export const useTweetSelect = () => {
         // tweet.retweetUserSlugsを生成
         const retweetUsersColRef = collection(getFirestore(), 'tweets', tweet.tweetDocId, 'retweetUsersSubCollection')
         const retweetUsersQuery = query(retweetUsersColRef, orderBy('createdAt', 'desc'))
-        const retweetUsersQuerySnapshot= await getDocs(retweetUsersQuery)
+        const retweetUsersQuerySnapshot = await getDocs(retweetUsersQuery)
         tweet.retweetUserSlugs = retweetUsersQuerySnapshot.docs.map((retweetUserQueryDocSnapshot) => {
             console.log('ここはretouchTweet()で各ツイートをいいねしている人を取得しているところ。userSlug↓')
             console.log(retweetUserQueryDocSnapshot.id)
             return retweetUserQueryDocSnapshot.id
         })
 
-        if(tweet.type === 'normal') {
+        if (tweet.type === 'normal') {
             return tweet as Tweet
         }
         // ツイートがリツイートの場合、オリジナルツイートを取得
         console.log('ここに残っているということはリツイート。tweet.type === retweet。')
-        if(tweet.originalTweetDocRef) {
-            const originalTweets = await getRetouchedTweets([tweet.originalTweetDocRef])
-            // ↓これがないと500エラー
-            // Maximum call stack size exceeded
-            // Cannot stringify arbitrary non-POJOs DocumentReference
-            delete tweet.originalTweetDocRef
-
+        if (tweet.originalTweetDocId) {
+            const originalTweets = await getRetouchedTweets([tweet.originalTweetDocId])
             console.log('■■originalTweets↓')
             console.log(originalTweets)
-            if(originalTweets === undefined || originalTweets.length === 0) {
+            if (originalTweets === undefined || originalTweets.length === 0) {
                 // リツイート元が削除された場合
                 console.log('リツイート元のオリジナルツイートが存在しない分岐入った')
                 return null
             }
             tweet.originalTweet = originalTweets[0]
-            console.log('ここまで来てるのは、originalTweetが存在する。つまり元ツイートが削除されていないということ。tweet↓')
+            console.log(
+                'ここまで来てるのは、originalTweetが存在する。つまり元ツイートが削除されていないということ。tweet↓'
+            )
             console.log(tweet)
             return tweet as Retweet
         }

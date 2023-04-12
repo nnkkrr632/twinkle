@@ -117,7 +117,8 @@ export const useCreateTweet = () => {
             batch.set(myTweetDocRef, {
                 // tweetsコレクション側のslugを持たせる。
                 // 個人ごとツイートで時系列順に表示できるようcreatedAtを持たせる。
-                tweetDocRef: tweetDocRef,
+                tweetDocId: tweetDocId,
+                type: 'normal',
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
             })

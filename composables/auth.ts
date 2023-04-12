@@ -5,27 +5,14 @@ import {
     onAuthStateChanged,
     signInWithPopup,
     signOut as firebaseSignOut,
+    deleteUser
 } from 'firebase/auth'
-import {
-    setDoc,
-    doc,
-    getFirestore,
-    serverTimestamp,
-    deleteDoc,
-    collection,
-    getDocs,
-    DocumentReference,
-    writeBatch,
-} from '@firebase/firestore'
+import { setDoc, doc, getFirestore, serverTimestamp } from '@firebase/firestore'
 
 import { useState } from '#imports'
-import { getRandomString, arrayChunk } from '@/utils/myLibrary'
+import { getRandomString } from '@/utils/myLibrary'
 import type { User } from '@/composables/types'
 import { useUserSelect } from '@/composables/userSelect'
-import { useStorage } from '@/composables/storage'
-import { useTweetsByUser } from '@/composables/tweetByUser'
-import { useTweetDelete } from '@/composables/tweetDelete'
-import { useLike } from '@/composables/tweetLike'
 
 // サインイン
 export const useAuthByGoogleAccount = () => {
@@ -144,37 +131,11 @@ export const useAuthByGoogleAccount = () => {
                         // authenticationUserがいるということはFirestoreからも取れてしかるべき
                         const { getRetouchedUser } = useUserSelect()
                         const retouchedUser = await getRetouchedUser(authenticationUser.uid)
-                        if(retouchedUser) {
+                        if (retouchedUser) {
                             me.value = retouchedUser
                         }
                         console.log('onAuthStateChanged()内のme.value↓')
                         console.log(me.value)
-
-                        // useAsyncData()でやってみたけど再読み込み時にuser.valueにすぐに値がセットされないことは変わらない
-                        // const { data: retouchedUser } = useAsyncData(async () => {
-                        //     try {
-                        //         const retouchedUser = await getRetouchedUser(authenticationUser.uid)
-                        //         if(retouchedUser) {
-                        //             me.value = retouchedUser
-                        //         }
-                        //         console.log('リターンするretouchedUser↓')
-                        //         console.log(retouchedUser)
-                        //         console.log('me.value at 内側')
-                        //         if(retouchedUser) {
-                        //             // me.value = retouchedUser
-                        //             // console.log(me.value)
-                        //             // console.log('うえうえ')
-                        //         }
-                        //         return retouchedUser
-                        //     } catch (error) {
-                        //         console.log('■■onAuthStateChanged()でエラー発生↓')
-                        //         console.debug(error)
-                        //     }
-                        // })
-                        // console.log('useAsyncDataを抜けた me.value = retouchedUser ↓')
-                        // me.value = retouchedUser
-                        // console.log('me.value↓')
-                        // console.log(me.value)
                         resolve(authenticationUser)
                     } else {
                         console.log('setUser()のonAuthStateChangedでauthenticationUserが存在しない分岐入った')
@@ -188,83 +149,17 @@ export const useAuthByGoogleAccount = () => {
     }
 
     const deleteMe = async () => {
-        console.log('deleteMe呼ばれた')
-
-        if(!me.value) {
-            alert('ログインしていないので退会できません。')
+        const auth = getAuth()
+        const authenticationUser = auth.currentUser
+        console.log('authenticationUser↓')
+        console.log(authenticationUser)
+        if(!authenticationUser) {
+            console.log('ログインしていない自分を削除することはできません。')
             return
         }
-
-        const db = getFirestore()
-        const { deleteTweet } = useTweetDelete()
-        const { destroyLike } = useLike()
-        const { deleteImage } = useStorage()
-
-        // ツイートを全削除
-        const myTweetsColRef = collection(db, 'users', me.value.uid, 'myTweetsSubCollection')
-        const myTweetsSnapshot = await getDocs(myTweetsColRef)
-        const tweetDocIds: string[] = []
-        myTweetsSnapshot.forEach( myTweetQueryDocSnapshot => {
-            tweetDocIds.push(myTweetQueryDocSnapshot.id)
-        })
-        for(const tweetDocId of tweetDocIds) {
-            console.log('deleteTweetのforループ。delete対象のtweetDocId↓')
-            console.log(tweetDocId)
-            // await deleteTweet(tweetDocId)
-        }
-
-        // いいねを全削除
-        const myLikeTweetsColRef = collection(db, 'users', me.value.uid, 'myLikeTweetsSubCollection')
-        const myLikeTweetsSnapshot = await getDocs(myLikeTweetsColRef)
-        const likeTweetDocIds: string[] = []
-        myLikeTweetsSnapshot.forEach( myLikeTweetQueryDocSnapshot => {
-            likeTweetDocIds.push(myLikeTweetQueryDocSnapshot.id)
-        })
-        for(const tweetDocId of likeTweetDocIds) {
-            console.log('destroyLikeのforループ。対象のtweetDocId↓')
-            console.log(tweetDocId)
-            // await destroyLike(tweetDocId)
-        }
-
-        //users/uid削除
-
-        // プロフィールの画像削除
-        // if(me.value.headerImageFullPath) {
-        //     await deleteImage(me.value.headerImageFullPath)
-        // }
-        // if(me.value.iconImageFullPath) {
-        //     await deleteImage(me.value.iconImageFullPath)
-        // }
-
-        // const myUserDocRef = doc(db, 'users', me.value.uid)
-        // await deleteDoc(myUserDocRef)
+        console.log('deleteMe呼ばれた')
+        await deleteUser(authenticationUser)
     }
 
     return { me, signOut, setAuthUserWhenAUthStateChanged, googleSignUp, deleteMe }
 }
-
-// サインインしたユーザーの取得
-// export const useSignedInUser = () => {
-//   console.log('useSignedInUser入った')
-
-//   const getSignedInUser = () => {
-//     const auth = getAuth(app)
-//     onAuthStateChanged(auth, (user) => {
-//       console.log('onAuthStateChangedの引数のuserってなに？↓')
-//       console.log(user)
-//       if (user) {
-//         // User is signed in, see docs for a list of available properties
-//         // https://firebase.google.com/docs/reference/js/firebase.User
-//         const uid = user.uid;
-//         console.log(uid);
-//         return uid
-//         // ...
-//       } else {
-//         // User is signed out
-//         // ...
-//       }
-//     })
-//   }
-
-//   return { getSignedInUser }
-// }

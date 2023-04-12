@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useAuthByGoogleAccount } from '@/composables/auth'
+import { useAccountDelete } from '@/composables/accountDelete'
 
-const { deleteMe, me } = useAuthByGoogleAccount()
+const { me, deleteMe } = useAuthByGoogleAccount()
+const { deleteAccount } = useAccountDelete()
 </script>
 
 <template>
@@ -54,9 +56,15 @@ const { deleteMe, me } = useAuthByGoogleAccount()
         <div class="flex justify-end p-4">
             <button
                 class="font-semibold text-white px-4 py-[6px] rounded-full bg-red-500/90 hover:bg-red-500"
-                @click="deleteMe"
+                @click="deleteAccount"
             >
                 アカウント削除
+            </button>
+            <button
+                class="font-semibold text-white px-4 py-[6px] rounded-full bg-red-500/90 hover:bg-red-500"
+                @click="deleteMe"
+            >
+                deleteMe()テスト
             </button>
         </div>
     </div>

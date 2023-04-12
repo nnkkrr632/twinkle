@@ -31,7 +31,6 @@ export const useUserSelect = () => {
 
     // firestoreからユーザー取得
     const getUser = async (uid: string) => {
-        // console.log('getUser開始')
         try {
             const userDocRef = doc(getFirestore(), 'users', uid)
             const userSnapshot = await getDoc(userDocRef)

@@ -135,7 +135,7 @@ const props = defineProps<{ user: User }>()
             <ul class="flex justify-between h-[52px]">
                 <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
                     <NuxtLink
-                        :to="`${user.slug}`"
+                        :to="`/${user.slug}`"
                         class="w-full flex justify-center"
                     >
                         <div class="flex flex-col justify-between">
@@ -150,7 +150,7 @@ const props = defineProps<{ user: User }>()
                 </li>
                 <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
                     <NuxtLink
-                        :to="`${user.slug}/with-replies`"
+                        :to="`/${user.slug}/with-replies`"
                         class="w-full flex justify-center"
                     >
                         <div class="flex flex-col justify-between">
@@ -166,7 +166,7 @@ const props = defineProps<{ user: User }>()
                 </li>
                 <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
                     <NuxtLink
-                        :to="`${user.slug}/media`"
+                        :to="`/${user.slug}/media`"
                         class="w-full flex justify-center"
                     >
                         <div class="flex flex-col justify-between">
@@ -181,7 +181,7 @@ const props = defineProps<{ user: User }>()
                 </li>
                 <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
                     <NuxtLink
-                        :to="`${user.slug}/likes`"
+                        :to="`/${user.slug}/likes`"
                         class="w-full flex justify-center"
                     >
                         <div class="flex flex-col justify-between">

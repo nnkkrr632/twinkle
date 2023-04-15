@@ -5,7 +5,8 @@ import { onKeyStroke } from '@vueuse/core'
 
 const { visible, closeModal } = useEditProfileModal()
 // useスコープでガード節リターンしてるので赤線が引かれてしまう
-const { profileDraft, selectHeaderImage, deselectHeaderImage, selectIconImage, isValidLink, isValidEdit, edit } = useEditProfile()
+const { profileDraft, selectHeaderImage, deselectHeaderImage, selectIconImage, isValidLink, isValidEdit, edit } =
+    useEditProfile()
 console.log('わたしはEditProfileModal.vue')
 
 onKeyStroke('Escape', (e) => {
@@ -103,7 +104,7 @@ onKeyStroke('Escape', (e) => {
                     class="absolute bg-gray-200 dark:bg-gray-900 w-1/5 aspect-square min-w-[3rem] top-[75%] left-4 rounded-full"
                 >
                     <!-- プロフィール画像と+カメラの重ねるようのrelative -->
-                    <div 
+                    <div
                         class="w-full h-full relative border-2 xs:border-4 border-white dark:border-black overflow-hidden"
                         :class="profileDraft.userType === 'official' ? 'rounded-lg' : 'rounded-full'"
                     >

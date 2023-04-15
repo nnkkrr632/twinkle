@@ -5,9 +5,7 @@ const { googleSignUp } = useAuthByGoogleAccount()
 </script>
 
 <template>
-    <div
-        class="px-3 py-4 border dark:border-gray-800 flex flex-col rounded-2xl"
-    >
+    <div class="px-3 py-4 border dark:border-gray-800 flex flex-col rounded-2xl">
         <div class="text-xl font-extrabold">
             Twinkleを使ってみよう
         </div>

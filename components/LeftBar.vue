@@ -63,10 +63,7 @@ const { me } = useAuthByGoogleAccount()
                     </NuxtLink>
                 </li>
                 <!-- 設定 -->
-                <li
-                    v-if="me"
-                    class="flex justify-center xl:justify-start"
-                >
+                <li class="flex justify-center xl:justify-start">
                     <NuxtLink
                         to="/settings"
                         class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
@@ -83,7 +80,10 @@ const { me } = useAuthByGoogleAccount()
                 </li>
             </ul>
             <!-- ツイートセクション -->
-            <div class="mt-4 flex justify-center items-center text-white">
+            <div
+                v-if="me"
+                class="mt-4 flex justify-center items-center text-white"
+            >
                 <!-- アイコン正円 -->
                 <button
                     class="xl:hidden bg-amber-500/90 w-[52px] h-[52px] flex justify-center items-center rounded-full hover:bg-amber-500"

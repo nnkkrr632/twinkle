@@ -1,9 +1,8 @@
 <script setup lang="ts">
-
 import { useUserDetail } from '@/composables/userDetail'
 import { useTweetsByUser } from '@/composables/tweetByUser'
 import { ref } from '#imports'
-import { useIntersectionObserver } from '@vueuse/core';
+import { useIntersectionObserver } from '@vueuse/core'
 
 const { tweets, addOldTweets } = useTweetsByUser()
 console.log('私はpages/userSlug/index.vue。tweetsとれてる？↓')

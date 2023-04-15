@@ -11,7 +11,7 @@ const { openModal } = useConfirmTweetDelete()
 const { me } = useAuthByGoogleAccount()
 
 const { setImages } = useImagesModal()
-const props = defineProps<{ tweet: Tweet, tweetDocId: string, retweetedBy?: string }>()
+const props = defineProps<{ tweet: Tweet; tweetDocId: string; retweetedBy?: string }>()
 // propsを直接変更できない
 const likeUserSlugs = ref(props.tweet.likeUserSlugs)
 const retweetUserSlugs = ref(props.tweet.retweetUserSlugs)
@@ -41,7 +41,7 @@ const cancelLike = async () => {
         alert('いいねしていないツイートのいいねを取り消すことはできません。')
         return
     }
-    likeUserSlugs.value = likeUserSlugs.value.filter((userSlug => userSlug !== me.value?.slug))
+    likeUserSlugs.value = likeUserSlugs.value.filter((userSlug) => userSlug !== me.value?.slug)
     console.log('tweetDocId↓')
     console.log(props.tweet.tweetDocId)
     console.log('likeUserSlugs.value↓')
@@ -74,19 +74,16 @@ const cancelRetweet = async () => {
         alert('リツイートしていないツイートのリツイートを取り消すことはできません。')
         return
     }
-    retweetUserSlugs.value = retweetUserSlugs.value.filter((userSlug => userSlug !== me.value?.slug))
+    retweetUserSlugs.value = retweetUserSlugs.value.filter((userSlug) => userSlug !== me.value?.slug)
     console.log('retweetUserSlugs.value↓')
     console.log(retweetUserSlugs.value)
     const originalTweetDocId = props.tweet.tweetDocId
     await destroyRetweet(props.tweetDocId, originalTweetDocId)
 }
-
 </script>
 
 <template>
-    <div 
-        class="block border-b dark:border-gray-800 px-4 hover:bg-gray-400/5 dark:hover:bg-white/5 py-[6px]"
-    >
+    <div class="block border-b dark:border-gray-800 px-4 hover:bg-gray-400/5 dark:hover:bg-white/5 py-[6px]">
         <div>tweetDocId：{{ tweet.tweetDocId }}</div>
         <div>userSlug：{{ tweet.userInfo.slug }}</div>
         <!-- リツイート -->
@@ -95,7 +92,7 @@ const cancelRetweet = async () => {
             class="flex items-center text-sm text-gray-500"
         >
             <span class="material-symbols-outlined text-xl ml-7 mr-3">repeat</span>
-            <span>{{ props.retweetedBy }} さんがリツイートしました</span>
+            <span class="line-clamp-1">{{ props.retweetedBy }} さんがリツイートしました</span>
         </div>
         <!-- アイコンと文章のフレックス -->
         <div class="flex">
@@ -161,18 +158,6 @@ const cancelRetweet = async () => {
                 </div>
                 <!-- 最下段 -->
                 <div class="flex justify-between mt-3 max-w-[27rem]">
-                    <div class="flex items-center">
-                        <!-- アイコン正円 -->
-                        <button
-                            class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-amber-600/10"
-                            title="返信"
-                        >
-                            <span class="material-symbols-outlined text-xl text-gray-500 hover:text-amber-500">chat_bubble</span>
-                        </button>
-                        <div class="ml-1 pb-[2px] text-gray-500 text-sm">
-                            0
-                        </div>
-                    </div>
                     <!-- リツイート -->
                     <div class="flex items-center">
                         <!-- リツイート済 -->
@@ -234,7 +219,7 @@ const cancelRetweet = async () => {
                             title="削除"
                             @click="openModal(tweet.tweetDocId)"
                         >
-                            <span 
+                            <span
                                 class="material-symbols-outlined text-xl text-gray-500"
                                 :class="props.retweetedBy ? '' : 'hover:text-red-500'"
                             >delete</span>

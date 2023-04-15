@@ -94,7 +94,7 @@ export const useEditProfileModal = () => {
         console.log('editProfileModal openModal呼ばれた')
         visible.value = true
         console.log('visible.value↓')
-        if(visible.value) {
+        if (visible.value) {
             console.log('visible.valueはtrue')
         }
     }
@@ -115,7 +115,7 @@ export const useConfirmTweetDelete = () => {
         tweetDocId.value = deletingTweetDocId
         visible.value = true
         console.log('visible.value↓')
-        if(visible.value) {
+        if (visible.value) {
             console.log('visible.valueはtrue')
         }
     }

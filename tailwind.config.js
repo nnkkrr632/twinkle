@@ -11,11 +11,7 @@ module.exports = {
         './nuxt.config.{js,ts}',
         './app.vue',
     ],
-    safelist: [
-        'grid-cols-1',
-        'grid-cols-2',
-        'grid-cols-3',
-    ],
+    safelist: ['grid-cols-1', 'grid-cols-2', 'grid-cols-3'],
     theme: {
         // @link https://tailwindcss.com/docs/screens#adding-smaller-breakpoints
         screens: {

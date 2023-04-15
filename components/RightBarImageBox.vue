@@ -11,11 +11,16 @@ const route = useRoute()
 const imageUrls = ref<string[]>([])
 watchEffect(() => {
     console.log('★★imageUrlsのwatchEffect開始')
-    imageUrls.value = allImageUrls.value
-    if (route.name !== 'userSlug') {
-        console.log('ルートがuserSlug出ない分岐によるリセット')
-        imageUrls.value = []
+    if (!route.name) {
+        return
     }
+    // ユーザーページ系では画像を表示
+    if (route.name.toString().includes('userSlug')) {
+        imageUrls.value = allImageUrls.value
+        return
+    }
+    imageUrls.value = []
+    return
 })
 </script>
 

@@ -150,22 +150,6 @@ const props = defineProps<{ user: User }>()
                 </li>
                 <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
                     <NuxtLink
-                        :to="`/${user.slug}/with-replies`"
-                        class="w-full flex justify-center"
-                    >
-                        <div class="flex flex-col justify-between">
-                            <div class="link-text h-full flex items-center text-gray-500 px-2">
-                                <div class="flex flex-wrap justify-center">
-                                    <span>ツイートと</span>
-                                    <span>返信</span>
-                                </div>
-                            </div>
-                            <span class="underline" />
-                        </div>
-                    </NuxtLink>
-                </li>
-                <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
-                    <NuxtLink
                         :to="`/${user.slug}/media`"
                         class="w-full flex justify-center"
                     >

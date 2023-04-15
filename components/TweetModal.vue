@@ -15,6 +15,14 @@ useFocus(tweetDraftTextarea, { initialValue: true })
 onKeyStroke('Escape', (e) => {
     closeModal()
 })
+
+const tweetButtonText = ref<string>('ツイートする')
+const tweetAndCloseModal = async () => {
+    tweetButtonText.value = '...ツイート中'
+    await tweet()
+    closeModal()
+    tweetButtonText.value = 'ツイートする'
+}
 </script>
 
 <template>
@@ -42,7 +50,9 @@ onKeyStroke('Escape', (e) => {
             <!-- アイコン正円と入力部分のflex -->
             <div class="flex space-x-3 mt-3">
                 <!-- アイコン正円 -->
-                <div class="w-[52px] h-[52px] flex justify-center items-center rounded-full overflow-hidden bg-gray-200 dark:bg-gray-900">
+                <div
+                    class="w-[52px] h-[52px] flex justify-center items-center rounded-full overflow-hidden bg-gray-200 dark:bg-gray-900"
+                >
                     <img
                         v-if="me.iconImageUrl"
                         class="h-full w-full object-cover"
@@ -83,7 +93,7 @@ onKeyStroke('Escape', (e) => {
                             />
                         </div>
                     </div>
-                    <!-- 縦flex(3) 全員が返信できます -->
+                    <!-- 縦flex(3) ツイートは全体公開されます -->
                     <div class="flex items-center p-2 text-sm text-amber-500/90 font-semibold space-x-1">
                         <span class="material-symbols-outlined text-xl">public</span>
                         <span>ツイートは全体公開されます</span>
@@ -122,9 +132,9 @@ onKeyStroke('Escape', (e) => {
                                 class="px-4 py-1 text-white text-base bg-amber-500/90 rounded-full"
                                 :class="!isValidTweet ? 'opacity-30' : 'hover:bg-amber-500'"
                                 :disabled="!isValidTweet"
-                                @click="tweet(), closeModal()"
+                                @click="tweetAndCloseModal"
                             >
-                                ツイートする
+                                {{ tweetButtonText }}
                             </button>
                         </div>
                     </div>

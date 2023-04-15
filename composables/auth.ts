@@ -1,3 +1,4 @@
+import { useState, navigateTo } from '#imports'
 import type { User as AuthenticationUser } from 'firebase/auth'
 import {
     getAuth,
@@ -5,14 +6,13 @@ import {
     onAuthStateChanged,
     signInWithPopup,
     signOut as firebaseSignOut,
-    deleteUser
+    deleteUser,
+    reauthenticateWithCredential,
 } from 'firebase/auth'
 import { setDoc, doc, getFirestore, serverTimestamp } from '@firebase/firestore'
-
-import { useState } from '#imports'
-import { getRandomString } from '@/utils/myLibrary'
 import type { User } from '@/composables/types'
 import { useUserSelect } from '@/composables/userSelect'
+import { getRandomString } from '@/utils/myLibrary'
 
 // サインイン
 export const useAuthByGoogleAccount = () => {
@@ -96,6 +96,7 @@ export const useAuthByGoogleAccount = () => {
                 console.log('新規登録で作成されたuserで埋められたme.value↓')
                 console.log(me.value)
             }
+            navigateTo(`/${me.value?.slug}`)
         } catch (error) {
             console.log('googleSignUpでエラー発生')
             throw error
@@ -107,6 +108,7 @@ export const useAuthByGoogleAccount = () => {
         if (!me.value) {
             alert('現在ログインしていません。')
         }
+        navigateTo('/')
         try {
             await firebaseSignOut(getAuth())
             me.value = null
@@ -148,18 +150,45 @@ export const useAuthByGoogleAccount = () => {
         })
     }
 
+    const reAuthenticated = useState<boolean>('reAuthenticated', () => false)
+    const reAuthenticate = async () => {
+        try {
+            const auth = getAuth()
+            const currentUser = auth.currentUser
+            if (!currentUser) {
+                return
+            }
+            const userCredential = await signInWithPopup(auth, new GoogleAuthProvider())
+            const oAuthCredential = GoogleAuthProvider.credentialFromResult(userCredential)
+            if (!oAuthCredential) {
+                return
+            }
+            await reauthenticateWithCredential(currentUser, oAuthCredential)
+            console.log('reAuthenticateここまで残っているのは成功。下でuseStateのreAuthenticatedにtrueをセット')
+            reAuthenticated.value = true
+        } catch (error) {
+            console.log('再度ログインエラー発生')
+            console.log(error)
+        }
+    }
+
     const deleteMe = async () => {
         const auth = getAuth()
-        const authenticationUser = auth.currentUser
-        console.log('authenticationUser↓')
-        console.log(authenticationUser)
-        if(!authenticationUser) {
+        const currentUser = auth.currentUser
+        console.log('currentUser')
+        console.log(currentUser)
+        if (!currentUser) {
             console.log('ログインしていない自分を削除することはできません。')
             return
         }
-        console.log('deleteMe呼ばれた')
-        await deleteUser(authenticationUser)
+
+        try {
+            await deleteUser(currentUser)
+        } catch (error) {
+            console.log('deleteMe()でエラー発生')
+            console.debug(error)
+        }
     }
 
-    return { me, signOut, setAuthUserWhenAUthStateChanged, googleSignUp, deleteMe }
+    return { me, signOut, setAuthUserWhenAUthStateChanged, googleSignUp, reAuthenticate, reAuthenticated, deleteMe }
 }

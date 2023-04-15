@@ -61,6 +61,14 @@ export const useCreateTweet = () => {
         }
     }
 
+    const clearTweetDraft = () => {
+        tweetDraft.body = ''
+        tweetDraft.images = []
+        tweetDraft.imageUrls = []
+        tweetDraft.imageFullPaths = []
+        tweetDraft.imagePreviewUrls = []
+    }
+
     // tweetsコレクションとuserコレクションのmyTweetsサブコレクションに保存
     const tweet = async () => {
         console.log('tweet()開始')
@@ -124,6 +132,7 @@ export const useCreateTweet = () => {
             })
 
             await batch.commit()
+            clearTweetDraft()
         } catch (error) {
             console.log('■■tweets()でエラー発生。コンソールデバッグ↓')
             console.debug(error)

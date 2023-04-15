@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { definePageMeta, ref } from '#imports'
+import { navigateTo, definePageMeta } from '#imports'
 import { useAuthByGoogleAccount } from '@/composables/auth'
-import { useAccountDelete } from '@/composables/accountDelete'
 
 definePageMeta({
-    middleware: 're-authenticated',
+    middleware: 'auth',
 })
 
-const { me } = useAuthByGoogleAccount()
-const { deleteAccount } = useAccountDelete()
-
-const deleteButtonText = ref<string>('アカウント削除')
-const successed = ref<boolean>(false)
-const tryDeleteAccount = async () => {
-    deleteButtonText.value = '...アカウントを削除中'
-    successed.value = await deleteAccount()
-    deleteButtonText.value = 'アカウントを削除'
+const { me, reAuthenticate, reAuthenticated, signOut } = useAuthByGoogleAccount()
+const reSignIn = async () => {
+    await reAuthenticate()
+    if (reAuthenticated.value) {
+        navigateTo('/settings/delete')
+    } else {
+        alert(
+            '本人確認に失敗したためログアウトします。\nログインしているGoogleアカウントと異なるGoogleアカウントが指定された可能性があります。'
+        )
+        signOut()
+    }
 }
 </script>
 
@@ -55,38 +56,20 @@ const tryDeleteAccount = async () => {
         </NuxtLink>
         <!-- 注意書き -->
         <p class="px-4 text-lg mb-2">
-            アカウントが削除されます
+            再度ログインして本人であることをご確認ください。
         </p>
-        <div class="flex flex-col text-gray-500 text-sm">
-            <p class="px-4 border-b dark:border-gray-800 py-2">
-                アカウントの削除は取り消せません。
-            </p>
-            <p class="px-4 border-b dark:border-gray-800 py-2">
-                GoogleやBingなどの検索エンジンに一部のアカウント情報が残っている場合があります。
-            </p>
-        </div>
         <!-- ボタン -->
-        <div class="flex justify-end p-4">
+        <div class="flex flex-wrap flex-col space-y-3 m-3 text-black">
             <button
-                class="font-semibold text-white px-4 py-[6px] rounded-full bg-red-500/90 hover:bg-red-500"
-                @click="tryDeleteAccount"
+                class="bg-white hover:bg-gray-100 border-2 dark:border-gray-800 py-2 flex items-center justify-center rounded-full space-x-2"
+                @click="reSignIn"
             >
-                {{ deleteButtonText }}
+                <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/24px-Google_%22G%22_Logo.svg.png"
+                    class="w-5 aspect-square"
+                />
+                <span>Google で再度ログイン</span>
             </button>
         </div>
-    </div>
-    <div
-        v-if="successed"
-        class="p-3 flex flex-col gap-4"
-    >
-        <h1 class="text-lg font-bold">
-            削除済み
-        </h1>
-        <p class="text-lg font-bold">
-            アカウントが削除されました
-        </p>
-        <p class="text-gray-500 text-sm">
-            ご利用ありがとうございました。 #GoodBye
-        </p>
     </div>
 </template>

@@ -1,8 +1,4 @@
-import {
-    Timestamp,
-    DocumentReference,
-    DocumentData,
-} from 'firebase/firestore'
+import { Timestamp, DocumentReference, DocumentData } from 'firebase/firestore'
 
 export type TweetDraft = {
     body: string
@@ -17,8 +13,8 @@ export type UserProfileDraft = {
     description: string
     place: string
     link: string
-    headerImage: File|null
-    iconImage: File|null
+    headerImage: File | null
+    iconImage: File | null
     headerImagePreviewUrl: string
     iconImagePreviewUrl: string
     headerImageFullPath: string

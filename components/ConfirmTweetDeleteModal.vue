@@ -5,7 +5,6 @@ import { onKeyStroke, useFocus } from '@vueuse/core'
 
 const { visible, tweetDocId, closeModal } = useConfirmTweetDelete()
 const { deleteTweet } = useTweetDelete()
-
 </script>
 
 <template>

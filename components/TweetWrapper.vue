@@ -3,7 +3,6 @@ import type { Tweet, Retweet } from '@/composables/types'
 const props = defineProps<{ tweet: Tweet | Retweet }>()
 console.log('私はcomponents/TweetWrapper.vue。props.tweetとれてる？↓')
 console.log(props.tweet)
-
 </script>
 
 <template>

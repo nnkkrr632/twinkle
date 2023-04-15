@@ -2,7 +2,6 @@ import { getStorage, ref as storageRef, getDownloadURL, uploadBytes, deleteObjec
 import { getRandomString } from '@/utils/myLibrary'
 
 export const useStorage = () => {
-
     // private firebase storage から画像を取得
     const resolveImageUrl = async (imageFullPath: string) => {
         console.log('storage.tsのresolveImageUrl開始')
@@ -27,7 +26,7 @@ export const useStorage = () => {
             console.log(response.metadata)
             console.log(response.ref)
             const imageUrl = await resolveImageUrl(imageRef.fullPath)
-            return { imageFullPath: imageRef.fullPath, imageUrl: imageUrl}
+            return { imageFullPath: imageRef.fullPath, imageUrl: imageUrl }
         } catch (error) {
             console.debug(error)
         }

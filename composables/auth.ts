@@ -45,7 +45,7 @@ export const useAuthByGoogleAccount = () => {
                 description: '',
                 link: '',
                 place: '',
-                userType: 'normal',
+                type: 'normal',
                 iconImageFullPath: '',
                 headerImageFullPath: '',
                 iconImageUrl: '',

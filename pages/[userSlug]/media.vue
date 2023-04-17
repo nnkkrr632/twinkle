@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from '#imports'
-import type { Tweet, Retweet } from '@/composables/types'
 import { useUserDetail } from '@/composables/userDetail'
 import { useTweetsByUser } from '@/composables/tweetByUser'
 import { ref } from '#imports'
@@ -47,15 +46,21 @@ useIntersectionObserver(
         <UserProfile :user="user" />
         <!-- <div class="w-20 h-20 bg-red-300 cursor-pointer" @click="addOldTweets()">add</div> -->
         <!-- ツイートs -->
-        <div v-if="mediaTweets">
+        <div v-if="mediaTweets.length > 0">
             <section
                 v-for="tweet of mediaTweets"
                 :key="tweet.tweetDocId"
             >
                 <TweetWrapper :tweet="tweet" />
             </section>
+            <!-- useIntersectionObserver で無限スクロール -->
+            <span ref="el" />
         </div>
-        <!-- useIntersectionObserver で無限スクロール -->
-        <span ref="el" />
+        <div v-else class="flex justify-center items-center py-8">
+            <div class="flex flex-col justify-center max-w-sm">
+                <p class="text-2xl font-bold">@{{ user.slug }} さんはまだメディア付きツイートしていません</p>
+                <p class="text-gray-500">実際に行うとそのツイートがここに表示されます。</p>
+            </div>
+        </div>
     </div>
 </template>

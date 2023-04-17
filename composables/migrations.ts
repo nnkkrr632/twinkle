@@ -17,7 +17,7 @@ export const useMigrateUser = () => {
             displayName: userSlug,
             description: `${userDisplayName}のデスクリプションです。`,
             link: 'https://google.com',
-            userType: 'normal',
+            type: 'normal',
             iconImageFullPath: 'user-icon-images/14.PNG',
             headerImageFullPath: 'user-header-images/40.PNG',
             createdAt: serverTimestamp(),

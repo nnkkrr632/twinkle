@@ -103,14 +103,14 @@ const cancelRetweet = async () => {
                 >
                     <!-- ユーザーアイコン -->
                     <div
-                        class="w-12 h-12 flex justify-center items-center bg-gray-200 dark:bg-gray-900 rounded-full overflow-hidden"
+                        class="w-12 h-12 flex justify-center items-center bg-gray-100 dark:bg-gray-900 overflow-hidden"
+                        :class="tweet.userInfo.type === 'official' ? 'rounded-md' : 'rounded-full'"
                     >
                         <img
                             v-if="tweet.userInfo.iconImageUrl"
                             :src="tweet.userInfo.iconImageUrl"
                             alt="ツイートしたユーザーのアイコン画像"
                             class="h-full w-full object-cover"
-                            :class="tweet.userInfo.userType === 'official' ? 'rounded-md' : 'rounded-full'"
                         />
                     </div>
                 </NuxtLink>
@@ -127,8 +127,8 @@ const cancelRetweet = async () => {
                     </NuxtLink>
                     <!-- バッジ -->
                     <span
-                        v-if="tweet.userInfo.userType === 'official'"
-                        class="official-badge material-symbols-outlined text-xl text-amber-500/90 ml-1 mt-[3px]"
+                        v-if="tweet.userInfo.type === 'official'"
+                        class="official-badge material-symbols-outlined text-xl text-amber-500/90 ml-1 mt-[2px]"
                     >verified</span>
                     <NuxtLink :to="`/${tweet.userInfo.slug}`">
                         <span class="text-gray-500 ml-2 line-clamp-1">@{{ tweet.userInfo.slug }}</span>

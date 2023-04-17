@@ -48,10 +48,10 @@ const tweetAndCloseModal = async () => {
                 <span class="material-symbols-outlined text-2xl">close</span>
             </div>
             <!-- アイコン正円と入力部分のflex -->
-            <div class="flex space-x-3 mt-3">
+            <div class="flex gap-3 mt-3">
                 <!-- アイコン正円 -->
                 <div
-                    class="w-[52px] h-[52px] flex justify-center items-center rounded-full overflow-hidden bg-gray-200 dark:bg-gray-900"
+                    class="w-[52px] h-[52px] flex justify-center items-center rounded-full overflow-hidden bg-gray-100 dark:bg-gray-900"
                 >
                     <img
                         v-if="me.iconImageUrl"
@@ -94,7 +94,7 @@ const tweetAndCloseModal = async () => {
                         </div>
                     </div>
                     <!-- 縦flex(3) ツイートは全体公開されます -->
-                    <div class="flex items-center p-2 text-sm text-amber-500/90 font-semibold space-x-1">
+                    <div class="flex items-center gap-1 p-2 text-sm text-amber-500/90 font-semibold">
                         <span class="material-symbols-outlined text-xl">public</span>
                         <span>ツイートは全体公開されます</span>
                     </div>
@@ -119,7 +119,7 @@ const tweetAndCloseModal = async () => {
                                 @change="selectImages"
                             />
                         </label>
-                        <div class="flex justify-end space-x-3 items-center">
+                        <div class="flex justify-end items-center gap-3">
                             <div>
                                 <span v-if="tweetDraft.body.length === 0">0</span>
                                 <span

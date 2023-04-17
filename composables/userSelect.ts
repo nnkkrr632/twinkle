@@ -22,10 +22,17 @@ export const useUserSelect = () => {
         const q = query(usersColRef, where('slug', '==', userSlug))
         const querySnapshot = await getDocs(q)
         let uid = ''
+
+        if(querySnapshot.empty) {
+            console.log('■■■■ userSlugからuid解決できない分岐入った')
+            return ''
+        }
         querySnapshot.forEach((queryDocSnapshot) => {
             const docId = queryDocSnapshot.id
             uid = docId
         })
+        console.log('■■■■■■uid↓')
+        console.log(uid)
         return uid
     }
 

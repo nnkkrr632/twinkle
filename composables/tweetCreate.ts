@@ -115,7 +115,7 @@ export const useCreateTweet = () => {
                     displayName: me.value.displayName,
                     description: me.value.description,
                     iconImageUrl: me.value.iconImageUrl,
-                    userType: me.value.userType,
+                    type: me.value.type,
                 },
             })
 

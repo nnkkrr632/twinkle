@@ -35,7 +35,7 @@ const props = defineProps<{ user: User }>()
         <!-- 画像部 -->
         <div class="relative">
             <!-- ユーザーヘッダー画像 -->
-            <div class="w-full aspect-[3/1] bg-gray-300 dark:bg-gray-800">
+            <div class="w-full aspect-[3/1] bg-gray-200 dark:bg-gray-800">
                 <img
                     v-if="user.headerImageUrl"
                     :src="user.headerImageUrl"
@@ -50,13 +50,13 @@ const props = defineProps<{ user: User }>()
                     v-if="user.iconImageUrl"
                     :src="user.iconImageUrl"
                     class="h-full w-full object-cover cursor-pointer border-2 xs:border-4 border-white dark:border-black"
-                    :class="user.userType === 'official' ? 'rounded-lg' : 'rounded-full'"
+                    :class="user.type === 'official' ? 'rounded-lg' : 'rounded-full'"
                     alt="ユーザーのアイコン画像"
                     @click="setImages([user.iconImageUrl], 0)"
                 />
                 <div
                     v-else
-                    class="bg-gray-200 dark:bg-gray-900 h-full w-full object-cover rounded-full border-[3px] border-white dark:border-black"
+                    class="bg-gray-100 dark:bg-gray-900 h-full w-full object-cover rounded-full border-[3px] border-white dark:border-black"
                 />
             </div>
         </div>
@@ -79,10 +79,10 @@ const props = defineProps<{ user: User }>()
                 class="py-[34px]"
             />
             <!-- ユーザー名 -->
-            <div class="flex items-center">
-                <span class="text-xl font-bold mr-1">{{ user.displayName }}</span>
+            <div class="flex items-center gap-1">
+                <span class="text-xl font-bold">{{ user.displayName }}</span>
                 <span
-                    v-if="user.userType === 'official'"
+                    v-if="user.type === 'official'"
                     class="official-badge material-symbols-outlined text-xl text-amber-500/90 pt-[2px]"
                 >verified</span>
             </div>

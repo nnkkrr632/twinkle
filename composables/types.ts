@@ -29,7 +29,7 @@ export type UserInfo = {
     displayName: string
     description: string
     iconImageUrl: string
-    userType: 'normal' | 'official'
+    type: 'normal' | 'official'
 }
 
 export type FirestoreUser = DocumentData & {
@@ -41,7 +41,7 @@ export type FirestoreUser = DocumentData & {
     description: string
     place: string
     link: string
-    userType: 'normal' | 'official'
+    type: 'normal' | 'official'
     iconImageFullPath: string
     headerImageFullPath: string
     iconImageUrl: string

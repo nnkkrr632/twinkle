@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { ref, definePageMeta } from '#imports'
 import { useUserDetail } from '@/composables/userDetail'
 import { useTweetsByUser } from '@/composables/tweetByUser'
-import { ref } from '#imports'
 import { useIntersectionObserver } from '@vueuse/core'
+
+definePageMeta({
+    middleware: 'user-slug',
+})
 
 const { tweets, addOldTweets } = useTweetsByUser()
 console.log('私はpages/userSlug/index.vue。tweetsとれてる？↓')
@@ -33,15 +37,21 @@ useIntersectionObserver(
         <UserProfile :user="user" />
         <!-- <div class="w-20 h-20 bg-red-300 cursor-pointer" @click="addOldTweets()">add</div> -->
         <!-- ツイートs -->
-        <div>
+        <div v-if="tweets">
             <section
                 v-for="tweet of tweets"
                 :key="tweet.tweetDocId"
             >
                 <TweetWrapper :tweet="tweet" />
             </section>
+            <!-- useIntersectionObserver で無限スクロール -->
+            <span ref="el" />
         </div>
-        <!-- useIntersectionObserver で無限スクロール -->
-        <span ref="el" />
+        <div v-else class="flex justify-center items-center py-8">
+            <div class="flex flex-col justify-center max-w-sm">
+                <p class="text-2xl font-bold">@{{ user.slug }} さんはまだツイートしていません</p>
+                <p class="text-gray-500">実際に行うとそのツイートがここに表示されます。</p>
+            </div>
+        </div>
     </div>
 </template>

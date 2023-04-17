@@ -31,7 +31,7 @@ onKeyStroke('Escape', (e) => {
         >
             <!-- xボタン行 -->
             <div class="flex items-center justify-between px-4 pb-2">
-                <div class="flex items-center space-x-6">
+                <div class="flex items-center gap-6">
                     <!-- ×ボタン正円 -->
                     <div
                         class="w-10 h-10 flex justify-center items-center rounded-full cursor-pointer hover:bg-black/5 dark:hover:bg-white/10"
@@ -66,11 +66,11 @@ onKeyStroke('Escape', (e) => {
                     />
                     <div
                         v-else
-                        class="w-full h-full bg-gray-300 dark:bg-gray-800"
+                        class="w-full h-full bg-gray-200 dark:bg-gray-800"
                     />
                     <!-- 画像の上のボタン -->
                     <div
-                        class="absolute top-1/2 left-1/2 translate-y-[-50%] translate-x-[-50%] flex items-center space-x-6"
+                        class="absolute top-1/2 left-1/2 translate-y-[-50%] translate-x-[-50%] flex items-center gap-6"
                     >
                         <!-- カメラinput -->
                         <label>
@@ -101,12 +101,12 @@ onKeyStroke('Escape', (e) => {
                 </div>
                 <!-- アイコン画像 -->
                 <div
-                    class="absolute bg-gray-200 dark:bg-gray-900 w-1/5 aspect-square min-w-[3rem] top-[75%] left-4 rounded-full"
+                    class="absolute bg-gray-100 dark:bg-gray-900 w-1/5 aspect-square min-w-[3rem] top-[75%] left-4 rounded-full"
                 >
                     <!-- プロフィール画像と+カメラの重ねるようのrelative -->
                     <div
                         class="w-full h-full relative border-2 xs:border-4 border-white dark:border-black overflow-hidden"
-                        :class="profileDraft.userType === 'official' ? 'rounded-lg' : 'rounded-full'"
+                        :class="profileDraft.type === 'official' ? 'rounded-lg' : 'rounded-full'"
                     >
                         <img
                             v-if="profileDraft.iconImagePreviewUrl"
@@ -135,7 +135,7 @@ onKeyStroke('Escape', (e) => {
                 </div>
             </div>
 
-            <div class="flex flex-col mt-20 mx-4 space-y-6">
+            <div class="flex flex-col mt-20 mx-4 gap-6">
                 <!-- 名前 -->
                 <div>
                     <div

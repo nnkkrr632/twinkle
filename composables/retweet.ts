@@ -36,7 +36,7 @@ export const useRetweet = () => {
                     displayName: me.value.displayName,
                     description: me.value.description,
                     iconImageUrl: me.value.iconImageUrl,
-                    userType: me.value.userType,
+                    type: me.value.type,
                 },
                 originalTweetDocId: originalTweetDocId,
             })
@@ -60,7 +60,7 @@ export const useRetweet = () => {
                     displayName: me.value.displayName,
                     description: me.value.description,
                     iconImageUrl: me.value.iconImageUrl,
-                    userType: me.value.userType,
+                    type: me.value.type,
                 },
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),

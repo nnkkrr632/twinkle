@@ -13,7 +13,7 @@ const { me } = useAuthByGoogleAccount()
     <div class="flex flex-col justify-between h-full">
         <!-- twinkleとツイートボタンは上部 -->
         <div>
-            <ul class="flex flex-col space-y-3">
+            <ul class="flex flex-col gap-3">
                 <!-- twinkle -->
                 <li class="flex justify-center xl:justify-start">
                     <div

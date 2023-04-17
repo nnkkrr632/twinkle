@@ -11,9 +11,9 @@ const { googleSignUp } = useAuthByGoogleAccount()
         </div>
         <span class="text-gray-500 text-sm pt-3">今すぐ登録して、タイムラインをカスタマイズしましょう。</span>
         <!-- ログインボタンs -->
-        <div class="flex flex-wrap flex-col space-y-3 m-3 text-black">
+        <div class="flex flex-wrap flex-col m-3 text-black">
             <button
-                class="bg-white hover:bg-gray-100 border-2 dark:border-gray-800 py-2 flex items-center justify-center rounded-full space-x-2"
+                class="bg-white hover:bg-gray-100 border-2 dark:border-gray-800 py-2 flex items-center gap-2 justify-center rounded-full"
                 @click="googleSignUp"
             >
                 <img

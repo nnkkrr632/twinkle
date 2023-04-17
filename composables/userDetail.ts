@@ -16,6 +16,7 @@ export const useUserDetail = () => {
 
         try {
             const uid = await resolveUidFromUserSlug(userSlug)
+            if(!uid) { return }
             const retouchedUser = await getRetouchedUser(uid)
             // console.log('■■リターン前のretouchedUser↓')
             // console.log(retouchedUser)

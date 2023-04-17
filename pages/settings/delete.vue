@@ -43,7 +43,7 @@ const tryDeleteAccount = async () => {
                     />
                     <div
                         v-else
-                        class="w-12 h-12 bg-gray-200 dark:bg-gray-900 rounded-full"
+                        class="w-12 h-12 bg-gray-100 dark:bg-gray-900 rounded-full"
                     />
                 </div>
                 <!-- 文字 -->

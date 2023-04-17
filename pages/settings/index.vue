@@ -9,7 +9,7 @@ definePageMeta({
     <h1 class="text-xl font-bold px-3 py-3 pb-2">
         設定
     </h1>
-    <ul class="flex flex-col space-y-3">
+    <ul class="flex flex-col">
         <li class="flex">
             <NuxtLink
                 to="/settings/re-sign-in"

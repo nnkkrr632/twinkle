@@ -44,7 +44,7 @@ const reSignIn = async () => {
                     />
                     <div
                         v-else
-                        class="w-12 h-12 bg-gray-200 dark:bg-gray-900 rounded-full"
+                        class="w-12 h-12 bg-gray-100 dark:bg-gray-900 rounded-full"
                     />
                 </div>
                 <!-- 文字 -->
@@ -59,9 +59,9 @@ const reSignIn = async () => {
             再度ログインして本人であることをご確認ください。
         </p>
         <!-- ボタン -->
-        <div class="flex flex-wrap flex-col space-y-3 m-3 text-black">
+        <div class="flex flex-wrap flex-col m-3 text-black">
             <button
-                class="bg-white hover:bg-gray-100 border-2 dark:border-gray-800 py-2 flex items-center justify-center rounded-full space-x-2"
+                class="bg-white hover:bg-gray-100 border-2 dark:border-gray-800 py-2 flex items-center justify-center gap-2 rounded-full"
                 @click="reSignIn"
             >
                 <img

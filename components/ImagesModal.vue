@@ -20,7 +20,7 @@ onKeyStroke('Escape', (e) => {
 <template>
     <div
         v-if="visible"
-        class="fixed flex justify-center h-full w-full z-20 bg-black bg-opacity-80 overscroll-contain overflow-y-scroll hidden-scrollbar"
+        class="fixed inset-0 z-20 flex justify-center bg-black bg-opacity-80 overscroll-contain overflow-y-scroll hidden-scrollbar"
         @click="closeModal"
     >
         <!-- モーダルコンテンツ -->

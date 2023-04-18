@@ -14,8 +14,8 @@ watchEffect(() => {
     if (!route.name) {
         return
     }
-    // ユーザーページ系では画像を表示
-    if (route.name.toString().includes('userSlug')) {
+    // /userSlug と /userSlug/media では 画像ボックスを表示
+    if (route.name.toString() === 'userSlug' || route.name.toString() === 'userSlug-media') {
         imageUrls.value = allImageUrls.value
         return
     }

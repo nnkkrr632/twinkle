@@ -7,7 +7,7 @@ defineProps<{ title: string; subTitle?: string }>()
 </script>
 
 <template>
-    <header class="z-10 sticky top-0 w-full h-12 backdrop-blur-sm bg-white/50 dark:bg-black/50">
+    <header class="z-10 sticky top-0 w-full h-12 bg-white/50 dark:bg-black/50">
         <!-- (1)矢印 (2)タイトル&サブタイトル (3)スロット のflex -->
         <div class="px-3 h-full flex items-center">
             <!-- (1)矢印 -->
@@ -24,19 +24,6 @@ defineProps<{ title: string; subTitle?: string }>()
                     v-if="subTitle"
                     class="text-sm line-clamp-1"
                 >{{ subTitle }}</span>
-            </div>
-            <!-- ログインしている場合はフォローボタンを表示 -->
-            <div
-                v-if="me"
-                class="h-full flex items-center justify-end flex-1 min-w-max"
-            >
-                <div v-if="me.slug === $route.params.userSlug" />
-                <div
-                    v-else
-                    class="bg-black dark:bg-white px-5 py-1 rounded-full text-gray-200 dark:text-gray-700 font-semibold hover:opacity-80 dark:hover:opacity-90 cursor-pointer"
-                >
-                    フォロー
-                </div>
             </div>
         </div>
     </header>

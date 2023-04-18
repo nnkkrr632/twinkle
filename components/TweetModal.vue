@@ -28,7 +28,7 @@ const tweetAndCloseModal = async () => {
 <template>
     <div
         v-if="visible && me"
-        class="fixed w-full h-full z-20 top-0 left-0 bg-black dark:bg-white bg-opacity-40 dark:bg-opacity-20 flex justify-center overscroll-contain overflow-y-scroll hidden-scrollbar"
+        class="fixed inset-0 z-20 bg-black dark:bg-white bg-opacity-40 dark:bg-opacity-20 flex justify-center overscroll-contain overflow-y-scroll hidden-scrollbar"
         @click="closeModal"
     >
         <!-- モーダルコンテンツ -->

@@ -1,16 +1,24 @@
 <script setup lang="ts">
+import { ref } from '#imports'
 import { useConfirmTweetDelete } from '@/composables/modal'
 import { useTweetDelete } from '@/composables/tweetDelete'
-import { onKeyStroke, useFocus } from '@vueuse/core'
 
 const { visible, tweetDocId, closeModal } = useConfirmTweetDelete()
 const { deleteTweet } = useTweetDelete()
+
+const deleteButtonText = ref<string>('削除')
+const deleteAndCloseModal = async (tweetDocId: string) => {
+    deleteButtonText.value = '...削除中'
+    await deleteTweet(tweetDocId)
+    closeModal()
+    deleteButtonText.value = '削除'
+}
 </script>
 
 <template>
     <div
         v-if="visible"
-        class="fixed w-full h-full z-20 top-0 left-0 bg-black dark:bg-white bg-opacity-40 dark:bg-opacity-20 flex justify-center overscroll-contain overflow-y-scroll hidden-scrollbar"
+        class="fixed inset-0 z-20 bg-black dark:bg-white bg-opacity-40 dark:bg-opacity-20 flex justify-center overscroll-contain overflow-y-scroll hidden-scrollbar"
         @click="closeModal"
     >
         <!-- モーダルコンテンツ -->
@@ -28,9 +36,9 @@ const { deleteTweet } = useTweetDelete()
                 <!-- ログアウトボタン -->
                 <button
                     class="bg-red-600 hover:opacity-80 dark:hover:opacity-90 border border-red-600 text-white dark:text-gray-200 text-xl font-bold items-center justify-center w-full rounded-full py-2 mt-6"
-                    @click="deleteTweet(tweetDocId)"
+                    @click="deleteAndCloseModal(tweetDocId)"
                 >
-                    削除
+                    {{ deleteButtonText }}
                 </button>
                 <!-- キャンセルボタン -->
                 <button

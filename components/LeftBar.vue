@@ -63,7 +63,7 @@ const { me } = useAuthByGoogleAccount()
                     </NuxtLink>
                 </li>
                 <!-- 設定 -->
-                <li class="flex justify-center xl:justify-start">
+                <li v-if="me" class="flex justify-center xl:justify-start">
                     <NuxtLink
                         to="/settings"
                         class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"

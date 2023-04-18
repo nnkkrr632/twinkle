@@ -1,13 +1,12 @@
 // 明示しないとVSCodeに波線が引かれる
 
-import { useRoute, useAsyncData, computed, useState } from '#imports'
+import { useRoute, useAsyncData, computed } from '#imports'
 import {
     getFirestore,
     Timestamp,
     collection,
     query,
     getDocs,
-    DocumentReference,
     orderBy,
     limit,
     where,
@@ -19,14 +18,17 @@ import { useUserSelect } from '@/composables/userSelect'
 export const useTweetsByUser = () => {
     console.log('useTweetsByUser()開始。')
 
+    // 本人のツイート一覧 or いいねしたツイート一覧を取得
     const getTweetDocIds = async (uid: string, oldestCreatedAt: Timestamp | null = null) => {
-        console.log('selectByUser.tsのgetTweetDocIds()開始')
+        // URL(= route)で取得先のコレクションを判断
+        const route = useRoute()
+        const targetSubCollection = route.name === 'userSlug-likes' ? 'myLikeTweetsSubCollection' : 'myTweetsSubCollection'
+        const colRef = collection(getFirestore(), 'users', uid, targetSubCollection)
 
-        const myTweetsColRef = collection(getFirestore(), 'users', uid, 'myTweetsSubCollection')
-        let tweetsQuery = query(myTweetsColRef, orderBy('createdAt', 'desc'), limit(5))
+        let tweetsQuery = query(colRef, orderBy('createdAt', 'desc'), limit(5))
         if (oldestCreatedAt) {
             tweetsQuery = query(
-                myTweetsColRef,
+                colRef,
                 where('createdAt', '<', oldestCreatedAt),
                 orderBy('createdAt', 'desc'),
                 limit(5)
@@ -105,6 +107,8 @@ export const useTweetsByUser = () => {
                 console.log('uidが見つかりません')
                 return []
             }
+
+            if(tweets.value?.length === 0) { return []}
 
             // ツイートの参照を取得
             const currentOldestCreatedAt = tweets.value?.[tweets.value.length - 1].createdAt ?? null

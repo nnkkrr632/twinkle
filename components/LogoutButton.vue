@@ -10,7 +10,6 @@ await setAuthUserWhenAUthStateChanged()
 <template>
     <div class="w-20 h-20 bg-red-400 cursor-pointer" @click="googleSignUp">サインイン</div>
     <div class="w-20 h-20 bg-blue-400 cursor-pointer" @click="signOut">サインアウト</div>
-    <div>{{ me }}</div>
 
     <div v-if="me" class="flex justify-center xl:justify-start my-5">
         <NuxtLink to="/logout" class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full">

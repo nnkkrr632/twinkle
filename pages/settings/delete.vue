@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { definePageMeta, ref } from '#imports'
+import { definePageMeta, ref, useHead } from '#imports'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { useAccountDelete } from '@/composables/accountDelete'
 
@@ -11,12 +11,17 @@ const { me } = useAuthByGoogleAccount()
 const { deleteAccount } = useAccountDelete()
 
 const deleteButtonText = ref<string>('アカウント削除')
-const successed = ref<boolean>(false)
+const succeeded = ref<boolean>(false)
 const tryDeleteAccount = async () => {
     deleteButtonText.value = '...アカウントを削除中'
-    successed.value = await deleteAccount()
+    succeeded.value = await deleteAccount()
     deleteButtonText.value = 'アカウントを削除'
 }
+
+useHead({
+    title: 'アカウントを削除 / Twinkle',
+    meta: [{property: 'robots', content: 'noindex'}],
+})
 </script>
 
 <template>
@@ -76,7 +81,7 @@ const tryDeleteAccount = async () => {
         </div>
     </div>
     <div
-        v-if="successed"
+        v-if="succeeded"
         class="p-3 flex flex-col gap-4"
     >
         <h1 class="text-lg font-bold">

@@ -12,7 +12,7 @@ import {
 import { setDoc, doc, getFirestore, serverTimestamp } from '@firebase/firestore'
 import type { User } from '@/composables/types'
 import { useUserSelect } from '@/composables/userSelect'
-import { getRandomString } from '@/utils/myLibrary'
+import { getRandomString } from '@/utils/helpers'
 
 // サインイン
 export const useAuthByGoogleAccount = () => {

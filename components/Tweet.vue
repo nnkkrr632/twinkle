@@ -26,12 +26,16 @@ const like = async () => {
         alert('既にいいね済です。')
         return
     }
-    likeUserSlugs.value.push(me.value.slug)
-    console.log('tweetDocId↓')
-    console.log(props.tweet.tweetDocId)
-    console.log('likeUserSlugs↓')
-    console.log(likeUserSlugs.value)
-    await storeLike(props.tweet.tweetDocId)
+    const storeSucceeded = await storeLike(props.tweet.tweetDocId)
+    if(storeSucceeded) {
+        likeUserSlugs.value.push(me.value.slug)
+        console.log('tweetDocId↓')
+        console.log(props.tweet.tweetDocId)
+        console.log('likeUserSlugs↓')
+        console.log(likeUserSlugs.value)
+    } else {
+        alert('ツイートのいいねに失敗しました。ツイートが存在しない可能性があります。')
+    }
 }
 const cancelLike = async () => {
     if (!me.value) {
@@ -41,12 +45,16 @@ const cancelLike = async () => {
         alert('いいねしていないツイートのいいねを取り消すことはできません。')
         return
     }
-    likeUserSlugs.value = likeUserSlugs.value.filter((userSlug) => userSlug !== me.value?.slug)
-    console.log('tweetDocId↓')
-    console.log(props.tweet.tweetDocId)
-    console.log('likeUserSlugs.value↓')
-    console.log(likeUserSlugs.value)
-    await destroyLike(props.tweet.tweetDocId)
+    const destroySucceeded = await destroyLike(props.tweet.tweetDocId)
+    if(destroySucceeded) {
+        likeUserSlugs.value = likeUserSlugs.value.filter((userSlug) => userSlug !== me.value?.slug)
+        console.log('tweetDocId↓')
+        console.log(props.tweet.tweetDocId)
+        console.log('likeUserSlugs.value↓')
+        console.log(likeUserSlugs.value)
+    } else {
+        alert('ツイートのいいね取り消しに失敗しました。ツイートが存在しない可能性があります。')
+    }
 }
 
 const { storeRetweet, destroyRetweet } = useRetweet()
@@ -59,12 +67,16 @@ const retweet = async () => {
         alert('既にリツイート済です。')
         return
     }
-    retweetUserSlugs.value.push(me.value.slug)
-    console.log('tweetDocId↓')
-    console.log(props.tweet.tweetDocId)
-    console.log('retweetUserSlugs.value↓')
-    console.log(retweetUserSlugs.value)
-    await storeRetweet(props.tweet.tweetDocId)
+    const storeSucceeded = await storeRetweet(props.tweet.tweetDocId)
+    if(storeSucceeded) {
+        retweetUserSlugs.value.push(me.value.slug)
+        console.log('tweetDocId↓')
+        console.log(props.tweet.tweetDocId)
+        console.log('retweetUserSlugs.value↓')
+        console.log(retweetUserSlugs.value)
+    } else {
+        alert('リツイートに失敗しました。ツイートが存在しない可能性があります。')
+    }
 }
 const cancelRetweet = async () => {
     if (!me.value) {
@@ -74,18 +86,22 @@ const cancelRetweet = async () => {
         alert('リツイートしていないツイートのリツイートを取り消すことはできません。')
         return
     }
-    retweetUserSlugs.value = retweetUserSlugs.value.filter((userSlug) => userSlug !== me.value?.slug)
-    console.log('retweetUserSlugs.value↓')
-    console.log(retweetUserSlugs.value)
     const originalTweetDocId = props.tweet.tweetDocId
-    await destroyRetweet(props.tweetDocId, originalTweetDocId)
+    const destroySucceeded = await destroyRetweet(props.tweetDocId, originalTweetDocId)
+    if (destroySucceeded) {
+        retweetUserSlugs.value = retweetUserSlugs.value.filter((userSlug) => userSlug !== me.value?.slug)
+        console.log('retweetUserSlugs.value↓')
+        console.log(retweetUserSlugs.value)
+    } else {
+        alert('リツイートの取り消しに失敗しました。ツイートが存在しない可能性があります。')
+    }
 }
 </script>
 
 <template>
     <div class="block border-b dark:border-gray-800 px-4 hover:bg-gray-400/5 dark:hover:bg-white/5 py-[6px]">
-        <div>tweetDocId：{{ tweet.tweetDocId }}</div>
-        <div>userSlug：{{ tweet.userInfo.slug }}</div>
+        <!-- <div>tweetDocId：{{ tweet.tweetDocId }}</div>
+        <div>userSlug：{{ tweet.userInfo.slug }}</div> -->
         <!-- リツイート -->
         <div
             v-if="props.retweetedBy"
@@ -157,7 +173,7 @@ const cancelRetweet = async () => {
                     />
                 </div>
                 <!-- 最下段 -->
-                <div class="flex justify-between mt-3 max-w-[27rem]">
+                <div class="flex justify-between mt-3 mx-10 xs:mx-20">
                     <!-- リツイート -->
                     <div class="flex items-center">
                         <!-- リツイート済 -->

@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import { definePageMeta, useHead } from '#imports'
-import { userInfo } from 'os';
 
 definePageMeta({
     middleware: 'auth',
 })
 
-// SEO
-if (user.value) {
-    const title = `${user.value.displayName}(@${user.value.slug})さんがいいねしたツイート / Twinkle`
-    useHead({
-        title: '設定 / Twinkle',
-    })
-}
+// SEO 上書きするものだけ定義
+useHead({
+    title: '設定 / Twinkle',
+    meta: [{property: 'robots', content: 'noindex'}],
+})
+
 </script>
 <template>
     <h1 class="text-xl font-bold px-3 py-3 pb-2">
@@ -66,19 +64,3 @@ if (user.value) {
         </li>
     </ul>
 </template>
-
-<style scoped lang="scss">
-#twinkle-icon {
-    .material-symbols-outlined {
-        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
-    }
-}
-
-.router-link-active {
-    font-weight: 700;
-
-    .material-symbols-outlined {
-        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
-    }
-}
-</style>

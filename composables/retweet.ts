@@ -1,6 +1,6 @@
 import { useAuthByGoogleAccount } from '@/composables/auth'
+import { useTweetSelect } from '@/composables/tweetSelect'
 import { useTweetDelete } from '@/composables/tweetDelete'
-import { Tweet } from '@/composables/types'
 import { getFirestore, writeBatch, collection, serverTimestamp, doc } from 'firebase/firestore'
 
 export const useRetweet = () => {
@@ -12,7 +12,14 @@ export const useRetweet = () => {
         const { me } = useAuthByGoogleAccount()
         if (!me.value) {
             alert('ログインしていないのでリツイートをすることができません')
-            return
+            return false
+        }
+
+        const { doesTweetExists } = useTweetSelect()
+        const exists = await doesTweetExists(originalTweetDocId)
+        if(!exists) { 
+            console.log('ツイートIDが存在しない分岐入った')
+            return false
         }
 
         const db = getFirestore()
@@ -67,9 +74,11 @@ export const useRetweet = () => {
             })
 
             await batch.commit()
+            return true
         } catch (error) {
             console.debug('storeRetweetでエラー発生')
             console.debug(error)
+            return false
         }
     }
 
@@ -78,7 +87,14 @@ export const useRetweet = () => {
         const { me } = useAuthByGoogleAccount()
         if (!me.value) {
             alert('ログインしていないのでリツイートを取り消すことができません')
-            return
+            return false
+        }
+
+        const { doesTweetExists } = useTweetSelect()
+        const exists = await doesTweetExists(originalTweetDocId)
+        if(!exists) { 
+            console.log('ツイートIDが存在しない分岐入った')
+            return false
         }
 
         // リツイート取り消しはツイート削除のようなものなので流用できる
@@ -94,9 +110,11 @@ export const useRetweet = () => {
             batch.delete(retweetUserDocRef)
 
             await batch.commit()
+            return true
         } catch (error) {
             console.debug('destroyRetweetでエラー発生')
             console.debug(error)
+            return false
         }
     }
 

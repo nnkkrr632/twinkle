@@ -1,5 +1,5 @@
 import { getStorage, ref as storageRef, getDownloadURL, uploadBytes, deleteObject } from 'firebase/storage'
-import { getRandomString } from '@/utils/myLibrary'
+import { getRandomString } from '@/utils/helpers'
 
 export const useStorage = () => {
     // private firebase storage から画像を取得
@@ -32,6 +32,14 @@ export const useStorage = () => {
         }
     }
 
+    const getDefaultImageUrl = async (imageFileName: string) => {
+        const imageRef = storageRef(getStorage(), `material-images/${imageFileName}`)
+        const imageUrl = await resolveImageUrl(imageRef.fullPath)
+        console.log('imageUrl↓')
+        console.log(imageUrl)
+        return imageUrl
+    }
+
     const deleteImage = async (imageFullPath: string) => {
         console.log('deleteImage開始')
         const deletingImageRef = storageRef(getStorage(), imageFullPath)
@@ -43,5 +51,5 @@ export const useStorage = () => {
         }
     }
 
-    return { uploadPublicImage, deleteImage }
+    return { uploadPublicImage, deleteImage, getDefaultImageUrl }
 }

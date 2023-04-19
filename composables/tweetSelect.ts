@@ -1,9 +1,17 @@
-import { getDoc, getFirestore, doc, DocumentData, collection, getDocs, query, orderBy } from 'firebase/firestore'
-import { getReadableDate } from '~/utils/myLibrary'
+import { getDoc, getFirestore, doc, collection, getDocs, query, orderBy } from 'firebase/firestore'
+import { getReadableDate } from '~/utils/helpers'
 import type { FirestoreTweet, Tweet, Retweet } from './types'
 
 // ツイート取得
 export const useTweetSelect = () => {
+
+    // ツイートが存在するか確認するバリデーション用メソッド
+    const doesTweetExists = async (tweetDocId: string) => {
+        const docRef = doc(getFirestore(), 'tweets', tweetDocId)
+        const docSnapshot = await getDoc(docRef)
+        return docSnapshot.exists()
+    }
+
     const getRetouchedTweets = async (tweetDocIds: string[]) => {
         console.log('★★getRetouchedTweets。引数のtweetDocIds↓')
         console.log(tweetDocIds)
@@ -104,5 +112,5 @@ export const useTweetSelect = () => {
         return null
     }
 
-    return { getRetouchedTweets }
+    return { getRetouchedTweets, doesTweetExists }
 }

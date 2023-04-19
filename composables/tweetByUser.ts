@@ -40,10 +40,10 @@ export const useTweetsByUser = () => {
                 console.log('ドキュメントない分岐入ってる！！')
                 return null
             }
-            const tweetDocRefs = tweetsQuerySnapshot.docs.map((tweetQueryDocSnapshot) => {
+            const tweetDocIds = tweetsQuerySnapshot.docs.map((tweetQueryDocSnapshot) => {
                 return tweetQueryDocSnapshot.get('tweetDocId') as string
             })
-            return tweetDocRefs
+            return tweetDocIds
         } catch (error) {
             console.log('selectByUser.tsのgetTweetDocIds()でエラー発生。コンソールデバッグ↓')
             console.debug(error)
@@ -68,7 +68,6 @@ export const useTweetsByUser = () => {
                 return []
             }
 
-            // ツイートの参照を取得
             const tweetDocIds = await getTweetDocIds(uid)
             console.log('useAsyncDataでtweetDocIdsとれてる？↓')
             console.log(tweetDocIds)

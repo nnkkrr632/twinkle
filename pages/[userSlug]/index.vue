@@ -24,7 +24,7 @@ useIntersectionObserver(
     }
 )
 
-// SEO
+// SEO 上書きするものだけ定義
 if (user.value) {
     const title = `${user.value.displayName}(@${user.value.slug})さん / Twinkle`
     useHead({
@@ -37,8 +37,6 @@ if (user.value) {
         description: user.value.description,
         ogDescription: user.value.description,
         ogImage: user.value.iconImageUrl,
-        ogSiteName: 'Twinkle',
-        twitterCard: 'summary',
         twitterImage: user.value.iconImageUrl,
         twitterTitle: title,
         twitterDescription: user.value.description,
@@ -60,7 +58,7 @@ if (user.value) {
             <!-- useIntersectionObserver で無限スクロール -->
             <span ref="el" />
         </div>
-        <div v-else class="flex justify-center items-center py-8">
+        <div v-else class="flex justify-center items-center py-8 px-5">
             <div class="flex flex-col justify-center max-w-sm">
                 <p class="text-2xl font-bold">@{{ user.slug }} さんはまだツイートしていません</p>
                 <p class="text-gray-500">ツイートをするとここに表示されます。</p>

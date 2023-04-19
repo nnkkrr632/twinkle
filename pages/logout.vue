@@ -1,6 +1,16 @@
 <script setup lang="ts">
+import { definePageMeta, useHead } from '#imports'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 const { signOut } = useAuthByGoogleAccount()
+
+definePageMeta({
+    middleware: 'auth',
+})
+
+useHead({
+    title: 'ログアウト / Twinkle',
+    meta: [{property: 'robots', content: 'noindex'}],
+})
 </script>
 
 <template>

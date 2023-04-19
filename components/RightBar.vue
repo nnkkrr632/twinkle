@@ -25,8 +25,10 @@ const { users } = useUserAll()
             </div>
         </div>
         <!-- 注釈 -->
-        <div class="w-full px-4 text-gray-500 text-sm">
+        <div class="w-full px-4 text-gray-500 text-sm flex flex-col">
             <span>© 2023 Twinkle @nrpans</span>
+            <span>・GitHub: https://github.com/nnkkrr632/twinkle</span>
+            <span>・NuxtとFirebaseの学習のために作成した個人用サイトです。予告なくアカウントやデータを削除する場合がございます。</span>
             <NuxtLink class="block hover:underline" to="/aaaaa">存在しないユーザーIDテスト：/aaaaa</NuxtLink>
             <NuxtLink class="block hover:underline" to="/settings/aaa">存在しないURLテスト：/settings/aaa</NuxtLink>
         </div>

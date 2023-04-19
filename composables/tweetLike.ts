@@ -1,5 +1,7 @@
 import { doc, getFirestore, serverTimestamp, writeBatch } from 'firebase/firestore'
+import { useTweetSelect } from '@/composables/tweetSelect'
 import { useAuthByGoogleAccount } from '@/composables/auth'
+
 
 export const useLike = () => {
     const { me } = useAuthByGoogleAccount()
@@ -8,11 +10,19 @@ export const useLike = () => {
         console.log('storeLike開始')
         if (!me.value) {
             alert('ログインしていないのでいいねをすることができません')
-            return
+            return false
         }
+
+        const { doesTweetExists } = useTweetSelect()
+        const exists = await doesTweetExists(tweetDocId)
+        if(!exists) { 
+            console.log('ツイートIDが存在しない分岐入った')
+            return false
+        }
+
         const db = getFirestore()
         const batch = writeBatch(db)
-
+        
         try {
             // users/uid/myLikeTweetsSubCollection
             const myLikeTweetDocRef = doc(db, 'users', me.value.uid, 'myLikeTweetsSubCollection', tweetDocId)
@@ -36,9 +46,11 @@ export const useLike = () => {
             })
 
             await batch.commit()
+            return true
         } catch (error) {
             console.debug('storeLike()でエラー発生')
             console.debug(error)
+            return false
         }
     }
 
@@ -46,8 +58,16 @@ export const useLike = () => {
         console.log('destroyLike開始')
         if (!me.value) {
             alert('ログインしていないのでいいねを取り消すことができません')
-            return
+            return false
         }
+
+        const { doesTweetExists } = useTweetSelect()
+        const exists = await doesTweetExists(tweetDocId)
+        if(!exists) { 
+            console.log('ツイートIDが存在しない分岐入った')
+            return false
+        }
+
         const db = getFirestore()
         const batch = writeBatch(db)
 
@@ -60,9 +80,11 @@ export const useLike = () => {
             batch.delete(likeUserDocRef)
 
             await batch.commit()
+            return true
         } catch (error) {
             console.debug('destroyLike()でエラー発生')
             console.debug(error)
+            return false
         }
     }
 

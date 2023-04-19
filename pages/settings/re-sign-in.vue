@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { navigateTo, definePageMeta } from '#imports'
+import { navigateTo, definePageMeta, useHead } from '#imports'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 
 definePageMeta({
@@ -18,6 +18,12 @@ const reSignIn = async () => {
         signOut()
     }
 }
+
+// SEO 上書きするものだけ定義
+useHead({
+    title: 'アカウントを削除-本人確認 / Twinkle',
+    meta: [{property: 'robots', content: 'noindex'}],
+})
 </script>
 
 <template>

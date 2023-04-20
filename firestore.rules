@@ -1,9 +1,60 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if request.auth != null;
+
+    function createTweetFieldsAreValid(tweet) {
+      // ツイートとリツイート共通で持ってるフィールド
+      return tweet.keys().hasAll(['createdAt', 'updatedAt', 'tweetDocId', 'body', 'imageFullPaths', 'imageUrls', 'type', 'userInfo'])
+        && tweet.createdAt is timestamp
+        && tweet.updatedAt is timestamp
+        && tweet.tweetDocId is string
+        && tweet.body is string
+        && tweet.imageFullPaths is list
+        && tweet.imageUrls is list
+        && tweet.type in ['normal', 'retweet']
+        && tweet.userInfo is map
+        && tweet.userInfo.slug is string
+        && tweet.userInfo.displayName is string
+        && tweet.userInfo.description is string
+        && tweet.userInfo.iconImageUrl is string
+        && tweet.userInfo.type in ['normal', 'official'];
     }
+
+    // tweet作成時
+    match /tweets/{tweet} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && createTweetFieldsAreValid(request.resource.data);
+    }
+    match /users/{uid}/myTweetsSubCollection/{tweetDocId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        // tweetsコレクションに存在するtweetDocのIDであること
+        // これをするためにwriteBatchを辞めた (batch.commit()前は存在しない扱いと思われる)
+        // && exists(/databases/$(database)/documents/tweets/$(tweetDocId));
+    }
+
+    match /tweets/{tweet}/retweetUsersSubCollection/{userSlug} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /tweets/{tweet}/likeUsersSubCollection/{userSlug} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // usersコレクション
+    match /users/{uid} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    match /users/{uid}/myLikeTweetsSubCollection/{tweetDocId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
   }
 }
 

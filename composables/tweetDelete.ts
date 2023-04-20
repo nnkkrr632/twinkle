@@ -8,13 +8,19 @@ export const useTweetDelete = () => {
     const deleteTweet = async (tweetDocId: string) => {
         const db = getFirestore()
         const batch = writeBatch(db)
-        const { getRetouchedTweets } = useTweetSelect()
+        const { getRetouchedTweets, doesTweetExists } = useTweetSelect()
         const { deleteImage } = useStorage()
         const { me } = useAuthByGoogleAccount()
 
         if (!me.value) {
             alert('ログインしていません。')
-            return
+            return false
+        }
+
+        const exists = await doesTweetExists(tweetDocId)
+        if(!exists) { 
+            console.log('ツイートIDが存在しない分岐入った')
+            return false
         }
 
         console.log('deleteTweet入った。tweetDocId↓')
@@ -23,9 +29,8 @@ export const useTweetDelete = () => {
         console.log('削除するtweet↓')
         console.log(tweet)
         if (!tweet) {
-            console.log('削除対象のツイートが存在しません。')
-            alert('削除対象のツイートが存在しません。')
-            return
+            // このifには入らない。型定義のため
+            return false
         }
 
         // 画像の削除
@@ -61,9 +66,11 @@ export const useTweetDelete = () => {
             batch.delete(myTweetDocRef)
 
             await batch.commit()
+            return true
         } catch (error) {
             console.log('deleteTweetでエラー発生')
             console.debug(error)
+            return false
         }
     }
 

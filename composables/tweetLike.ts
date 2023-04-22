@@ -35,6 +35,7 @@ export const useLike = () => {
             const likeUserDocRef = doc(db, 'tweets', tweetDocId, 'likeUsersSubCollection', me.value.slug)
             batch.set(likeUserDocRef, {
                 userInfo: {
+                    uid: me.value.uid,
                     slug: me.value.slug,
                     displayName: me.value.displayName,
                     description: me.value.description,

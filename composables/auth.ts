@@ -31,11 +31,6 @@ export const useAuthByGoogleAccount = () => {
         try {
             const randomSlug = getRandomString()
             // users/uid
-            await setDoc(doc(db, 'users', `${user.uid}`), {
-                slug: randomSlug,
-            })
-
-            // users/uid
             await setDoc(doc(db, 'users', user.uid), {
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),

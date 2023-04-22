@@ -42,25 +42,26 @@ export const useTweetDelete = () => {
         }
 
         try {
-            // 親ドキュメントを削除してもサブコレクションは削除されない。個別に削除する
-            // ※ writebatchの500 制限を考慮していない。
-
             // tweetsコレクション側
             batch.delete(doc(db, 'tweets', tweetDocId))
-            // tweets/xxx/retweetUsersSubCollection
-            const retweetUsersSubCollectionColRef = collection(db, 'tweets', tweetDocId, 'retweetUsersSubCollection')
-            const retweetUsersQuerySnapshot = await getDocs(retweetUsersSubCollectionColRef)
-            retweetUsersQuerySnapshot.forEach((queryDocSnapshot) => {
-                const docRef = queryDocSnapshot.ref
-                batch.delete(docRef)
-            })
-            // tweets/xxx/likeUsersSubCollection
-            const likeUsersSubCollectionColRef = collection(db, 'tweets', tweetDocId, 'likeUsersSubCollection')
-            const likeUsersColSnapshot = await getDocs(likeUsersSubCollectionColRef)
-            likeUsersColSnapshot.forEach((queryDocSnapshot) => {
-                const docRef = queryDocSnapshot.ref
-                batch.delete(docRef)
-            })
+            // セキュリティルールの都合上、(1)(2)の削除を辞める
+            // (1)tweets/xxx/retweetUsersSubCollection (2)/tweets/xxx/likeUsersSubCollection
+            // (1)(2)のサブコレクションに対するセキュリティルールを「自分のuserSlugのドキュメントだけを削除できる」にするため。
+            // ↓を許可するセキュリティルールにすると、リツイートorいいね取り消しのときに他人のリツイートorいいねを取り消せてしまう
+            // // tweets/xxx/retweetUsersSubCollection
+            // const retweetUsersSubCollectionColRef = collection(db, 'tweets', tweetDocId, 'retweetUsersSubCollection')
+            // const retweetUsersQuerySnapshot = await getDocs(retweetUsersSubCollectionColRef)
+            // retweetUsersQuerySnapshot.forEach((queryDocSnapshot) => {
+            //     const docRef = queryDocSnapshot.ref
+            //     batch.delete(docRef)
+            // })
+            // // tweets/xxx/likeUsersSubCollection
+            // const likeUsersSubCollectionColRef = collection(db, 'tweets', tweetDocId, 'likeUsersSubCollection')
+            // const likeUsersColSnapshot = await getDocs(likeUsersSubCollectionColRef)
+            // likeUsersColSnapshot.forEach((queryDocSnapshot) => {
+            //     const docRef = queryDocSnapshot.ref
+            //     batch.delete(docRef)
+            // })
             // usersコレクション側
             const myTweetDocRef = doc(db, 'users', me.value.uid, 'myTweetsSubCollection', tweetDocId)
             batch.delete(myTweetDocRef)

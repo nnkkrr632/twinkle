@@ -39,6 +39,7 @@ export const useRetweet = () => {
                 imageUrls: [],
                 type: 'retweet',
                 userInfo: {
+                    uid: me.value.uid,
                     slug: me.value.slug,
                     displayName: me.value.displayName,
                     description: me.value.description,
@@ -63,6 +64,7 @@ export const useRetweet = () => {
             const retweetUserDocRef = doc(db, 'tweets', originalTweetDocId, 'retweetUsersSubCollection', me.value.slug)
             batch.set(retweetUserDocRef, {
                 userInfo: {
+                    uid: me.value.uid,
                     slug: me.value.slug,
                     displayName: me.value.displayName,
                     description: me.value.description,

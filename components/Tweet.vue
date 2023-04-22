@@ -100,8 +100,8 @@ const cancelRetweet = async () => {
 
 <template>
     <div class="block border-b dark:border-gray-800 px-4 hover:bg-gray-400/5 dark:hover:bg-white/5 py-[6px]">
-        <!-- <div>tweetDocId：{{ tweet.tweetDocId }}</div>
-        <div>userSlug：{{ tweet.userInfo.slug }}</div> -->
+        <div>tweetDocId：{{ tweet.tweetDocId }}</div>
+        <div>userSlug：{{ tweet.userInfo.slug }}</div>
         <!-- リツイート -->
         <div
             v-if="props.retweetedBy"
@@ -224,7 +224,7 @@ const cancelRetweet = async () => {
                     </div>
                     <!-- 削除 ※リツイートの場合は押せない。リツイートは取り消しに限定する。-->
                     <div
-                        v-if="me && me.slug === tweet.userInfo.slug"
+                        
                         class="flex items-center"
                     >
                         <!-- アイコン正円 -->

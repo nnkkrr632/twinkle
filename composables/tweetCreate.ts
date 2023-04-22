@@ -111,6 +111,7 @@ export const useCreateTweet = () => {
                 imageUrls: tweetDraft.imageUrls,
                 type: 'normal',
                 userInfo: {
+                    uid: me.value.uid,
                     slug: me.value.slug,
                     displayName: me.value.displayName,
                     description: me.value.description,

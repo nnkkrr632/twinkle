@@ -25,6 +25,7 @@ export type UserProfileDraft = {
 
 // 各ツイートに表示されるような簡易ユーザー情報
 export type UserInfo = {
+    uid: string
     slug: string
     displayName: string
     description: string
@@ -65,6 +66,7 @@ export type FirestoreTweet = DocumentData & {
     imageUrls: string[]
     type: 'normal' | 'retweet'
     originalTweetDocId?: string
+    uid: string
     userInfo: UserInfo
     // 以下サブコレクション
     // likeUsersSubCollection

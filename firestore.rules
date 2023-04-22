@@ -1,6 +1,58 @@
-rules_version = '2';
+rules_version = '2'
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // すべての コレクション & サブコレクション で読み取りは許可
+    match /users/{uid} {
+      allow read: if true
+    }
+    match /users/{uid}/myTweetsSubCollection/{tweetDocId} {
+      allow read: if true
+    }
+    match /users/{uid}/myLikeTweetsSubCollection/{tweetDocId} {
+      allow read: if true
+    }
+    match /tweets/{tweetDocId} {
+      allow read: if true
+    }
+    match /tweets/{tweetDocId}/likeUsersSubCollection/{userSlug} {
+      allow read: if true
+    }
+    match /tweets/{tweetDocId}/retweetUsersSubCollection/{userSlug} {
+      allow read: if true
+    }
+
+    // 【ユーザー登録】
+    match /users/{uid} {
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.uid
+    }
+
+    function editProfileFieldsAreValid(user) {
+      return user.keys().hasAll(['headerImageFullPath', 'iconImageFullPath', 'headerImageUrl', 'iconImageUrl', 'displayName', 'description', 'place', 'link', 'updatedAt'])
+        && user.headerImageFullPath is string
+        && user.iconImageFullPath is string
+        && user.headerImageUrl is string
+        && user.iconImageUrl is string
+        && user.displayName is string
+        && user.description is string
+        && user.place is string
+        && user.link is string
+        && user.updatedAt is timestamp
+    }
+    // 【プロフィール更新・アカウント削除】
+    match /users/{uid} {
+      // アカウント削除
+      allow delete: if request.auth != null
+        && request.auth.uid == uid
+      allow update: if request.auth != null
+        && request.auth.uid == uid
+        && editProfileFieldsAreValid(request.resource.data)
+    }
+
+    // 自分だけが自分のusers/uidドキュメントに書き込むものに関しては、(1)(2)だけでよさそう
+    // (1)ログインしていること
+    // (2)uidがusers/uidと一致
 
     function createTweetFieldsAreValid(tweet) {
       // ツイートとリツイート共通で持ってるフィールド
@@ -13,46 +65,72 @@ service cloud.firestore {
         && tweet.imageUrls is list
         && tweet.type in ['normal', 'retweet']
         && tweet.userInfo is map
+        && tweet.userInfo.uid is string
         && tweet.userInfo.slug is string
         && tweet.userInfo.displayName is string
         && tweet.userInfo.description is string
         && tweet.userInfo.iconImageUrl is string
-        && tweet.userInfo.type in ['normal', 'official'];
+        && tweet.userInfo.type in ['normal', 'official']
     }
 
-    // tweet作成時
-    match /tweets/{tweet} {
-      allow read: if true;
+    // 【ツイート時】
+    // tweets/xxx
+    match /tweets/{tweetDocId} {
+      // ツイート
       allow create: if request.auth != null
-        && createTweetFieldsAreValid(request.resource.data);
+        && createTweetFieldsAreValid(request.resource.data)
+        && request.auth.uid == request.resource.data.userInfo.uid
+      // ツイート削除
+      allow delete: if request.auth != null
+        && request.auth.uid == get(/databases/$(database)/documents/tweets/$(tweetDocId)).data.userInfo.uid
     }
+    // myTweetsSubCollection
     match /users/{uid}/myTweetsSubCollection/{tweetDocId} {
-      allow read: if true;
+      // ツイート
       allow create: if request.auth != null
         && request.auth.uid == uid
         // tweetsコレクションに存在するtweetDocのIDであること
-        // これをするためにwriteBatchを辞めた (batch.commit()前は存在しない扱いと思われる)
-        // && exists(/databases/$(database)/documents/tweets/$(tweetDocId));
+        // writeBatchだからできない (batch.commit()前は存在しない扱いと思われる)
+        // && exists(/databases/$(database)/documents/tweets/$(tweetDocId))
+      // ツイート削除
+      allow delete: if request.auth != null
+        && request.auth.uid == uid
     }
 
-    match /tweets/{tweet}/retweetUsersSubCollection/{userSlug} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /tweets/{tweet}/likeUsersSubCollection/{userSlug} {
-      allow read: if true;
-      allow write: if request.auth != null;
+    // 【リツイート時】
+    // tweetsコレクションへのドキュメント追加は(1)(2)で定義した
+    // (1)match /tweets/{tweetDocId} allow create:
+    // (2)match /users/{uid}/myTweetsSubCollection/{tweetDocId} allow create:
+    // リツイートもtypeフィールドが「retweet」なツイートであるため、セキュリティルールが共通となる。
+
+    // retweetUsersSubCollection
+    match /tweets/{tweetDocId}/retweetUsersSubCollection/{userSlug} {
+      // リツイート
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.userInfo.uid
+      // リツイート取り消し
+      allow delete: if request.auth != null
+        && request.auth.uid == get(/databases/$(database)/documents/tweets/$(tweetDocId)/likeUsersSubCollection/$(userSlug)).data.userInfo.uid
     }
 
-    // usersコレクション
-    match /users/{uid} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-
+    // 【いいね時】
+    // myLikeTweetsSubCollection
     match /users/{uid}/myLikeTweetsSubCollection/{tweetDocId} {
-      allow read: if true;
-      allow write: if request.auth != null;
+      // いいね
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+      // いいね取り消し
+      allow delete: if request.auth != null
+        && request.auth.uid == uid
+    }
+    // likeUsersSubCollection
+    match /tweets/{tweetDocId}/likeUsersSubCollection/{userSlug} {
+      // いいね
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.userInfo.uid
+      // いいね取り消し
+      allow delete: if request.auth != null
+        && request.auth.uid == get(/databases/$(database)/documents/tweets/$(tweetDocId)/likeUsersSubCollection/$(userSlug)).data.userInfo.uid
     }
 
   }

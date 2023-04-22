@@ -36,9 +36,9 @@ const { users } = useUserAll()
         <div class="w-full px-4 text-gray-500 text-sm flex flex-col gap-1">
             <span>・NuxtとFirebaseの学習のために作成した個人用サイトです。予告なくアカウントやデータを削除する場合がございます。</span>
             <a
-            href="https://github.com/nnkkrr632/twinkle"
-            target="_blank"
-            class="block hover:underline"
+                href="https://github.com/nnkkrr632/twinkle"
+                target="_blank"
+                class="block hover:underline"
             >・GitHub: https://github.com/nnkkrr632/twinkle</a>
             <span>© 2023 Twinkle @nrpans</span>
         </div>

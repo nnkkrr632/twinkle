@@ -9,13 +9,8 @@ const { deleteTweet } = useTweetDelete()
 const deleteButtonText = ref<string>('削除')
 const deleteAndCloseModal = async (tweetDocId: string) => {
     deleteButtonText.value = '...削除中'
-    const succeeded = await deleteTweet(tweetDocId)
-    if(succeeded) {
-        closeModal()
-    } else {
-        alert('ツイートの削除に失敗しました。ツイートが存在しない可能性があります。')
-        closeModal()
-    }
+    await deleteTweet(tweetDocId)
+    closeModal()
     deleteButtonText.value = '削除'
 }
 </script>

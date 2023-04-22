@@ -19,6 +19,7 @@ const retweetUserSlugs = ref(props.tweet.retweetUserSlugs)
 const { storeLike, destroyLike } = useLike()
 const like = async () => {
     if (!me.value) {
+        alert('いいねをするにはログインが必要です。')
         return
     }
     const storeSucceeded = await storeLike(props.tweet.tweetDocId)
@@ -42,39 +43,27 @@ const retweet = async () => {
         alert('リツイートをするにはログインが必要です。')
         return
     }
-    if (retweetUserSlugs.value.includes(me.value.slug)) {
-        alert('既にリツイート済です。')
-        return
-    }
     const storeSucceeded = await storeRetweet(props.tweet.tweetDocId)
     if(storeSucceeded) {
         retweetUserSlugs.value.push(me.value.slug)
-    } else {
-        alert('リツイートに失敗しました。ツイートが存在しない可能性があります。')
     }
 }
 const cancelRetweet = async () => {
     if (!me.value) {
         return
     }
-    if (!retweetUserSlugs.value.includes(me.value.slug)) {
-        alert('リツイートしていないツイートのリツイートを取り消すことはできません。')
-        return
-    }
     const originalTweetDocId = props.tweet.tweetDocId
     const destroySucceeded = await destroyRetweet(props.tweetDocId, originalTweetDocId)
     if (destroySucceeded) {
         retweetUserSlugs.value = retweetUserSlugs.value.filter((userSlug) => userSlug !== me.value?.slug)
-    } else {
-        alert('リツイートの取り消しに失敗しました。ツイートが存在しない可能性があります。')
     }
 }
 </script>
 
 <template>
     <div class="block border-b dark:border-gray-800 px-4 hover:bg-gray-400/5 dark:hover:bg-white/5 py-[6px]">
-        <div>tweetDocId：{{ tweet.tweetDocId }}</div>
-        <div>userSlug：{{ tweet.userInfo.slug }}</div>
+        <!-- <div>tweetDocId：{{ tweet.tweetDocId }}</div>
+        <div>userSlug：{{ tweet.userInfo.slug }}</div> -->
         <!-- リツイート -->
         <div
             v-if="props.retweetedBy"
@@ -197,7 +186,7 @@ const cancelRetweet = async () => {
                     </div>
                     <!-- 削除 ※リツイートの場合は押せない。リツイートは取り消しに限定する。-->
                     <div
-                        
+                        v-if="me && me.slug === tweet.userInfo.slug"
                         class="flex items-center"
                     >
                         <!-- アイコン正円 -->

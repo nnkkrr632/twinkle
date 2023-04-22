@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from '#imports'
 import { useEditProfile } from '@/composables/userEditProfile'
 import { useEditProfileModal } from '@/composables/modal'
 import { onKeyStroke } from '@vueuse/core'
@@ -10,6 +11,15 @@ const { profileDraft, selectHeaderImage, deselectHeaderImage, selectIconImage, i
 onKeyStroke('Escape', (e) => {
     closeModal()
 })
+
+const buttonText = ref<string>('保存')
+const editAndCloseModal = async () => {
+    buttonText.value = '...保存中'
+    await edit()
+    closeModal()
+    buttonText.value = '保存'
+}
+
 </script>
 
 <template>
@@ -20,7 +30,7 @@ onKeyStroke('Escape', (e) => {
     >
         <!-- モーダルコンテンツ -->
         <div
-            class="bg-white dark:bg-black w-[37rem] h-max opacity-100 mt-20 rounded-2xl py-3 z-30"
+            class="h-max bg-white dark:bg-black w-[37rem] opacity-100 xs:mt-20 xs:rounded-2xl py-3 z-30"
             @click="
                 (event) => {
                     event.stopPropagation()
@@ -42,12 +52,12 @@ onKeyStroke('Escape', (e) => {
                 <!-- 保存 -->
                 <div class="flex items-center">
                     <button
-                        class="bg-black dark:bg-white px-3 py-1 rounded-full text-gray-200 dark:text-gray-700 font-semibold"
+                        class="bg-black dark:bg-white w-24 py-1 rounded-full text-gray-200 dark:text-gray-700 font-semibold"
                         :class="!isValidEdit ? 'opacity-30' : 'hover:bg-black/80 dark:hover:bg-white/80'"
                         :disabled="!isValidEdit"
-                        @click="edit"
+                        @click="editAndCloseModal"
                     >
-                        保存
+                        {{ buttonText }}
                     </button>
                 </div>
             </div>

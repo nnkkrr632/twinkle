@@ -1,7 +1,14 @@
 <script setup lang="ts">
+import { ref } from '#imports'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 
 const { googleSignUp } = useAuthByGoogleAccount()
+const googleButton = ref<string>('/images/btn_google_signin_light_normal_web@2x.png')
+const googleSignUpWithOfficialButton = async () => {
+    googleButton.value = '/images/btn_google_signin_light_pressed_web@2x.png'
+    await googleSignUp()
+    googleButton.value = '/images/btn_google_signin_light_normal_web@2x.png'
+}
 </script>
 
 <template>
@@ -10,18 +17,13 @@ const { googleSignUp } = useAuthByGoogleAccount()
             Twinkleを使ってみよう
         </div>
         <span class="text-gray-500 text-sm pt-3">今すぐ登録して、タイムラインをカスタマイズしましょう。</span>
-        <!-- ログインボタンs -->
-        <div class="flex flex-wrap flex-col m-3 text-black">
-            <button
-                class="bg-white hover:bg-gray-100 border-2 dark:border-gray-800 py-2 flex items-center gap-2 justify-center rounded-full"
-                @click="googleSignUp"
-            >
-                <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/24px-Google_%22G%22_Logo.svg.png"
-                    class="w-5 aspect-square"
-                />
-                <span>Google で登録 / ログイン</span>
-            </button>
+        <div class="flex justify-center items-center">
+            <img
+                :src="googleButton"
+                alt="Googleで登録/ログイン"
+                class="h-12 mt-2 mb-1 object-contain cursor-pointer"
+                @click="googleSignUpWithOfficialButton"
+            />
         </div>
     </div>
 </template>

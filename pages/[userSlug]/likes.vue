@@ -15,7 +15,7 @@ const el = ref<HTMLElement>(null)
 useIntersectionObserver(
     el,
     () => {
-        console.debug('スクロールによるツイート取得更新')
+        // console.debug('スクロールによるツイート取得更新')
         addOldTweets()
     },
     {

@@ -46,8 +46,6 @@ export const useTweetsByAll = () => {
     })
 
     const addOldTweets = async () => {
-        console.debug('■■addOldTweets開始')
-
         try {
             if (tweets.value?.length === 0) {
                 return

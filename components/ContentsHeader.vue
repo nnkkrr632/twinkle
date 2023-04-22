@@ -3,7 +3,7 @@ defineProps<{ title: string; subTitle?: string }>()
 </script>
 
 <template>
-    <header class="z-10 sticky top-0 w-full h-12 bg-white/50 dark:bg-black/50">
+    <header class="z-10 sticky top-0 w-full h-12 bg-white/50 dark:bg-black/50 backdrop-blur-sm backdrop-grayscale">
         <!-- (1)矢印 (2)タイトル&サブタイトル (3)スロット のflex -->
         <div class="px-3 h-full flex items-center">
             <!-- (1)矢印 -->

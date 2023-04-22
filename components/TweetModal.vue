@@ -5,7 +5,7 @@ import { useCreateTweetModal } from '@/composables/modal'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { onKeyStroke, useFocus } from '@vueuse/core'
 
-const { tweetDraft, deselectImage, selectImages, isValidTweet, tweet } = useCreateTweet()
+const { tweetDraft, deselectImage, selectImages, isValidTweet, maxTextCount, tweet } = useCreateTweet()
 const { visible, closeModal } = useCreateTweetModal()
 const { me } = useAuthByGoogleAccount()
 
@@ -33,7 +33,7 @@ const tweetAndCloseModal = async () => {
     >
         <!-- モーダルコンテンツ -->
         <div
-            class="bg-white dark:bg-black w-[37rem] h-max opacity-100 mt-20 rounded-2xl px-4 py-3 z-30"
+            class="bg-white dark:bg-black w-[37rem] h-screen xs:h-max opacity-100 xs:mt-20 xs:rounded-2xl px-4 py-3 z-30"
             @click="
                 (event) => {
                     event.stopPropagation()
@@ -66,7 +66,7 @@ const tweetAndCloseModal = async () => {
                         ref="tweetDraftTextarea"
                         v-model="tweetDraft.body"
                         placeholder="いまどうしてる？"
-                        class="h-64 lg:h-40 text-xl resize-none outline-none dark:bg-black"
+                        class="h-48 text-xl resize-none outline-none dark:bg-black"
                     />
                     <!-- 縦flex(2) 画像プレビュー -->
                     <div
@@ -124,9 +124,9 @@ const tweetAndCloseModal = async () => {
                                 <span v-if="tweetDraft.body.length === 0">0</span>
                                 <span
                                     v-else
-                                    :class="tweetDraft.body.length < 11 ? 'text-amber-500/90' : 'text-red-500/90'"
+                                    :class="tweetDraft.body.length <= maxTextCount ? 'text-amber-500/90' : 'text-red-500/90'"
                                 >{{ tweetDraft.body.length }}</span>
-                                /10
+                                /{{ maxTextCount }}
                             </div>
                             <button
                                 class="px-4 py-1 text-white text-base bg-amber-500/90 rounded-full"

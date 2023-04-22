@@ -16,29 +16,17 @@ const { me, googleSignUp } = useAuthByGoogleAccount()
     >
         <!-- アイコン正円 -->
         <button
-            class="xl:hidden bg-amber-500/90 w-[52px] h-[52px] flex justify-center items-center rounded-full hover:bg-amber-500"
+            class="xl:hidden bg-amber-500/90 w-[52px] h-[52px] flex justify-center items-center rounded-full hover:bg-amber-500 backdrop-blur-sm"
             @click="openModal"
         >
             <span class="material-symbols-outlined text-3xl text-white">auto_fix</span>
         </button>
     </section>
-    <!-- ログインセクション -->
-    <section
-        v-else
-        class="bg-white/50 dark:bg-black/50 flex justify-center w-full border-t dark:border-gray-800 py-[2px]"
+
+    <ul
+        class="bg-white/50 dark:bg-black/50 w-full h-14 flex items-center backdrop-blur-sm backdrop-grayscale"
+        :class="me && me.value? 'border-t dark:border-gray-800' : ''"
     >
-        <button
-            class="flex items-center gap-2 justify-center py-1 w-full"
-            @click="googleSignUp"
-        >
-            <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/24px-Google_%22G%22_Logo.svg.png"
-                class="w-5 aspect-square"
-            />
-            <span class="dark:text-white text-sm">Google で登録 / ログイン</span>
-        </button>
-    </section>
-    <ul class="bg-white/50 dark:bg-black/50 w-full h-14 flex items-center border-t dark:border-gray-800">
         <!-- ホーム -->
         <li class="flex justify-center w-full h-full">
             <NuxtLink

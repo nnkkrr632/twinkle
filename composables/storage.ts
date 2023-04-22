@@ -27,12 +27,6 @@ export const useStorage = () => {
         }
     }
 
-    const getDefaultImageUrl = async (imageFileName: string) => {
-        const imageRef = storageRef(getStorage(), `material-images/${imageFileName}`)
-        const imageUrl = await resolveImageUrl(imageRef.fullPath)
-        return imageUrl
-    }
-
     const deleteImage = async (imageFullPath: string) => {
         const deletingImageRef = storageRef(getStorage(), imageFullPath)
         try {
@@ -43,5 +37,5 @@ export const useStorage = () => {
         }
     }
 
-    return { uploadPublicImage, deleteImage, getDefaultImageUrl }
+    return { uploadPublicImage, deleteImage }
 }

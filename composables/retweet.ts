@@ -1,7 +1,8 @@
+import { useRoute } from '#imports'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { useTweetSelect } from '@/composables/tweetSelect'
 import { useTweetDelete } from '@/composables/tweetDelete'
-import { getFirestore, writeBatch, collection, serverTimestamp, doc } from 'firebase/firestore'
+import { getFirestore, writeBatch, collection, serverTimestamp, doc, getDoc } from 'firebase/firestore'
 
 export const useRetweet = () => {
 
@@ -9,13 +10,23 @@ export const useRetweet = () => {
     const storeRetweet = async (originalTweetDocId: string) => {
         const { me } = useAuthByGoogleAccount()
         if (!me.value) {
-            alert('ログインしていないのでリツイートをすることができません')
+            alert('ログインしていないのでリツイートをすることができません。')
             return false
         }
 
         const { doesTweetExists } = useTweetSelect()
         const exists = await doesTweetExists(originalTweetDocId)
-        if(!exists) { 
+        if(!exists) {
+            // アカウント削除時(= ルート: settings/delete)は表示しない
+            const route = useRoute()
+            if(!route.path.includes('settings'))
+            alert('ツイートが存在しません。既に削除されている可能性があります。\n画面の更新をお試しください。')
+            return false
+        }
+
+        const isRetweeted = await isAlreadyRetweeted(originalTweetDocId)
+        if(isRetweeted) {
+            alert('既にリツイートしています。画面の再読込をお試しください。')
             return false
         }
 
@@ -76,6 +87,7 @@ export const useRetweet = () => {
         } catch (error) {
             console.debug('useRetweet()のstoreRetweet()でエラー発生')
             console.error(error)
+            alert('何かしらの理由によりリツイートに失敗しました。')
             return false
         }
     }
@@ -83,13 +95,23 @@ export const useRetweet = () => {
     const destroyRetweet = async (tweetDocId: string, originalTweetDocId: string) => {
         const { me } = useAuthByGoogleAccount()
         if (!me.value) {
-            alert('ログインしていないのでリツイートを取り消すことができません')
+            alert('ログインしていないのでリツイートを取り消すことができません。')
             return false
         }
 
         const { doesTweetExists } = useTweetSelect()
         const exists = await doesTweetExists(originalTweetDocId)
-        if(!exists) { 
+        if(!exists) {
+            // アカウント削除時(= ルート: settings/delete)は表示しない
+            const route = useRoute()
+            if(!route.path.includes('settings'))
+            alert('ツイートが存在しません。既に削除されている可能性があります。\n画面の更新をお試しください。')
+            return false
+        }
+
+        const isRetweeted = await isAlreadyRetweeted(originalTweetDocId)
+        if(!isRetweeted) {
+            alert('既にリツイートを取り消してる可能性があります。画面の再読込をお試しください。')
             return false
         }
 
@@ -110,8 +132,22 @@ export const useRetweet = () => {
         } catch (error) {
             console.debug('useRetweet()のdestroyRetweet()でエラー発生')
             console.error(error)
+            alert('何かしらの理由によりリツイートの取り消しに失敗しました。')
             return false
         }
+    }
+
+    // 既にいいね済みかのバリデーション
+    const isAlreadyRetweeted = async (originalTweetDocId: string) => {
+        const { me } = useAuthByGoogleAccount()
+        if (!me.value) {
+            alert('ログインしていないのでリツイート済みか判定できません。')
+            return false
+        }
+        // tweets/xxx/retweetUsersSubCollection
+        const docRef = doc(getFirestore(), 'tweets', originalTweetDocId, 'retweetUsersSubCollection', me.value.slug)
+        const myLikeTweetSnapshot = await getDoc(docRef)
+        return myLikeTweetSnapshot.exists()
     }
 
     return { storeRetweet, destroyRetweet }

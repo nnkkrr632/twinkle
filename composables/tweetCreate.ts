@@ -29,17 +29,18 @@ export const useCreateTweet = () => {
         tweetDraft.imagePreviewUrls.splice(index, 1)
     }
 
+    const maxTextCount = 100
     const isValidTweet = computed(() => {
         if (tweetDraft.images.length) {
-            return tweetDraft.images.length < 5 && tweetDraft.body.length < 11
+            return tweetDraft.images.length < 5 && tweetDraft.body.length <= maxTextCount
         }
-        return tweetDraft.body.length > 0 && tweetDraft.body.length < 11
+        return tweetDraft.body.length > 0 && tweetDraft.body.length <= maxTextCount
     })
 
     const uploadTweetImages = async () => {
         const { me } = useAuthByGoogleAccount()
         if (!me.value) {
-            alert('ログインしていないので画像をアップロードすることができません')
+            alert('ログインしていないので画像をアップロードすることができません。')
             return
         }
         const { uploadPublicImage } = useStorage()
@@ -63,7 +64,7 @@ export const useCreateTweet = () => {
     const tweet = async () => {
         const { me } = useAuthByGoogleAccount()
         if (!me.value) {
-            alert('ログインしていないのでツイートすることができません')
+            alert('ログインしていないのでツイートすることができません。')
             return
         }
         
@@ -121,5 +122,5 @@ export const useCreateTweet = () => {
             console.error(error)
         }
     }
-    return { tweetDraft, deselectImage, selectImages, isValidTweet, tweet }
+    return { tweetDraft, deselectImage, selectImages, isValidTweet, maxTextCount, tweet }
 }

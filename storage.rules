@@ -2,10 +2,6 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
-    match /material-images/{image} {
-      allow read: if true
-    }
-
     // https://zenn.dev/sgr_ksmt/articles/e6e7dfaf1851d1
     function isValidContentType(contentType) {
       return contentType in ['image/png', 'image/jpg', 'image/jpeg', 'image/gif'];

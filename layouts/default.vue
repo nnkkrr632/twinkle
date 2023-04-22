@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useHead, useSeoMeta } from '#imports'
+import { useHead, useSeoMeta, ref } from '#imports'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 
 const { me, googleSignUp } = useAuthByGoogleAccount()
@@ -7,7 +7,15 @@ const { me, googleSignUp } = useAuthByGoogleAccount()
 // SEO layouts/default.vueで定義されたものはすべてのページで使用できる。各ページで再定義することで上書きできる
 const defaultTitle = 'Twinkle'
 const defaultDescription = 'NuxtとFirebaseで作成されたTwitterクローンサイト「Twinkle」です。'
-const twinkleImageUrl = 'https://firebasestorage.googleapis.com/v0/b/twinkle-d72d6.appspot.com/o/material-images%2Ftwinkle.png?alt=media'
+const twinkleImageUrl = `${window.location.href}/images/twinkle.png`
+
+const googleButton = ref<string>('/images/btn_google_signin_light_normal_web@2x.png')
+const googleSignUpWithOfficialButton = async () => {
+    googleButton.value = '/images/btn_google_signin_light_pressed_web@2x.png'
+    await googleSignUp()
+    googleButton.value = '/images/btn_google_signin_light_normal_web@2x.png'
+}
+
 useHead({
     title: defaultTitle,
     meta: [{ property: 'description', content: defaultDescription }],
@@ -46,34 +54,35 @@ useSeoMeta({
             </aside>
         </div>
         <!-- SPビュー フッターメニューバー -->
-        <footer class="fixed bottom-0 xs:hidden w-full">
+        <footer
+            class="fixed bottom-0 xs:hidden w-full"
+            :class="me && me.value ? 'bottom-0' : 'bottom-16'"
+        >
             <Footbar />
         </footer>
         <!-- ログインバー PCビュー 左バー+コンテンツ+右バー の中央寄せのwidthに影響されずwindow幅 -->
         <div
             v-if="!me"
-            class="fixed bottom-0 hidden xs:flex justify-around items-center w-full bg-amber-500 h-[72px]"
+            class="fixed bottom-0 flex justify-around items-center w-full bg-amber-500 h-16"
         >
             <!-- テキストとログインボタンのflex -->
-            <div class="flex items-center justify-center gap-[10%] w-full px-20 md:px-10">
-                <div class="hidden md:flex flex-col text-white">
-                    <p class="text-2xl font-bold">
+            <div class="flex items-center justify-center gap-1 md:gap-[10%] w-full h-full">
+                <div class="hidden xs:flex flex-col text-white">
+                    <p class="text-lg md:text-2xl font-bold">
                         「いま」起きていることを見つけよう
                     </p>
-                    <p class="">
-                        Twinkleなら、「いま」起きていることをいち早くチェックできます。
+                    <p class="text-xs md:text-base">
+                        Twinkleなら「いま」起きていることをいち早くチェックできます。
                     </p>
                 </div>
-                <button
-                    class="w-full md:w-auto bg-white hover:bg-gray-200 border px-4 py-[6px] text-black flex items-center justify-center gap-2 rounded-full"
-                    @click="googleSignUp"
-                >
+                <div class="h-full flex justify-center items-center">
                     <img
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/24px-Google_%22G%22_Logo.svg.png"
-                        class="w-5 aspect-square"
+                        :src="googleButton"
+                        alt="Googleで登録/ログイン" 
+                        class="h-12 object-contain cursor-pointer"
+                        @click="googleSignUpWithOfficialButton"
                     />
-                    <span>Google で登録 / ログイン</span>
-                </button>
+                </div>
             </div>
         </div>
         <!-- モーダル -->

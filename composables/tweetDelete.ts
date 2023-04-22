@@ -1,3 +1,4 @@
+import { useRoute } from '#imports'
 import { doc, getFirestore, writeBatch } from 'firebase/firestore'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { useStorage } from '@/composables/storage'
@@ -18,7 +19,11 @@ export const useTweetDelete = () => {
         }
 
         const exists = await doesTweetExists(tweetDocId)
-        if(!exists) { 
+        if(!exists) {
+            // アカウント削除時(= ルート: settings/delete)は表示しない
+            const route = useRoute()
+            if(!route.path.includes('settings'))
+            alert('ツイートが存在しません。既に削除されている可能性があります。\n画面の更新をお試しください。')
             return false
         }
 
@@ -64,6 +69,7 @@ export const useTweetDelete = () => {
         } catch (error) {
             console.debug('useTweetDelete()のdeleteTweet()でエラー発生')
             console.error(error)
+            alert('何かしらの理由によりリツイートに失敗しました。')
             return false
         }
     }

@@ -40,8 +40,8 @@ export const useTweetSelect = () => {
                 const tweet = tweetDocSnapshot.data() as FirestoreTweet | undefined
                 if (!tweet) {
                     // 例えば、myLikeTweetsSubCollectionにあるTweetDocIdのツイートがツイート者によって消されていたときここに入る
-                    console.debug('指定されたTweetDocIdのドキュメントが存在しません。tweetDocId↓')
-                    console.debug(tweetDocId)
+                    // console.debug('指定されたTweetDocIdのドキュメントが存在しません。tweetDocId↓')
+                    // console.debug(tweetDocId)
                     continue
                 }
                 tweets.push(tweet)

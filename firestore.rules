@@ -23,11 +23,28 @@ service cloud.firestore {
     }
 
     // 【ユーザー登録】
+    function createUserFieldsAreValid(user) {
+      return user.keys().hasAll(['createdAt', 'updatedAt', 'uid', 'slug', 'displayName', 'description', 'link', 'place', 'type', 'iconImageFullPath', 'headerImageFullPath', 'iconImageUrl', 'headerImageUrl'])
+      && user.createdAt is timestamp
+      && user.updatedAt is timestamp
+      && user.slug is string
+      && user.displayName is string
+      && user.description is string
+      && user.link is string
+      && user.place is string
+      && user.type == 'normal'
+      && user.iconImageFullPath is string
+      && user.headerImageFullPath is string
+      && user.iconImageUrl is string
+      && user.headerImageUrl is string
+    }
     match /users/{uid} {
       allow create: if request.auth != null
         && request.auth.uid == request.resource.data.uid
+        && createUserFieldsAreValid(request.resource.data)
     }
 
+    // 【プロフィール更新】
     function editProfileFieldsAreValid(user) {
       return user.keys().hasAll(['headerImageFullPath', 'iconImageFullPath', 'headerImageUrl', 'iconImageUrl', 'displayName', 'description', 'place', 'link', 'updatedAt'])
         && user.headerImageFullPath is string
@@ -40,14 +57,16 @@ service cloud.firestore {
         && user.link is string
         && user.updatedAt is timestamp
     }
-    // 【プロフィール更新・アカウント削除】
     match /users/{uid} {
-      // アカウント削除
-      allow delete: if request.auth != null
-        && request.auth.uid == uid
       allow update: if request.auth != null
         && request.auth.uid == uid
         && editProfileFieldsAreValid(request.resource.data)
+    }
+
+    // 【アカウント削除】
+    match /users/{uid} {
+      allow delete: if request.auth != null
+        && request.auth.uid == uid
     }
 
     // 自分だけが自分のusers/uidドキュメントに書き込むものに関しては、(1)(2)だけでよさそう
@@ -110,7 +129,7 @@ service cloud.firestore {
         && request.auth.uid == request.resource.data.userInfo.uid
       // リツイート取り消し
       allow delete: if request.auth != null
-        && request.auth.uid == get(/databases/$(database)/documents/tweets/$(tweetDocId)/likeUsersSubCollection/$(userSlug)).data.userInfo.uid
+        && request.auth.uid == get(/databases/$(database)/documents/tweets/$(tweetDocId)/retweetUsersSubCollection/$(userSlug)).data.userInfo.uid
     }
 
     // 【いいね時】

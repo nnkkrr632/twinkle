@@ -13,8 +13,6 @@ export const useTweetSelect = () => {
     }
 
     const getRetouchedTweets = async (tweetDocIds: string[]) => {
-        console.log('★★getRetouchedTweets。引数のtweetDocIds↓')
-        console.log(tweetDocIds)
         try {
             const tweets = await getTweets(tweetDocIds)
             if (!tweets) {
@@ -23,8 +21,8 @@ export const useTweetSelect = () => {
             const retouchedTweets = await retouchTweets(tweets)
             return retouchedTweets
         } catch (error) {
-            console.error('■■TweetSelectのgetRetouchedTweets()でエラー発生。コンソールでバッグ↓')
-            console.debug(error)
+            console.error('useTweetSelect()のgetRetouchedTweets()でエラー発生')
+            console.error(error)
         }
     }
 
@@ -42,16 +40,16 @@ export const useTweetSelect = () => {
                 const tweet = tweetDocSnapshot.data() as FirestoreTweet | undefined
                 if (!tweet) {
                     // 例えば、myLikeTweetsSubCollectionにあるTweetDocIdのツイートがツイート者によって消されていたときここに入る
-                    console.log('指定されたTweetDocIdのツイートドキュメントが存在しません。tweetDocId↓')
-                    console.log(tweetDocId)
+                    console.debug('指定されたTweetDocIdのドキュメントが存在しません。tweetDocId↓')
+                    console.debug(tweetDocId)
                     continue
                 }
                 tweets.push(tweet)
             }
             return tweets
         } catch (error) {
-            console.log('■■TweetSelectのgetTweets()でエラー発生。コンソールデバッグ↓')
-            console.debug(error)
+            console.debug('useTweetSelect()のgetTweets()でエラー発生')
+            console.error(error)
         }
     }
 
@@ -69,7 +67,6 @@ export const useTweetSelect = () => {
     // サブコレクションからいいねやリツイートの情報を取得
     // + 表示用にデータ成形
     const retouchTweet = async (tweet: FirestoreTweet): Promise<Tweet | Retweet | null> => {
-        console.log('retouchTweet開始。')
         tweet.formattedCreatedAt = getReadableDate(tweet.createdAt.toDate())
 
         // tweet.likeUserSlugsを生成
@@ -77,8 +74,6 @@ export const useTweetSelect = () => {
         const likeUsersQuery = query(likeUsersColRef, orderBy('createdAt', 'desc'))
         const likeUsersQuerySnapshot = await getDocs(likeUsersQuery)
         tweet.likeUserSlugs = likeUsersQuerySnapshot.docs.map((likeUserQueryDocSnapshot) => {
-            console.log('ここはretouchTweet()で各ツイートをいいねしている人を取得しているところ。userSlug↓')
-            console.log(likeUserQueryDocSnapshot.id)
             return likeUserQueryDocSnapshot.id
         })
         // tweet.retweetUserSlugsを生成
@@ -86,8 +81,6 @@ export const useTweetSelect = () => {
         const retweetUsersQuery = query(retweetUsersColRef, orderBy('createdAt', 'desc'))
         const retweetUsersQuerySnapshot = await getDocs(retweetUsersQuery)
         tweet.retweetUserSlugs = retweetUsersQuerySnapshot.docs.map((retweetUserQueryDocSnapshot) => {
-            console.log('ここはretouchTweet()で各ツイートをいいねしている人を取得しているところ。userSlug↓')
-            console.log(retweetUserQueryDocSnapshot.id)
             return retweetUserQueryDocSnapshot.id
         })
 
@@ -95,21 +88,13 @@ export const useTweetSelect = () => {
             return tweet as Tweet
         }
         // ツイートがリツイートの場合、オリジナルツイートを取得
-        console.log('ここに残っているということはリツイート。tweet.type === retweet。')
         if (tweet.originalTweetDocId) {
             const originalTweets = await getRetouchedTweets([tweet.originalTweetDocId])
-            console.log('■■originalTweets↓')
-            console.log(originalTweets)
             if (originalTweets === undefined || originalTweets.length === 0) {
-                // リツイート元が削除された場合
-                console.log('リツイート元のオリジナルツイートが存在しない分岐入った')
+                // 元ツイートが削除されている
                 return null
             }
             tweet.originalTweet = originalTweets[0]
-            console.log(
-                'ここまで来てるのは、originalTweetが存在する。つまり元ツイートが削除されていないということ。tweet↓'
-            )
-            console.log(tweet)
             return tweet as Retweet
         }
         return null

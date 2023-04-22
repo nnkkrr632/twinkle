@@ -12,8 +12,8 @@ export const useUserSelect = () => {
             }
             return retouchUser(user) as User
         } catch (error) {
-            console.log('getRetouchedUserでエラー発生。コンソールデバッグ↓')
-            console.debug(error)
+            console.debug('useUserSelect()のgetRetouchedUser()でエラー発生')
+            console.error(error)
         }
     }
 
@@ -24,15 +24,12 @@ export const useUserSelect = () => {
         let uid = ''
 
         if(querySnapshot.empty) {
-            console.log('■■■■ userSlugからuid解決できない分岐入った')
             return ''
         }
         querySnapshot.forEach((queryDocSnapshot) => {
             const docId = queryDocSnapshot.id
             uid = docId
         })
-        console.log('■■■■■■uid↓')
-        console.log(uid)
         return uid
     }
 
@@ -43,16 +40,13 @@ export const useUserSelect = () => {
             const userSnapshot = await getDoc(userDocRef)
             return userSnapshot.data()
         } catch (error) {
-            console.log('getUserでエラー発生。コンソールデバッグ↓')
-            console.debug(error)
+            console.debug('useUserSelect()のgetUser()でエラー発生')
+            console.error(error)
         }
     }
 
-    // 以下プライベートメソッド
-
     // 表示用に加工
     const retouchUser = (user: DocumentData) => {
-        // console.log('retouchUser()開始')
         // 日付の変換
         user.formattedCreatedAt = dayjs(user.createdAt.toDate()).format('YYYY年M月')
         return user

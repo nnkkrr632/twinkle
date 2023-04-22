@@ -7,8 +7,6 @@ import { collection, getDocs, getFirestore } from 'firebase/firestore'
 export const useUserAll = () => {
     const { getRetouchedUser } = useUserSelect()
     const { data: users } = useAsyncData(async () => {
-        console.log('■■useUserAll()のuseAsyncData()開始。')
-
         try{
             // usersコレクション
             const usersColRef = collection(getFirestore(), 'users')
@@ -17,8 +15,6 @@ export const useUserAll = () => {
             usersQuerySnapshot.forEach(queryDocSnapshot => {
                 uids.push(queryDocSnapshot.id)
             })
-            console.log('uids↓')
-            console.log(uids)
 
             const users: User[] = []
             for(const uid of uids) {
@@ -28,12 +24,10 @@ export const useUserAll = () => {
                 }
                 users.push(retouchedUser)
             }
-            console.log('users↓')
-            console.log(users)
             return users
         } catch(error) {
-            console.debug('useUserAll()のuseAsyncDataでエラー発生')
-            console.debug(error)
+            console.debug('useUserAll()のuseAsyncData()でエラー発生')
+            console.error(error)
         }
     })
 

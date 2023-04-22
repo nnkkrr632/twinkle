@@ -1,4 +1,4 @@
-import { doc, getFirestore, writeBatch, collection, getDocs, query } from 'firebase/firestore'
+import { doc, getFirestore, writeBatch } from 'firebase/firestore'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { useStorage } from '@/composables/storage'
 import { useTweetSelect } from '@/composables/tweetSelect'
@@ -19,15 +19,10 @@ export const useTweetDelete = () => {
 
         const exists = await doesTweetExists(tweetDocId)
         if(!exists) { 
-            console.log('ツイートIDが存在しない分岐入った')
             return false
         }
 
-        console.log('deleteTweet入った。tweetDocId↓')
-        console.log(tweetDocId)
         const tweet = await getRetouchedTweets([tweetDocId])
-        console.log('削除するtweet↓')
-        console.log(tweet)
         if (!tweet) {
             // このifには入らない。型定義のため
             return false
@@ -36,8 +31,6 @@ export const useTweetDelete = () => {
         // 画像の削除
         const imageFullPaths = tweet[0]?.imageFullPaths ?? []
         for (const imageFullPath of imageFullPaths) {
-            console.log('画像削除のループ。削除するimageFullPath↓')
-            console.log(imageFullPath)
             await deleteImage(imageFullPath)
         }
 
@@ -69,8 +62,8 @@ export const useTweetDelete = () => {
             await batch.commit()
             return true
         } catch (error) {
-            console.log('deleteTweetでエラー発生')
-            console.debug(error)
+            console.debug('useTweetDelete()のdeleteTweet()でエラー発生')
+            console.error(error)
             return false
         }
     }

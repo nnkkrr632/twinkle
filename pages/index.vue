@@ -10,7 +10,7 @@ const el = ref<HTMLElement>(null)
 useIntersectionObserver(
     el,
     () => {
-        console.log('★★★無限スクロール発火2')
+        console.debug('スクロールによるツイート取得更新')
         addOldTweets()
     },
     {
@@ -36,16 +36,26 @@ useSeoMeta({
         <ContentsHeader title="ホーム" />
         <!-- ツイートs -->
         <div v-if="tweets">
-            <section v-for="tweet of tweets" :key="tweet.tweetDocId">
+            <section
+                v-for="tweet of tweets"
+                :key="tweet.tweetDocId"
+            >
                 <TweetWrapper :tweet="tweet" />
             </section>
             <!-- useIntersectionObserver で無限スクロール -->
             <span ref="el" />
         </div>
-        <div v-else class="flex justify-center items-center py-8 px-5">
+        <div
+            v-else
+            class="flex justify-center items-center py-8 px-5"
+        >
             <div class="flex flex-col justify-center max-w-sm">
-                <p class="text-2xl font-bold">ツイートがありません</p>
-                <p class="text-gray-500">Twinkle上のツイートはすべてここに表示されます。</p>
+                <p class="text-2xl font-bold">
+                    ツイートがありません
+                </p>
+                <p class="text-gray-500">
+                    Twinkle上のツイートはすべてここに表示されます。
+                </p>
             </div>
         </div>
     </div>

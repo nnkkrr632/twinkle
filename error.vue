@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { useRoute } from '#imports'
-const route = useRoute()
-console.log('ルート↓')
-console.log(route)
 </script>
 <template>
     <NuxtLayout>
@@ -32,13 +28,22 @@ console.log(route)
             <!-- ツイートs -->
             <div class="flex justify-center items-center py-8">
                 <div class="flex flex-col justify-center max-w-sm py-8">
-                    <p class="text-2xl font-bold">このアカウントは存在しません</p>
-                    <p class="text-gray-500">キーワードを変えて検索してみてください。</p>
+                    <p class="text-2xl font-bold">
+                        このアカウントは存在しません
+                    </p>
+                    <p class="text-gray-500">
+                        キーワードを変えて検索してみてください。
+                    </p>
                 </div>
             </div>
         </div>
-        <div v-else class="flex items-center justify-center">
-            <p class="text-gray-500 py-8">このページは存在しません。他のページを検索してみましょう。</p>
+        <div
+            v-else
+            class="flex items-center justify-center"
+        >
+            <p class="text-gray-500 py-8">
+                このページは存在しません。他のページを検索してみましょう。
+            </p>
         </div>
     </NuxtLayout>
 </template>

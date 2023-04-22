@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { useAuthByGoogleAccount } from '@/composables/auth'
-
-const { me } = useAuthByGoogleAccount()
-
 defineProps<{ title: string; subTitle?: string }>()
 </script>
 

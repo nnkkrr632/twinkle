@@ -89,9 +89,9 @@ service cloud.firestore {
       // ツイート
       allow create: if request.auth != null
         && request.auth.uid == uid
+        // ★writeBatch
         // tweetsコレクションに存在するtweetDocのIDであること
-        // writeBatchだからできない (batch.commit()前は存在しない扱いと思われる)
-        // && exists(/databases/$(database)/documents/tweets/$(tweetDocId))
+        && request.resource.data.tweetDocId == getAfter(/databases/$(database)/documents/tweets/$(tweetDocId)).id
       // ツイート削除
       allow delete: if request.auth != null
         && request.auth.uid == uid

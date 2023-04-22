@@ -1,13 +1,10 @@
 import { computed, reactive } from '#imports'
-import { collection, doc, getFirestore, serverTimestamp, writeBatch, increment } from 'firebase/firestore'
+import { collection, doc, getFirestore, serverTimestamp, writeBatch } from 'firebase/firestore'
 import { TweetDraft } from '@/composables/types'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 import { useStorage } from '@/composables/storage'
 
 export const useCreateTweet = () => {
-    console.log('useCreateTweet開始。')
-
-    // ユーザー入力による部分
     const tweetDraft: TweetDraft = reactive({
         body: '',
         images: [],
@@ -18,32 +15,21 @@ export const useCreateTweet = () => {
 
     // inputタグはクリックするごとに画像ファイルを上書きするので、一度アップされた画像を退避しておきマージする
     const selectImages = (event) => {
-        console.log('selectImages発動')
-        console.log('tweetDraft.imagesの現状確認↓')
-        console.log(tweetDraft.images)
         tweetDraft.images = [...tweetDraft.images, ...event.target.files]
         // 先頭の4件に限定する
         tweetDraft.images = tweetDraft.images.splice(0, 4)
-        console.log('tweetDraft.imagesをマージしたあと↓')
-        console.log(tweetDraft.images)
         tweetDraft.imagePreviewUrls = []
         for (const image of tweetDraft.images) {
             tweetDraft.imagePreviewUrls.push(URL.createObjectURL(image))
         }
-        console.log('imagePreviewUrlsできた？↓')
-        console.log(tweetDraft.imagePreviewUrls)
     }
 
     const deselectImage = (index: number) => {
-        console.log('deselectImageよばれた')
         tweetDraft.images.splice(index, 1)
-        console.log(tweetDraft.images)
         tweetDraft.imagePreviewUrls.splice(index, 1)
-        console.log(tweetDraft.imagePreviewUrls)
     }
 
     const isValidTweet = computed(() => {
-        console.log('コンピューテッドのisValidTweet発動')
         if (tweetDraft.images.length) {
             return tweetDraft.images.length < 5 && tweetDraft.body.length < 11
         }
@@ -51,11 +37,15 @@ export const useCreateTweet = () => {
     })
 
     const uploadTweetImages = async () => {
-        console.log('uploadTweetImages開始')
+        const { me } = useAuthByGoogleAccount()
+        if (!me.value) {
+            alert('ログインしていないので画像をアップロードすることができません')
+            return
+        }
         const { uploadPublicImage } = useStorage()
 
         for (const image of tweetDraft.images) {
-            const { imageFullPath, imageUrl } = await uploadPublicImage('tweet-images', image)
+            const { imageFullPath, imageUrl } = await uploadPublicImage(`tweet-images/${me.value.uid}`, image)
             tweetDraft.imageFullPaths.push(imageFullPath)
             tweetDraft.imageUrls.push(imageUrl)
         }
@@ -71,20 +61,12 @@ export const useCreateTweet = () => {
 
     // tweetsコレクションとuserコレクションのmyTweetsサブコレクションに保存
     const tweet = async () => {
-        console.log('tweet()開始')
-
         const { me } = useAuthByGoogleAccount()
-
         if (!me.value) {
             alert('ログインしていないのでツイートすることができません')
             return
         }
-        console.log('ここまで来てるのはログインしているということ')
-        console.log('me.value↓')
-        console.log(me.value)
-
-        const db = getFirestore()
-
+        
         try {
             // 先に画像をアップロード firestore側に画像のフルパスを保存する必要があるから
             if (tweetDraft.images.length) {
@@ -95,12 +77,12 @@ export const useCreateTweet = () => {
             // @link https://cloud.google.com/firestore/docs/manage-data/transactions?hl=ja#batched-writes
             // writeBatch では addDocが存在しないためbatch.setで書き換え
             // @link https://blog.ojisan.io/firebase-batch-add-v9/
+            const db = getFirestore()
             const batch = writeBatch(db)
 
             // tweets/xxx/
             const tweetsColRef = collection(db, 'tweets')
             const tweetDocId = doc(tweetsColRef).id
-            console.log('tweetDocId' + tweetDocId)
             const tweetDocRef = doc(db, 'tweets', tweetDocId)
             batch.set(tweetDocRef, {
                 createdAt: serverTimestamp(),
@@ -135,8 +117,8 @@ export const useCreateTweet = () => {
             await batch.commit()
             clearTweetDraft()
         } catch (error) {
-            console.log('■■tweets()でエラー発生。コンソールデバッグ↓')
-            console.debug(error)
+            console.debug('useCreateTweet()のtweets()でエラー発生')
+            console.error(error)
         }
     }
     return { tweetDraft, deselectImage, selectImages, isValidTweet, tweet }

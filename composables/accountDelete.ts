@@ -28,8 +28,6 @@ export const useAccountDelete = () => {
                 tweetDocIds.push(queryDocSnapshot.id)
             })
             for (const tweetDocId of tweetDocIds) {
-                console.log('deleteTweetのforループ。delete対象のtweetDocId↓')
-                console.log(tweetDocId)
                 await deleteTweet(tweetDocId)
             }
 
@@ -44,8 +42,6 @@ export const useAccountDelete = () => {
                 })
             })
             for (const retweetInfo of retweetInfos) {
-                console.log('deleteTweetのforループ。delete対象のretweetInfo↓')
-                console.log(retweetInfo)
                 await destroyRetweet(retweetInfo.tweetDocId, retweetInfo.originalTweetDocId)
             }
 
@@ -57,8 +53,6 @@ export const useAccountDelete = () => {
                 likeTweetDocIds.push(myLikeTweetQueryDocSnapshot.id)
             })
             for (const tweetDocId of likeTweetDocIds) {
-                console.log('destroyLikeのforループ。対象のtweetDocId↓')
-                console.log(tweetDocId)
                 await destroyLike(tweetDocId)
             }
 
@@ -78,8 +72,8 @@ export const useAccountDelete = () => {
             // 最後に全削除成功を知らせる return true
             return true
         } catch (error) {
-            console.log('deleteAccountでエラー発生')
-            console.debug(error)
+            console.debug('useAccountDelete()のdeleteAccount()でエラー発生')
+            console.error(error)
             return false
         }
         // ツイートを全削除

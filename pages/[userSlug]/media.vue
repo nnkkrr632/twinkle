@@ -10,17 +10,13 @@ definePageMeta({
 })
 
 const { tweets, addOldTweets } = useTweetsByUser()
-// firestore で whereするフィールドは1つでなくてはならないからクライアント側でフィルタ
+// firestore で whereできるフィールドは仕様上1つなのでクライアント側でフィルタ
 // Invalid query. All where filters with an inequality (<, <=, !=, not-in, >, or >=) must be on the same field. But you have inequality filters on 'imageUrls' and 'createdAt'
 const mediaTweets = computed(() => {
     if (!tweets.value) {
         return []
     }
-    console.log('tweets.value↓')
-    console.log(tweets.value)
     const mediaTweetList = tweets.value.filter((tweet) => tweet.imageUrls.length !== 0)
-    console.log('mediaTweetList↓')
-    console.log(mediaTweetList)
     return mediaTweetList
 })
 
@@ -30,7 +26,7 @@ const el = ref<HTMLElement>(null)
 useIntersectionObserver(
     el,
     () => {
-        console.log('★★★無限スクロール発火2')
+        console.debug('スクロールによるツイート取得更新')
         addOldTweets()
     },
     {
@@ -78,10 +74,17 @@ if (user.value) {
             <!-- useIntersectionObserver で無限スクロール -->
             <span ref="el" />
         </div>
-        <div v-else class="flex justify-center items-center py-8 px-5">
+        <div
+            v-else
+            class="flex justify-center items-center py-8 px-5"
+        >
             <div class="flex flex-col justify-center max-w-sm">
-                <p class="text-2xl font-bold">@{{ user.slug }} さんは最近メディア付きツイートしていません</p>
-                <p class="text-gray-500">最近のメディア付きツイートがここに表示されます。</p>
+                <p class="text-2xl font-bold">
+                    @{{ user.slug }} さんは最近メディア付きツイートしていません
+                </p>
+                <p class="text-gray-500">
+                    最近のメディア付きツイートがここに表示されます。
+                </p>
             </div>
         </div>
     </div>

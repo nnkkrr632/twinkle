@@ -1,4 +1,4 @@
-import { Timestamp, DocumentReference, DocumentData } from 'firebase/firestore'
+import { Timestamp, DocumentData } from 'firebase/firestore'
 
 export type TweetDraft = {
     body: string

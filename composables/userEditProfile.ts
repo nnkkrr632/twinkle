@@ -6,11 +6,9 @@ import { useStorage } from '@/composables/storage'
 
 // ユーザープロフィール
 export const useEditProfile = () => {
-    console.log('useEditProfile開始')
     const { me } = useAuthByGoogleAccount()
 
     if (!me.value) {
-        console.log('ログインしていないので編集するためのプロフィールが存在しません。')
         return
     }
 
@@ -37,23 +35,15 @@ export const useEditProfile = () => {
     }
 
     const selectHeaderImage = (event: any) => {
-        console.log('selectImage開始')
-        console.log('profileDraftの現状確認↓')
-        console.log(profileDraft)
         // event.target.files が FileList型のようだ
         profileDraft.headerImage = event.target.files[0]
-        console.log('profileDraft.headerImage。ヘッダー画像追加した後↓')
-        console.log(profileDraft.headerImage)
         if (!profileDraft.headerImage) {
             return
         }
         profileDraft.headerImagePreviewUrl = URL.createObjectURL(profileDraft.headerImage)
-        console.log('headerImagePreviewUrlできた？↓')
-        console.log(profileDraft.headerImagePreviewUrl)
     }
 
     const deselectHeaderImage = async () => {
-        console.log('deselectHeaderImage呼ばれた')
         profileDraft.headerImage = null
         profileDraft.headerImagePreviewUrl = ''
         // 既に設定されているヘッダー画像を削除するフラグ
@@ -70,7 +60,6 @@ export const useEditProfile = () => {
     }
 
     const isValidLink = computed(() => {
-        console.log('コンピューテッドのisValidLink発動')
         return (
             profileDraft.link.length === 0 ||
             (profileDraft.link.length > 1 &&
@@ -80,8 +69,6 @@ export const useEditProfile = () => {
     })
 
     const isValidEdit = computed(() => {
-        console.log('コンピューテッドのisValidEdit発動')
-
         // 画像のチェックはなし
         return (
             profileDraft.displayName.length > 0 &&
@@ -93,7 +80,6 @@ export const useEditProfile = () => {
     })
 
     const edit = async () => {
-        console.log('editよばれた')
         if (!me.value) {
             return
         }
@@ -106,7 +92,7 @@ export const useEditProfile = () => {
                     await deleteImage(profileDraft.headerImageFullPath)
                 }
                 const { imageFullPath, imageUrl } = await uploadPublicImage(
-                    'user-header-images',
+                    `user-header-images/${me.value.uid}`,
                     profileDraft.headerImage
                 )
                 profileDraft.headerImageFullPath = imageFullPath
@@ -116,7 +102,7 @@ export const useEditProfile = () => {
                 if (profileDraft.iconImageFullPath) {
                     await deleteImage(profileDraft.iconImageFullPath)
                 }
-                const { imageFullPath, imageUrl } = await uploadPublicImage('user-icon-images', profileDraft.iconImage)
+                const { imageFullPath, imageUrl } = await uploadPublicImage(`user-icon-images/${me.value.uid}`, profileDraft.iconImage)
                 profileDraft.iconImageFullPath = imageFullPath
                 profileDraft.iconImageUrl = imageUrl
             }
@@ -126,28 +112,19 @@ export const useEditProfile = () => {
                 profileDraft.headerImageFullPath = ''
             }
 
-            console.log('profileDraft↓')
-            console.log(profileDraft)
-            console.log('beforeEditImages↓')
-            console.log(beforeEditImages)
             // 画像変更時は変更前の画像を削除
             if (
                 beforeEditImages.headerImageFullPath &&
                 beforeEditImages.headerImageFullPath !== profileDraft.headerImageFullPath
             ) {
-                console.log('ヘッダー画像削除の分岐入った')
                 await deleteImage(beforeEditImages.headerImageFullPath)
             }
             if (
                 beforeEditImages.iconImageFullPath &&
                 beforeEditImages.iconImageFullPath !== profileDraft.iconImageFullPath
             ) {
-                console.log('アイコン画像削除の分岐入った')
                 await deleteImage(beforeEditImages.iconImageFullPath)
             }
-
-            console.log('更新されるprofileDraftは以下の内容↓')
-            console.log(profileDraft)
 
             const myUserDocRef = doc(getFirestore(), 'users', me.value.uid)
             await updateDoc(myUserDocRef, {
@@ -164,7 +141,8 @@ export const useEditProfile = () => {
 
             location.reload()
         } catch (error) {
-            console.debug(error)
+            console.debug('useEditProfile()のedit()でエラー発生')
+            console.error(error)
         }
     }
 

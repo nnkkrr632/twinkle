@@ -26,9 +26,6 @@ const props = defineProps<{ user: User }>()
 // {{ props.user.displayName }}
 // {{ user.displayName }}
 
-// console.log('わたしはuser.vueコンポーネント')
-// console.log('props.user↓')
-// console.log(props.user)
 </script>
 <template>
     <div>
@@ -115,20 +112,6 @@ const props = defineProps<{ user: User }>()
                     <span>{{ user.formattedCreatedAt }}からTwinkleを利用しています</span>
                 </div>
             </div>
-            <!-- <div class="flex flex-wrap h-6">
-                <NuxtLink
-                    to="/taro/followings"
-                    class="mr-5 hover:border-b hover:border-gray-700 dark:hover:border-gray-200 h-5"
-                >
-                    <span class="font-bold mr-1">{{ user.followingsCount }}</span><span class="text-gray-500">フォロー中</span>
-                </NuxtLink>
-                <NuxtLink
-                    to="/taro/followers"
-                    class="mr-5 hover:border-b hover:border-gray-700 dark:hover:border-gray-200 h-5"
-                >
-                    <span class="font-bold mr-1">{{ user.followersCount }}</span><span class="text-gray-500">フォロワー</span>
-                </NuxtLink>
-            </div> -->
         </div>
         <!-- Nav -->
         <nav class="border-b dark:border-gray-800">

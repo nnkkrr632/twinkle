@@ -9,15 +9,13 @@ definePageMeta({
 })
 
 const { tweets, addOldTweets } = useTweetsByUser()
-console.log('私はpages/userSlug/index.vue。tweetsとれてる？↓')
-console.log(tweets)
 const { user } = useUserDetail()
 
 const el = ref<HTMLElement>(null)
 useIntersectionObserver(
     el,
     () => {
-        console.log('★★★無限スクロール発火2')
+        console.debug('スクロールによるツイート取得更新')
         addOldTweets()
     },
     {
@@ -66,10 +64,17 @@ if (user.value) {
             <!-- useIntersectionObserver で無限スクロール -->
             <span ref="el" />
         </div>
-        <div v-else class="flex justify-center items-center py-8 px-5">
+        <div
+            v-else
+            class="flex justify-center items-center py-8 px-5"
+        >
             <div class="flex flex-col justify-center max-w-sm">
-                <p class="text-2xl font-bold">@{{ user.slug }} さんはまだツイートをいいねしていません</p>
-                <p class="text-gray-500">いいねするとここに表示されます。</p>
+                <p class="text-2xl font-bold">
+                    @{{ user.slug }} さんはまだツイートをいいねしていません
+                </p>
+                <p class="text-gray-500">
+                    いいねするとここに表示されます。
+                </p>
             </div>
         </div>
     </div>

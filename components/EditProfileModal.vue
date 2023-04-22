@@ -5,9 +5,7 @@ import { onKeyStroke } from '@vueuse/core'
 
 const { visible, closeModal } = useEditProfileModal()
 // useスコープでガード節リターンしてるので赤線が引かれてしまう
-const { profileDraft, selectHeaderImage, deselectHeaderImage, selectIconImage, isValidLink, isValidEdit, edit } =
-    useEditProfile()
-console.log('わたしはEditProfileModal.vue')
+const { profileDraft, selectHeaderImage, deselectHeaderImage, selectIconImage, isValidLink, isValidEdit, edit } = useEditProfile()
 
 onKeyStroke('Escape', (e) => {
     closeModal()

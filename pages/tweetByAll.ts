@@ -40,17 +40,15 @@ export const useTweetsByAll = () => {
             const retouchedTweets = await getRetouchedTweets(tweetDocIds)
             return retouchedTweets
         } catch (error) {
-            console.debug('useTweetsByAlluseAsyncDataでエラー発生。コンソールデバッグ↓')
+            console.debug('useTweetsByAll()のuseAsyncDataでエラー発生')
             console.error(error)
         }
     })
 
     const addOldTweets = async () => {
-        console.debug('■■addOldTweets開始')
-
         try {
             if (tweets.value?.length === 0) {
-                return
+                return []
             }
 
             const currentOldestCreatedAt = tweets.value?.[tweets.value.length - 1].createdAt ?? null
@@ -64,7 +62,7 @@ export const useTweetsByAll = () => {
                 tweets.value = [...tweets.value, ...retouchedTweets]
             }
         } catch (error) {
-            console.debug('ホームのaddOldTweetsでエラー発生。コンソールデバッグ↓')
+            console.debug('useTweetsByAll()のaddOldTweets()でエラー発生')
             console.error(error)
         }
     }

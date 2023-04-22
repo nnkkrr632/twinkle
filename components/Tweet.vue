@@ -19,41 +19,20 @@ const retweetUserSlugs = ref(props.tweet.retweetUserSlugs)
 const { storeLike, destroyLike } = useLike()
 const like = async () => {
     if (!me.value) {
-        alert('いいねをするにはログインが必要です。')
-        return
-    }
-    if (likeUserSlugs.value.includes(me.value.slug)) {
-        alert('既にいいね済です。')
         return
     }
     const storeSucceeded = await storeLike(props.tweet.tweetDocId)
     if(storeSucceeded) {
         likeUserSlugs.value.push(me.value.slug)
-        console.log('tweetDocId↓')
-        console.log(props.tweet.tweetDocId)
-        console.log('likeUserSlugs↓')
-        console.log(likeUserSlugs.value)
-    } else {
-        alert('ツイートのいいねに失敗しました。ツイートが存在しない可能性があります。')
     }
 }
 const cancelLike = async () => {
     if (!me.value) {
         return
     }
-    if (!likeUserSlugs.value.includes(me.value.slug)) {
-        alert('いいねしていないツイートのいいねを取り消すことはできません。')
-        return
-    }
     const destroySucceeded = await destroyLike(props.tweet.tweetDocId)
     if(destroySucceeded) {
         likeUserSlugs.value = likeUserSlugs.value.filter((userSlug) => userSlug !== me.value?.slug)
-        console.log('tweetDocId↓')
-        console.log(props.tweet.tweetDocId)
-        console.log('likeUserSlugs.value↓')
-        console.log(likeUserSlugs.value)
-    } else {
-        alert('ツイートのいいね取り消しに失敗しました。ツイートが存在しない可能性があります。')
     }
 }
 
@@ -70,10 +49,6 @@ const retweet = async () => {
     const storeSucceeded = await storeRetweet(props.tweet.tweetDocId)
     if(storeSucceeded) {
         retweetUserSlugs.value.push(me.value.slug)
-        console.log('tweetDocId↓')
-        console.log(props.tweet.tweetDocId)
-        console.log('retweetUserSlugs.value↓')
-        console.log(retweetUserSlugs.value)
     } else {
         alert('リツイートに失敗しました。ツイートが存在しない可能性があります。')
     }
@@ -90,8 +65,6 @@ const cancelRetweet = async () => {
     const destroySucceeded = await destroyRetweet(props.tweetDocId, originalTweetDocId)
     if (destroySucceeded) {
         retweetUserSlugs.value = retweetUserSlugs.value.filter((userSlug) => userSlug !== me.value?.slug)
-        console.log('retweetUserSlugs.value↓')
-        console.log(retweetUserSlugs.value)
     } else {
         alert('リツイートの取り消しに失敗しました。ツイートが存在しない可能性があります。')
     }

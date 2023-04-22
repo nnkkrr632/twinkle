@@ -16,9 +16,7 @@ import { useUserSelect } from '@/composables/userSelect'
 
 // ユーザープロフィール
 export const useTweetsByUser = () => {
-    console.log('useTweetsByUser()開始。')
-
-    // 本人のツイート一覧 or いいねしたツイート一覧を取得
+    // MySubCollectionから本人のツイート一覧 or いいねしたツイート一覧を取得
     const getTweetDocIds = async (uid: string, oldestCreatedAt: Timestamp | null = null) => {
         // URL(= route)で取得先のコレクションを判断
         const route = useRoute()
@@ -37,7 +35,6 @@ export const useTweetsByUser = () => {
         try {
             const tweetsQuerySnapshot = await getDocs(tweetsQuery)
             if (tweetsQuerySnapshot.empty) {
-                console.log('ドキュメントない分岐入ってる！！')
                 return null
             }
             const tweetDocIds = tweetsQuerySnapshot.docs.map((tweetQueryDocSnapshot) => {
@@ -45,15 +42,13 @@ export const useTweetsByUser = () => {
             })
             return tweetDocIds
         } catch (error) {
-            console.log('selectByUser.tsのgetTweetDocIds()でエラー発生。コンソールデバッグ↓')
-            console.debug(error)
+            console.debug('useTweetsByUser()のgetTweetDocIds()でエラー発生')
+            console.error(error)
         }
     }
 
     // これが本体
     const { data: tweets, error: errorAtUseTweetsByUser } = useAsyncData(async () => {
-        console.log('■■useTweetsByUser()のuseAsyncData()開始。')
-
         const route = useRoute()
         const userSlug = route.params.userSlug
         if (typeof userSlug !== 'string') {
@@ -64,35 +59,28 @@ export const useTweetsByUser = () => {
             const { resolveUidFromUserSlug } = useUserSelect()
             const uid = await resolveUidFromUserSlug(userSlug)
             if (!uid) {
-                console.log('uidが見つかりません')
                 return []
             }
 
             const tweetDocIds = await getTweetDocIds(uid)
-            console.log('useAsyncDataでtweetDocIdsとれてる？↓')
-            console.log(tweetDocIds)
-
             if (!tweetDocIds) {
-                return
+                return []
             }
+
             const { getRetouchedTweets } = useTweetSelect()
             const retouchedTweets = await getRetouchedTweets(tweetDocIds)
-            console.log('useAsyncDataでretouchedTweetsとれてる？↓')
-            console.log(retouchedTweets)
             return retouchedTweets
         } catch (error) {
-            console.log('■■プロフィール詳細でUserごとのツイートを集めるuseAsyncDataでエラー発生。コンソールデバッグ↓')
-            console.debug(error)
+            console.debug('useTweetsByUser()のtweetsのuseAsyncData()でエラー発生')
+            console.error(error)
         }
     })
 
     const allImageUrls = computed(() => {
-        console.log('ここはuseTweetsByUser()直下。allImageUrlsのcomputed発火！')
         return tweets.value?.flatMap((tweet) => tweet.imageUrls) ?? []
     })
 
     const addOldTweets = async () => {
-        console.log('■■addOldTweets開始')
         const route = useRoute()
         const userSlug = route.params.userSlug
         if (typeof userSlug !== 'string') {
@@ -103,19 +91,14 @@ export const useTweetsByUser = () => {
             const { resolveUidFromUserSlug } = useUserSelect()
             const uid = await resolveUidFromUserSlug(userSlug)
             if (!uid) {
-                console.log('uidが見つかりません')
-                return []
+                return
             }
-
-            if(tweets.value?.length === 0) { return []}
+            // addする以前にツイートがそもそも0件
+            if (tweets.value?.length === 0) { return }
 
             // ツイートの参照を取得
             const currentOldestCreatedAt = tweets.value?.[tweets.value.length - 1].createdAt ?? null
-            console.log('■■最遅時間とれてる？↓')
-            console.log(currentOldestCreatedAt)
             const tweetDocIds = await getTweetDocIds(uid, currentOldestCreatedAt)
-            console.log('まだtweetDocIdsある？↓')
-            console.log(tweetDocIds)
             if (!tweetDocIds) {
                 return
             }
@@ -125,8 +108,8 @@ export const useTweetsByUser = () => {
                 tweets.value = [...tweets.value, ...retouchedTweets]
             }
         } catch (error) {
-            console.log('■■プロフィール詳細でUserごとのツイートを集めるuseAsyncDataでエラー発生。コンソールデバッグ↓')
-            console.debug(error)
+            console.debug('useTweetsByUser()のaddOldTweets()でエラー発生')
+            console.error(error)
         }
     }
 

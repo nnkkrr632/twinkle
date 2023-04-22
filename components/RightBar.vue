@@ -18,19 +18,29 @@ const { users } = useUserAll()
             <RightBarImageBox />
         </div>
         <!-- おすすめツイート 6人からoverflow:scrollになる-->
-        <div v-if="users && users.length" class="bg-gray-200 dark:bg-gray-800 flex flex-col rounded-2xl max-h-[416px] overflow-y-auto">
-            <p class="text-2xl font-bold px-4 py-3">おすすめツイート</p>
-            <div v-for="user of users" :key="user.slug">
+        <div
+            v-if="users && users.length"
+            class="bg-gray-200 dark:bg-gray-800 flex flex-col rounded-2xl max-h-[416px] overflow-y-auto"
+        >
+            <p class="text-2xl font-bold px-4 py-3">
+                おすすめツイート
+            </p>
+            <div
+                v-for="user of users"
+                :key="user.slug"
+            >
                 <UserStrip :user="user" />
             </div>
         </div>
         <!-- 注釈 -->
-        <div class="w-full px-4 text-gray-500 text-sm flex flex-col">
-            <span>© 2023 Twinkle @nrpans</span>
-            <span>・GitHub: https://github.com/nnkkrr632/twinkle</span>
+        <div class="w-full px-4 text-gray-500 text-sm flex flex-col gap-1">
             <span>・NuxtとFirebaseの学習のために作成した個人用サイトです。予告なくアカウントやデータを削除する場合がございます。</span>
-            <NuxtLink class="block hover:underline" to="/aaaaa">存在しないユーザーIDテスト：/aaaaa</NuxtLink>
-            <NuxtLink class="block hover:underline" to="/settings/aaa">存在しないURLテスト：/settings/aaa</NuxtLink>
+            <a
+            href="https://github.com/nnkkrr632/twinkle"
+            target="_blank"
+            class="block hover:underline"
+            >・GitHub: https://github.com/nnkkrr632/twinkle</a>
+            <span>© 2023 Twinkle @nrpans</span>
         </div>
     </div>
 </template>

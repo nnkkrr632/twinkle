@@ -4,11 +4,9 @@ import { useTweetDelete } from '@/composables/tweetDelete'
 import { getFirestore, writeBatch, collection, serverTimestamp, doc } from 'firebase/firestore'
 
 export const useRetweet = () => {
-    console.log('■■useRetweet開始。')
 
     // リツイートはツイート作成と似ている。type=retweetでツイートを作成し、オリジナルツイートのDocRefを入力。
     const storeRetweet = async (originalTweetDocId: string) => {
-        console.log('retweet開始')
         const { me } = useAuthByGoogleAccount()
         if (!me.value) {
             alert('ログインしていないのでリツイートをすることができません')
@@ -18,7 +16,6 @@ export const useRetweet = () => {
         const { doesTweetExists } = useTweetSelect()
         const exists = await doesTweetExists(originalTweetDocId)
         if(!exists) { 
-            console.log('ツイートIDが存在しない分岐入った')
             return false
         }
 
@@ -28,7 +25,6 @@ export const useRetweet = () => {
             // ツイート作成(type:retweet) tweets/xxx
             const tweetsColRef = collection(db, 'tweets')
             const tweetDocId = doc(tweetsColRef).id
-            console.log('tweetDocId：' + tweetDocId)
             const tweetDocRef = doc(db, 'tweets', tweetDocId)
             batch.set(tweetDocRef, {
                 createdAt: serverTimestamp(),
@@ -78,14 +74,13 @@ export const useRetweet = () => {
             await batch.commit()
             return true
         } catch (error) {
-            console.debug('storeRetweetでエラー発生')
-            console.debug(error)
+            console.debug('useRetweet()のstoreRetweet()でエラー発生')
+            console.error(error)
             return false
         }
     }
 
     const destroyRetweet = async (tweetDocId: string, originalTweetDocId: string) => {
-        console.log('destroyRetweet開始')
         const { me } = useAuthByGoogleAccount()
         if (!me.value) {
             alert('ログインしていないのでリツイートを取り消すことができません')
@@ -95,7 +90,6 @@ export const useRetweet = () => {
         const { doesTweetExists } = useTweetSelect()
         const exists = await doesTweetExists(originalTweetDocId)
         if(!exists) { 
-            console.log('ツイートIDが存在しない分岐入った')
             return false
         }
 
@@ -114,8 +108,8 @@ export const useRetweet = () => {
             await batch.commit()
             return true
         } catch (error) {
-            console.debug('destroyRetweetでエラー発生')
-            console.debug(error)
+            console.debug('useRetweet()のdestroyRetweet()でエラー発生')
+            console.error(error)
             return false
         }
     }

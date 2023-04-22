@@ -1,4 +1,4 @@
-import { doc, getFirestore, serverTimestamp, writeBatch } from 'firebase/firestore'
+import { doc, getFirestore, serverTimestamp, writeBatch, getDoc } from 'firebase/firestore'
 import { useTweetSelect } from '@/composables/tweetSelect'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 
@@ -7,22 +7,27 @@ export const useLike = () => {
     const { me } = useAuthByGoogleAccount()
 
     const storeLike = async (tweetDocId: string) => {
-        console.log('storeLike開始')
         if (!me.value) {
-            alert('ログインしていないのでいいねをすることができません')
+            alert('いいねをするにはログインが必要です。')
             return false
         }
 
         const { doesTweetExists } = useTweetSelect()
         const exists = await doesTweetExists(tweetDocId)
-        if(!exists) { 
-            console.log('ツイートIDが存在しない分岐入った')
+        if (!exists) {
+            alert('ツイートが存在しません。既に削除されている可能性があります')
+            return false
+        }
+
+        const isLiked = await isAlreadyLiked(tweetDocId)
+        if(isLiked) {
+            alert('既にツイートをいいねしています。画面の再読込をお試しください')
             return false
         }
 
         const db = getFirestore()
         const batch = writeBatch(db)
-        
+
         try {
             // users/uid/myLikeTweetsSubCollection
             const myLikeTweetDocRef = doc(db, 'users', me.value.uid, 'myLikeTweetsSubCollection', tweetDocId)
@@ -49,23 +54,29 @@ export const useLike = () => {
             await batch.commit()
             return true
         } catch (error) {
-            console.debug('storeLike()でエラー発生')
-            console.debug(error)
+            console.debug('useLike()のstoreLike()でエラー発生')
+            console.error(error)
+            alert('何かしらの理由によりいいねに失敗しました')
             return false
         }
     }
 
     const destroyLike = async (tweetDocId: string) => {
-        console.log('destroyLike開始')
         if (!me.value) {
-            alert('ログインしていないのでいいねを取り消すことができません')
+            alert('いいねを取り消すにはログインが必要です。')
             return false
         }
 
         const { doesTweetExists } = useTweetSelect()
         const exists = await doesTweetExists(tweetDocId)
-        if(!exists) { 
-            console.log('ツイートIDが存在しない分岐入った')
+        if (!exists) {
+            alert('ツイートが存在しません。既に削除されている可能性があります')
+            return false
+        }
+
+        const isLiked = await isAlreadyLiked(tweetDocId)
+        if(!isLiked) {
+            alert('既にいいねを取り消してる可能性があります。画面の再読込をお試しください')
             return false
         }
 
@@ -83,10 +94,23 @@ export const useLike = () => {
             await batch.commit()
             return true
         } catch (error) {
-            console.debug('destroyLike()でエラー発生')
-            console.debug(error)
+            console.debug('useLike()のdestroyLike()でエラー発生')
+            console.error(error)
+            alert('何かしらの理由によりいいねに失敗しました')
             return false
         }
+    }
+
+    // 既にいいね済みかのバリデーション
+    const isAlreadyLiked = async (tweetDocId: string) => {
+        if (!me.value) {
+            alert('ログインしていないのでいいね済みか判定できません')
+            return false
+        }
+        // users/uid/myLikeTweetsSubCollection
+        const myLikeTweetDocRef = doc(getFirestore(), 'users', me.value.uid, 'myLikeTweetsSubCollection', tweetDocId)
+        const myLikeTweetSnapshot = await getDoc(myLikeTweetDocRef)
+        return myLikeTweetSnapshot.exists()
     }
 
     return { storeLike, destroyLike }

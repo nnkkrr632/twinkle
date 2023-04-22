@@ -10,14 +10,20 @@ const props = defineProps<{ user: User }>()
         class="flex flex-row items-center gap-3 px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5"
     >
         <!-- ユーザーアイコン -->
-        <div class="overflow-hidden" :class="props.user.type === 'official' ? 'rounded-md' : 'rounded-full'">
+        <div
+            class="overflow-hidden"
+            :class="props.user.type === 'official' ? 'rounded-md' : 'rounded-full'"
+        >
             <img
                 v-if="user.iconImageUrl"
                 class="w-12 h-12 object-cover"
                 :src="user.iconImageUrl"
                 alt="ユーザーのアイコン画像"
             />
-            <div v-else class="w-12 h-12 bg-gray-100 dark:bg-gray-900" />
+            <div
+                v-else
+                class="w-12 h-12 bg-gray-100 dark:bg-gray-900"
+            />
         </div>
         <!-- 文字 -->
         <div class="flex flex-col flex-1 items-start">

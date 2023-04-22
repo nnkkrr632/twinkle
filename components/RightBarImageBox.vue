@@ -10,7 +10,6 @@ const route = useRoute()
 // 画像ボックス v-if="$route.name === userSlug" でボックス表示制御は再読み込み時の挙動が怪しかった
 const imageUrls = ref<string[]>([])
 watchEffect(() => {
-    console.log('★★imageUrlsのwatchEffect開始')
     if (!route.name) {
         return
     }

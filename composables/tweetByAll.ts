@@ -5,13 +5,13 @@ import { useTweetSelect } from '@/composables/tweetSelect'
 export const useTweetsByAll = () => {
     const getTweetDocIds = async (oldestCreatedAt: Timestamp | null = null) => {
         const tweetsCollection = collection(getFirestore(), 'tweets')
-        let tweetsQuery = query(tweetsCollection, orderBy('createdAt', 'desc'), limit(5))
+        let tweetsQuery = query(tweetsCollection, orderBy('createdAt', 'desc'), limit(15))
         if (oldestCreatedAt) {
             tweetsQuery = query(
                 tweetsCollection,
                 where('createdAt', '<', oldestCreatedAt),
                 orderBy('createdAt', 'desc'),
-                limit(5)
+                limit(15)
             )
         }
         try {

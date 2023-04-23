@@ -7,7 +7,7 @@ const { me, googleSignUp } = useAuthByGoogleAccount()
 // SEO layouts/default.vueで定義されたものはすべてのページで使用できる。各ページで再定義することで上書きできる
 const defaultTitle = 'Twinkle'
 const defaultDescription = 'NuxtとFirebaseで作成されたTwitterクローンサイト「Twinkle」です。'
-const twinkleImageUrl = `${window.location.href}/images/twinkle.png`
+const twinkleImageUrl = `https://nrpans-twinkle.vercel.app/images/twinkle.png`
 
 const googleButton = ref<string>('/images/btn_google_signin_light_normal_web@2x.png')
 const googleSignUpWithOfficialButton = async () => {
@@ -55,8 +55,8 @@ useSeoMeta({
         </div>
         <!-- SPビュー フッターメニューバー -->
         <footer
-            class="fixed bottom-0 xs:hidden w-full"
-            :class="me && me.value ? 'bottom-0' : 'bottom-16'"
+            class="fixed xs:hidden w-full"
+            :class="me ? 'bottom-0' : 'bottom-16'"
         >
             <Footbar />
         </footer>

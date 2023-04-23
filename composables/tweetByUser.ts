@@ -23,13 +23,13 @@ export const useTweetsByUser = () => {
         const targetSubCollection = route.name === 'userSlug-likes' ? 'myLikeTweetsSubCollection' : 'myTweetsSubCollection'
         const colRef = collection(getFirestore(), 'users', uid, targetSubCollection)
 
-        let tweetsQuery = query(colRef, orderBy('createdAt', 'desc'), limit(10))
+        let tweetsQuery = query(colRef, orderBy('createdAt', 'desc'), limit(15))
         if (oldestCreatedAt) {
             tweetsQuery = query(
                 colRef,
                 where('createdAt', '<', oldestCreatedAt),
                 orderBy('createdAt', 'desc'),
-                limit(10)
+                limit(15)
             )
         }
         try {

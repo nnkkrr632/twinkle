@@ -102,6 +102,7 @@ const props = defineProps<{ user: User }>()
                     :href="user.link"
                     target="_blank"
                     class="flex items-center mr-4"
+                    :class="user.link ? '' : 'pointer-events-none'"
                 >
                     <span class="material-symbols-outlined text-xl mr-[2px]">link</span>
                     <span class="text-blue-400 hover:border-b hover:border-blue-400 h-5">{{ user.link }}</span>

@@ -2,7 +2,6 @@ import { useRuntimeConfig, defineNuxtPlugin } from '#imports'
 import { initializeApp } from 'firebase/app'
 
 export default defineNuxtPlugin(() => {
-    console.log('plugin/firebase.tsのdefineNuxtPlugin開始。')
     const runtimeConfig = useRuntimeConfig()
     const firebaseConfig = {
         apiKey: runtimeConfig.public.FIREBASE_API_KEY,
@@ -13,7 +12,5 @@ export default defineNuxtPlugin(() => {
         appId: runtimeConfig.public.FIREBASE_APP_ID,
         measurementId: runtimeConfig.public.FIREBASE_MEASUREMENT_ID,
     }
-    const app = initializeApp(firebaseConfig)
-    // console.log('pluginでapp取得できてる？↓')
-    // console.log(app)
+    initializeApp(firebaseConfig)
 })

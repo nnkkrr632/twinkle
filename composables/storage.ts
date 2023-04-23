@@ -1,26 +1,41 @@
-import { ref as storageRef, getDownloadURL } from 'firebase/storage'
-// import { useMyFirebase } from '@/composables/firebase'
-import { getStorage } from 'firebase/storage'
+import { getStorage, ref as storageRef, getDownloadURL, uploadBytes, deleteObject } from 'firebase/storage'
+import { getRandomString } from '@/utils/helpers'
 
 export const useStorage = () => {
-    // console.log('storage.tsのuseStorage開始。getStorage()でstorageとれてるの？↓')
-    const storage = getStorage()
-    // console.log(storage)
-
-    // firebase storage から画像を取得
     const resolveImageUrl = async (imageFullPath: string) => {
-        // console.log('storage.tsのresolveImageUrl開始')
-        const imageRef = storageRef(storage, imageFullPath)
+        const imageRef = storageRef(getStorage(), imageFullPath)
         try {
             const imageUrl = await getDownloadURL(imageRef)
             return imageUrl
-        } catch (e) {
-            console.log('■■resolveImageUrl()でエラー発生。コンソールデバッグ↓')
-            console.debug(e)
-            // 画像フルパス設定されているのに取得ミスったらデフォルト設定しておく
-            return 'default-image-url'
+        } catch (error) {
+            console.debug('useStorage()のresolveImageUrl()でエラー発生')
+            console.error(error)
+            // 失敗したら画像なし扱い
+            return ''
         }
     }
 
-    return { resolveImageUrl }
+    const uploadPublicImage = async (filePath: string, image: File) => {
+        const imageRef = storageRef(getStorage(), `${filePath}/${getRandomString()}`)
+        try {
+            await uploadBytes(imageRef, image)
+            const imageUrl = await resolveImageUrl(imageRef.fullPath)
+            return { imageFullPath: imageRef.fullPath, imageUrl: imageUrl }
+        } catch (error) {
+            console.debug('useStorage()のuploadPublicImage()でエラー発生')
+            console.error(error)
+        }
+    }
+
+    const deleteImage = async (imageFullPath: string) => {
+        const deletingImageRef = storageRef(getStorage(), imageFullPath)
+        try {
+            await deleteObject(deletingImageRef)
+        } catch (error) {
+            console.debug('useStorage()のdeleteImage()でエラー発生')
+            console.error(error)
+        }
+    }
+
+    return { uploadPublicImage, deleteImage }
 }

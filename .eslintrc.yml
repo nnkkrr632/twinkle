@@ -1,7 +1,7 @@
 env:
     # windowやalertも含まれるたくさんのブラウザ用のグローバル変数を一気にglobals設定に登録してしまい、ESLintにチェックしなくてよいと伝える
     browser: true
-    # ECMAScript2021を適用
+    # ECMAScript2022を適用
     es2022: true
 extends:
     # eslint-plugin-vueが推奨するルールを適用/https://eslint.vuejs.org/user-guide/#installation
@@ -9,10 +9,7 @@ extends:
     - '@vue/typescript/recommended'
     # ESLintが推奨するチェック項目でまとめてチェックする
     - 'eslint:recommended'
-parserOptions:
-    # parserOptionsのecmaVersionは、使用するECMAScriptのバージョンを指定します。envのes2021は指定しているため、それに合わせる
-    ecmaVersion: 13
 plugins:
     - vue
     - '@typescript-eslint'
-rules: {}
+rules: { 'vue/html-indent': ['error', 4], 'vue/html-self-closing': ['error', { 'html': { 'void': 'always' } }] }

@@ -3,7 +3,7 @@ defineProps<{ title: string; subTitle?: string }>()
 </script>
 
 <template>
-    <header class="z-10 sticky top-0 w-full h-12 backdrop-blur-sm bg-white/50 dark:bg-black/50">
+    <header class="z-10 sticky top-0 w-full h-12 bg-white/50 dark:bg-black/50 backdrop-blur-sm backdrop-grayscale">
         <!-- (1)矢印 (2)タイトル&サブタイトル (3)スロット のflex -->
         <div class="px-3 h-full flex items-center">
             <!-- (1)矢印 -->
@@ -16,11 +16,10 @@ defineProps<{ title: string; subTitle?: string }>()
             <!-- (2)タイトル&サブタイトル -->
             <div class="flex flex-col pl-2">
                 <span class="text-lg font-semibold line-clamp-1">{{ title }}</span>
-                <span v-if="subTitle" class="text-sm line-clamp-1">{{ subTitle }}</span>
-            </div>
-            <!-- (3)slot -->
-            <div class="h-full flex justify-end flex-1 min-w-max">
-                <slot />
+                <span
+                    v-if="subTitle"
+                    class="text-sm line-clamp-1"
+                >{{ subTitle }}</span>
             </div>
         </div>
     </header>

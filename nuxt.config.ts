@@ -32,6 +32,8 @@ export default defineNuxtConfig({
                     rel: 'stylesheet',
                     href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200',
                 },
+                // https://zenn.dev/one_dock/articles/85521065c515a2
+                { rel: "icon", type: "image/png", href: "/favicon.png" },
             ],
             // please note that this is an area that is likely to change
             style: [

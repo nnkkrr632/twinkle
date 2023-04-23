@@ -6,8 +6,6 @@ import { useUserSelect } from '@/composables/userSelect'
 export const useUserDetail = () => {
     const { getRetouchedUser, resolveUidFromUserSlug } = useUserSelect()
     const { data: user, error } = useAsyncData(async () => {
-        console.log('■■useUserDetails()のuseAsyncData()開始。')
-
         const route = useRoute()
         const userSlug = route.params.userSlug
         if (typeof userSlug !== 'string') {
@@ -16,13 +14,12 @@ export const useUserDetail = () => {
 
         try {
             const uid = await resolveUidFromUserSlug(userSlug)
+            if(!uid) { return }
             const retouchedUser = await getRetouchedUser(uid)
-            console.log('■■リターン前のretouchedUser↓')
-            console.log(retouchedUser)
             return retouchedUser as User
-        } catch (e) {
-            console.log('■■プロフィール取得のuseAsyncData()でエラー発生。コンソールデバッグ↓')
-            console.debug(e)
+        } catch (error) {
+            console.debug('useUserDetail()のuseAsyncData()でエラー発生')
+            console.error(error)
         }
     })
 

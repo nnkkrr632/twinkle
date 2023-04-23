@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onKeyStroke } from '@vueuse/core'
-import { useImagesModal } from '~/composables/modal'
+import { useImagesModal } from '@/composables/modal'
 
 const { visible, hasLeft, hasRight, closeModal, currentImageUrl, showLeft, showRight } = useImagesModal()
 
@@ -20,7 +20,7 @@ onKeyStroke('Escape', (e) => {
 <template>
     <div
         v-if="visible"
-        class="fixed flex justify-center h-full w-full z-20 bg-black bg-opacity-80 overscroll-contain overflow-y-scroll hidden-scrollbar"
+        class="fixed inset-0 z-20 flex justify-center bg-black bg-opacity-80 overscroll-contain overflow-y-scroll hidden-scrollbar"
         @click="closeModal"
     >
         <!-- モーダルコンテンツ -->
@@ -63,7 +63,10 @@ onKeyStroke('Escape', (e) => {
                 </div>
             </div>
 
-            <img class="absolute w-full h-full object-contain" :src="currentImageUrl" />
+            <img
+                class="absolute w-full h-full object-contain"
+                :src="currentImageUrl"
+            />
         </div>
         <!-- スクロール防止 https://qiita.com/yowatsuyoengineer/items/b43b64e1419fa285b758 -->
         <div class="absolute w-20 flex justify-center h-[calc(100vh+0.5px)]" />

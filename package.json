@@ -15,14 +15,15 @@
         "@tailwindcss/line-clamp": "^0.4.2",
         "@typescript-eslint/eslint-plugin": "^5.47.0",
         "@typescript-eslint/parser": "^5.47.0",
+        "@unhead/addons": "^1.1.26",
         "@vue/eslint-config-prettier": "^7.0.0",
         "@vue/eslint-config-typescript": "^11.0.2",
-        "@vueuse/core": "^9.9.0",
+        "@vueuse/core": "^9.13.0",
         "@vueuse/nuxt": "^9.9.0",
         "autoprefixer": "^10.4.13",
         "eslint-plugin-vue": "^9.8.0",
         "eslit": "^6.0.0",
-        "nuxt": "^3.3.0",
+        "nuxt": "3.3.x",
         "postcss": "^8.4.20",
         "prettier": "^2.8.1",
         "sass": "^1.57.1",
@@ -30,6 +31,7 @@
         "tailwindcss": "^3.2.4"
     },
     "dependencies": {
+        "@vueuse/components": "^9.13.0",
         "dayjs": "^1.11.7",
         "firebase": "^9.15.0"
     }

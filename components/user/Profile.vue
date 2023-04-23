@@ -1,15 +1,21 @@
 <script setup lang="ts">
+import { ref, watch } from '#imports'
 import { useDark } from '@vueuse/core'
-import { User } from '~/composables/types'
-import { useImagesModal } from '~/composables/modal'
+import { User } from '@/composables/types'
+import { useImagesModal, useEditProfileModal } from '@/composables/modal'
+import { useAuthByGoogleAccount } from '@/composables/auth'
 
 const { setImages } = useImagesModal()
+const { openModal } = useEditProfileModal()
 
+// router-linkのCSS用
 const isDark = useDark()
 const textColor = ref(isDark.value ? 'rgb(229 231 235)' : 'rgb(31 41 55)')
 watch(isDark, () => {
     textColor.value = isDark.value ? 'rgb(229 231 235)' : 'rgb(31 41 55)'
 })
+
+const { me } = useAuthByGoogleAccount()
 
 // これがなぜだめなのかわからない。<>の中のkeyに親コンポーネントで渡す変数名がないとだめ？
 // const user = defineProps<User>();
@@ -20,16 +26,13 @@ const props = defineProps<{ user: User }>()
 // {{ props.user.displayName }}
 // {{ user.displayName }}
 
-// console.log('わたしはuser.vueコンポーネント')
-// console.log('props.user↓')
-// console.log(props.user)
 </script>
 <template>
     <div>
         <!-- 画像部 -->
         <div class="relative">
             <!-- ユーザーヘッダー画像 -->
-            <div class="w-full aspect-[3/1] bg-gray-300 dark:bg-gray-800">
+            <div class="w-full aspect-[3/1] bg-gray-200 dark:bg-gray-800">
                 <img
                     v-if="user.headerImageUrl"
                     :src="user.headerImageUrl"
@@ -44,40 +47,47 @@ const props = defineProps<{ user: User }>()
                     v-if="user.iconImageUrl"
                     :src="user.iconImageUrl"
                     class="h-full w-full object-cover cursor-pointer border-2 xs:border-4 border-white dark:border-black"
-                    :class="user.userType === 'official' ? 'rounded-lg' : 'rounded-full'"
+                    :class="user.type === 'official' ? 'rounded-lg' : 'rounded-full'"
                     alt="ユーザーのアイコン画像"
                     @click="setImages([user.iconImageUrl], 0)"
                 />
                 <div
                     v-else
-                    class="bg-gray-200 dark:bg-gray-900 h-full w-full object-cover rounded-full border-[3px] border-white dark:border-black"
+                    class="bg-gray-100 dark:bg-gray-900 h-full w-full object-cover rounded-full border-[3px] border-white dark:border-black"
                 />
             </div>
         </div>
         <!--テキストセクション -->
         <div class="pt-3 px-4 pb-4 flex flex-col">
             <!-- プロフィールを編集 -->
-            <div class="flex justify-end pb-[3%] xs:pb-[6%]">
+            <div
+                v-if="me && me.slug === $route.params.userSlug"
+                class="flex justify-end pb-[3%] xs:pb-[6%]"
+            >
                 <button
                     class="px-4 py-1 font-semibold border border-gray-300 dark:border-gray-500 hover:bg-black/5 dark:hover:bg-white/10 rounded-full"
+                    @click="openModal"
                 >
                     プロフィールを編集
                 </button>
             </div>
+            <div
+                v-else
+                class="py-[34px]"
+            />
             <!-- ユーザー名 -->
-            <div class="flex items-center">
-                <span class="text-xl font-bold mr-1">{{ user.displayName }}</span>
+            <div class="flex items-center gap-1">
+                <span class="text-xl font-bold">{{ user.displayName }}</span>
                 <span
-                    v-if="user.userType === 'official'"
+                    v-if="user.type === 'official'"
                     class="official-badge material-symbols-outlined text-xl text-amber-500/90 pt-[2px]"
-                    >verified</span
-                >
+                >verified</span>
             </div>
             <!-- ユーザーID -->
             <div class="-mt-1">
                 <span class="text-gray-500">@{{ user.slug }}</span>
             </div>
-            <div class="mt-3 mb-4">
+            <div class="my-3">
                 <span>{{ user.description }}</span>
             </div>
             <!-- 場所とリンクと開始日のflex -->
@@ -88,7 +98,12 @@ const props = defineProps<{ user: User }>()
                     <span>{{ user.place }}</span>
                 </div>
                 <!-- リンク -->
-                <a :href="user.link" target="_blank" class="flex items-center mr-4">
+                <a
+                    :href="user.link"
+                    target="_blank"
+                    class="flex items-center mr-4"
+                    :class="user.link ? '' : 'pointer-events-none'"
+                >
                     <span class="material-symbols-outlined text-xl mr-[2px]">link</span>
                     <span class="text-blue-400 hover:border-b hover:border-blue-400 h-5">{{ user.link }}</span>
                 </a>
@@ -98,28 +113,15 @@ const props = defineProps<{ user: User }>()
                     <span>{{ user.formattedCreatedAt }}からTwinkleを利用しています</span>
                 </div>
             </div>
-            <div class="flex flex-wrap h-6">
-                <NuxtLink
-                    to="/taro/followings"
-                    class="mr-5 hover:border-b hover:border-gray-700 dark:hover:border-gray-200 h-5"
-                >
-                    <span class="font-bold mr-1">{{ user.followingsCount }}</span
-                    ><span class="text-gray-500">フォロー中</span>
-                </NuxtLink>
-                <NuxtLink
-                    to="/taro/followers"
-                    class="mr-5 hover:border-b hover:border-gray-700 dark:hover:border-gray-200 h-5"
-                >
-                    <span class="font-bold mr-1">{{ user.followersCount }}</span
-                    ><span class="text-gray-500">フォロワー</span>
-                </NuxtLink>
-            </div>
         </div>
         <!-- Nav -->
         <nav class="border-b dark:border-gray-800">
             <ul class="flex justify-between h-[52px]">
                 <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
-                    <NuxtLink :to="`${user.slug}`" class="w-full flex justify-center">
+                    <NuxtLink
+                        :to="`/${user.slug}`"
+                        class="w-full flex justify-center"
+                    >
                         <div class="flex flex-col justify-between">
                             <div class="link-text h-full flex items-center text-gray-500 px-2">
                                 <div class="flex flex-wrap justify-center">
@@ -131,20 +133,10 @@ const props = defineProps<{ user: User }>()
                     </NuxtLink>
                 </li>
                 <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
-                    <NuxtLink :to="`${user.slug}/with-replies`" class="w-full flex justify-center">
-                        <div class="flex flex-col justify-between">
-                            <div class="link-text h-full flex items-center text-gray-500 px-2">
-                                <div class="flex flex-wrap justify-center">
-                                    <span>ツイートと</span>
-                                    <span>返信</span>
-                                </div>
-                            </div>
-                            <span class="underline" />
-                        </div>
-                    </NuxtLink>
-                </li>
-                <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
-                    <NuxtLink :to="`${user.slug}/media`" class="w-full flex justify-center">
+                    <NuxtLink
+                        :to="`/${user.slug}/media`"
+                        class="w-full flex justify-center"
+                    >
                         <div class="flex flex-col justify-between">
                             <div class="link-text h-full flex items-center text-gray-500 px-2">
                                 <div class="flex flex-wrap justify-center">
@@ -156,7 +148,10 @@ const props = defineProps<{ user: User }>()
                     </NuxtLink>
                 </li>
                 <li class="w-full flex justify-center hover:bg-black/5 dark:hover:bg-white/10">
-                    <NuxtLink :to="`${user.slug}/likes`" class="w-full flex justify-center">
+                    <NuxtLink
+                        :to="`/${user.slug}/likes`"
+                        class="w-full flex justify-center"
+                    >
                         <div class="flex flex-col justify-between">
                             <div class="link-text h-full flex items-center text-gray-500 px-2">
                                 <div class="flex flex-wrap justify-center">
@@ -169,6 +164,10 @@ const props = defineProps<{ user: User }>()
                 </li>
             </ul>
         </nav>
+        <!-- プロフィール編集モーダル user使うからクライアントオンリー-->
+        <ClientOnly>
+            <EditProfileModal />
+        </ClientOnly>
     </div>
 </template>
 

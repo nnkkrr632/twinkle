@@ -1,43 +1,54 @@
 // 明示しないとVSCodeに波線が引かれる
 
-import { useRoute, useAsyncData, useNuxtApp } from '#imports'
-import { getFirestore } from 'firebase/firestore'
-import { collection, query, getDocs, DocumentReference, orderBy, limit, where } from 'firebase/firestore'
+import { useRoute, useAsyncData, computed } from '#imports'
+import {
+    getFirestore,
+    Timestamp,
+    collection,
+    query,
+    getDocs,
+    orderBy,
+    limit,
+    where,
+} from 'firebase/firestore'
 import { useTweetSelect } from '@/composables/tweetSelect'
 import { useUserSelect } from '@/composables/userSelect'
 
-import { Tweet } from '~/composables/types'
-
 // ユーザープロフィール
 export const useTweetsByUser = () => {
-    console.log('useTweetsByUser()開始。')
-    const db = getFirestore()
+    // MySubCollectionから本人のツイート一覧 or いいねしたツイート一覧を取得
+    const getTweetDocIds = async (uid: string, oldestCreatedAt: Timestamp | null = null) => {
+        // URL(= route)で取得先のコレクションを判断
+        const route = useRoute()
+        const targetSubCollection = route.name === 'userSlug-likes' ? 'myLikeTweetsSubCollection' : 'myTweetsSubCollection'
+        const colRef = collection(getFirestore(), 'users', uid, targetSubCollection)
 
-    const { getRetouchedTweets } = useTweetSelect()
-    const { resolveUidFromUserSlug } = useUserSelect()
-
-    const getTweetDocRefs = async (uid: string) => {
-        console.log('selectByUser.tsのgetTweetDocRefs()開始')
-
-        const myTweetsColRef = collection(db, 'users', uid, 'public', 'userPublicDocumentV1', 'myTweets')
-        const tweetsQuery = query(myTweetsColRef, orderBy('createdAt', 'desc'), limit(30))
+        let tweetsQuery = query(colRef, orderBy('createdAt', 'desc'), limit(15))
+        if (oldestCreatedAt) {
+            tweetsQuery = query(
+                colRef,
+                where('createdAt', '<', oldestCreatedAt),
+                orderBy('createdAt', 'desc'),
+                limit(15)
+            )
+        }
         try {
             const tweetsQuerySnapshot = await getDocs(tweetsQuery)
-            const tweetDocRefs = tweetsQuerySnapshot.docs.map((tweetQueryDocSnapshot) => {
-                return tweetQueryDocSnapshot.get('tweetPublicDocRef') as DocumentReference
+            if (tweetsQuerySnapshot.empty) {
+                return null
+            }
+            const tweetDocIds = tweetsQuerySnapshot.docs.map((tweetQueryDocSnapshot) => {
+                return tweetQueryDocSnapshot.get('tweetDocId') as string
             })
-
-            return tweetDocRefs
-        } catch (e) {
-            console.log('selectByUser.tsのgetTweetDocRefs()でエラー発生。コンソールデバッグ↓')
-            console.debug(e)
+            return tweetDocIds
+        } catch (error) {
+            console.debug('useTweetsByUser()のgetTweetDocIds()でエラー発生')
+            console.error(error)
         }
     }
 
     // これが本体
     const { data: tweets, error: errorAtUseTweetsByUser } = useAsyncData(async () => {
-        console.log('■■useTweetsByUser()のuseAsyncData()開始。')
-
         const route = useRoute()
         const userSlug = route.params.userSlug
         if (typeof userSlug !== 'string') {
@@ -45,46 +56,62 @@ export const useTweetsByUser = () => {
         }
 
         try {
+            const { resolveUidFromUserSlug } = useUserSelect()
             const uid = await resolveUidFromUserSlug(userSlug)
-            console.log('useAsyncDataでuidとれてる？↓')
-            console.log(uid)
-            // ツイートの参照を取得
-            const tweetDocRefs = await getTweetDocRefs(uid)
-            console.log('useAsyncDataでtweetDocRefsとれてる？↓')
-            console.log(tweetDocRefs)
-
-            if (!tweetDocRefs) {
-                return
+            if (!uid) {
+                return []
             }
-            const retouchedTweets = await getRetouchedTweets(tweetDocRefs)
-            console.log('useAsyncDataでretouchedTweetsとれてる？↓')
-            console.log(retouchedTweets)
-            return retouchedTweets as Tweet[]
-        } catch (e) {
-            console.log('■■プロフィール詳細でUserごとのツイートを集めるuseAsyncDataでエラー発生。コンソールデバッグ↓')
-            console.debug(e)
+
+            const tweetDocIds = await getTweetDocIds(uid)
+            if (!tweetDocIds) {
+                return []
+            }
+
+            const { getRetouchedTweets } = useTweetSelect()
+            const retouchedTweets = await getRetouchedTweets(tweetDocIds)
+            return retouchedTweets
+        } catch (error) {
+            console.debug('useTweetsByUser()のtweetsのuseAsyncData()でエラー発生')
+            console.error(error)
         }
     })
 
-    // myTweetsコレクションから直接とるやり方
-    // const getUserTweets = async (userSlug: string) => {
+    const allImageUrls = computed(() => {
+        return tweets.value?.flatMap((tweet) => tweet.imageUrls) ?? []
+    })
 
-    //     const tweetColRef = collection(db, 'users', userSlug, 'public', 'userPublicDocumentV1', 'myTweets')
-    //     const tweetsQuery = query(tweetColRef, orderBy('createdAt', 'desc'), limit(30))
-    //     try {
-    //         const tweetsQuerySnapshot = await getDocs(tweetsQuery)
-    //         const tweets = tweetsQuerySnapshot.docs.map((tweetQueryDocSnapshot) => {
-    //             const data = tweetQueryDocSnapshot.data()
-    //             console.log('dataとれてる？↓')
-    //             console.log(data)
-    //             return data
-    //         })
-    //         return tweets
-    //     } catch (e) {
-    //         console.log('■■getUserTweetsでエラー発生。コンソールデバッグ↓')
-    //         console.debug(e)
-    //     }
-    // }
+    const addOldTweets = async () => {
+        const route = useRoute()
+        const userSlug = route.params.userSlug
+        if (typeof userSlug !== 'string') {
+            return
+        }
 
-    return { tweets, errorAtUseTweetsByUser, resolveUidFromUserSlug }
+        try {
+            const { resolveUidFromUserSlug } = useUserSelect()
+            const uid = await resolveUidFromUserSlug(userSlug)
+            if (!uid) {
+                return
+            }
+            // addする以前にツイートがそもそも0件
+            if (tweets.value?.length === 0) { return }
+
+            // ツイートの参照を取得
+            const currentOldestCreatedAt = tweets.value?.[tweets.value.length - 1].createdAt ?? null
+            const tweetDocIds = await getTweetDocIds(uid, currentOldestCreatedAt)
+            if (!tweetDocIds) {
+                return
+            }
+            const { getRetouchedTweets } = useTweetSelect()
+            const retouchedTweets = await getRetouchedTweets(tweetDocIds)
+            if (tweets.value?.length && retouchedTweets) {
+                tweets.value = [...tweets.value, ...retouchedTweets]
+            }
+        } catch (error) {
+            console.debug('useTweetsByUser()のaddOldTweets()でエラー発生')
+            console.error(error)
+        }
+    }
+
+    return { tweets, errorAtUseTweetsByUser, allImageUrls, addOldTweets, getTweetDocIds }
 }

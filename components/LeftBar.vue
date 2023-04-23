@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { useDark, useToggle } from '@vueuse/core'
-import { useCreateTweetModal } from '~/composables/modal'
+import { useCreateTweetModal } from '@/composables/modal'
 import { useAuthByGoogleAccount } from '@/composables/auth'
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 const { openModal } = useCreateTweetModal()
-const { user } = useAuthByGoogleAccount()
+const { me } = useAuthByGoogleAccount()
 </script>
 
 <template>
     <div class="flex flex-col justify-between h-full">
         <!-- twinkleとツイートボタンは上部 -->
         <div>
-            <ul class="flex flex-col space-y-3">
+            <ul class="flex flex-col gap-3">
                 <!-- twinkle -->
                 <li class="flex justify-center xl:justify-start">
                     <div
@@ -23,15 +23,16 @@ const { user } = useAuthByGoogleAccount()
                     >
                         <!-- アイコン正円 -->
                         <div class="w-12 h-12 flex justify-center items-center">
-                            <span class="material-symbols-outlined text-3xl text-amber-500/90 hover:text-amber-500"
-                                >auto_awesome</span
-                            >
+                            <span class="material-symbols-outlined text-3xl text-amber-500/90 hover:text-amber-500">auto_awesome</span>
                         </div>
                     </div>
                 </li>
                 <!-- ホーム -->
                 <li class="flex justify-center xl:justify-start">
-                    <NuxtLink to="/home" class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full">
+                    <NuxtLink
+                        to="/"
+                        class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
+                    >
                         <!-- アイコンと文字を横並び -->
                         <div class="flex flex-row items-center">
                             <!-- アイコン正円 -->
@@ -42,25 +43,15 @@ const { user } = useAuthByGoogleAccount()
                         </div>
                     </NuxtLink>
                 </li>
-                <!-- 通知 -->
-                <li class="flex justify-center xl:justify-start">
+                <!-- プロフィール -->
+                <li
+                    v-if="me"
+                    class="flex justify-center xl:justify-start"
+                >
                     <NuxtLink
-                        to="/notifications"
+                        :to="`/${me.slug}`"
                         class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
                     >
-                        <!-- アイコンと文字を横並び -->
-                        <div class="flex flex-row items-center">
-                            <!-- アイコン正円 -->
-                            <div class="w-12 h-12 flex justify-center items-center">
-                                <span class="material-symbols-outlined text-3xl">notifications</span>
-                            </div>
-                            <span class="hidden xl:block px-3 text-xl">通知</span>
-                        </div>
-                    </NuxtLink>
-                </li>
-                <!-- プロフィール -->
-                <li v-if="user" class="flex justify-center xl:justify-start">
-                    <NuxtLink :to="user.slug" class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full">
                         <!-- アイコンと文字を横並び -->
                         <div class="flex flex-row items-center">
                             <!-- アイコン正円 -->
@@ -72,8 +63,14 @@ const { user } = useAuthByGoogleAccount()
                     </NuxtLink>
                 </li>
                 <!-- 設定 -->
-                <li class="flex justify-center xl:justify-start">
-                    <NuxtLink to="/settings" class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full">
+                <li
+                    v-if="me"
+                    class="flex justify-center xl:justify-start"
+                >
+                    <NuxtLink
+                        to="/settings"
+                        class="rounded-full hover:bg-black/5 dark:hover:bg-white/10 xl:w-full"
+                    >
                         <!-- アイコンと文字を横並び -->
                         <div class="flex flex-row items-center">
                             <!-- アイコン正円 -->
@@ -86,7 +83,10 @@ const { user } = useAuthByGoogleAccount()
                 </li>
             </ul>
             <!-- ツイートセクション -->
-            <div class="mt-4 flex justify-center items-center text-white">
+            <div
+                v-if="me"
+                class="mt-4 flex justify-center items-center text-white"
+            >
                 <!-- アイコン正円 -->
                 <button
                     class="xl:hidden bg-amber-500/90 w-[52px] h-[52px] flex justify-center items-center rounded-full hover:bg-amber-500"

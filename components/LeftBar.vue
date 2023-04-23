@@ -16,7 +16,19 @@ const { me } = useAuthByGoogleAccount()
             <ul class="flex flex-col gap-3">
                 <!-- twinkle -->
                 <li class="flex justify-center xl:justify-start">
+                    <h1
+                        v-if="$route.fullPath === '/'"
+                        id="twinkle-icon"
+                        class="flex flex-row items-center rounded-full hover:bg-amber-100 dark:hover:bg-white/10 cursor-pointer"
+                        @click="toggleDark()"
+                    >
+                        <!-- アイコン正円 -->
+                        <div class="w-12 h-12 flex justify-center items-center">
+                            <span class="material-symbols-outlined text-3xl text-amber-500/90 hover:text-amber-500">auto_awesome</span>
+                        </div>
+                    </h1>
                     <div
+                        v-else
                         id="twinkle-icon"
                         class="flex flex-row items-center rounded-full hover:bg-amber-100 dark:hover:bg-white/10 cursor-pointer"
                         @click="toggleDark()"

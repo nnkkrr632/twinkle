@@ -85,7 +85,7 @@ export const useRetweet = () => {
             await batch.commit()
             return true
         } catch (error) {
-            console.debug('useRetweet()のstoreRetweet()でエラー発生')
+            // console.debug('useRetweet()のstoreRetweet()でエラー発生')
             console.error(error)
             alert('何かしらの理由によりリツイートに失敗しました。')
             return false
@@ -130,7 +130,7 @@ export const useRetweet = () => {
             await batch.commit()
             return true
         } catch (error) {
-            console.debug('useRetweet()のdestroyRetweet()でエラー発生')
+            // console.debug('useRetweet()のdestroyRetweet()でエラー発生')
             console.error(error)
             alert('何かしらの理由によりリツイートの取り消しに失敗しました。')
             return false

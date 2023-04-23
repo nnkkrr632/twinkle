@@ -66,7 +66,6 @@ export type FirestoreTweet = DocumentData & {
     imageUrls: string[]
     type: 'normal' | 'retweet'
     originalTweetDocId?: string
-    uid: string
     userInfo: UserInfo
     // 以下サブコレクション
     // likeUsersSubCollection

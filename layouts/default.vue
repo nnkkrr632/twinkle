@@ -31,6 +31,7 @@ useSeoMeta({
     twitterImage: twinkleImageUrl,
     twitterTitle: defaultTitle,
     twitterDescription: defaultDescription,
+    viewport: 'width=device-width, initial-scale=1'
 })
 </script>
 

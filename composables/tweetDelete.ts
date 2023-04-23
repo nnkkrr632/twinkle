@@ -67,7 +67,7 @@ export const useTweetDelete = () => {
             await batch.commit()
             return true
         } catch (error) {
-            console.debug('useTweetDelete()のdeleteTweet()でエラー発生')
+            // console.debug('useTweetDelete()のdeleteTweet()でエラー発生')
             console.error(error)
             alert('何かしらの理由によりリツイートに失敗しました。')
             return false

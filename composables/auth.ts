@@ -45,7 +45,7 @@ export const useAuthByGoogleAccount = () => {
                 headerImageUrl: '',
             })
         } catch (error) {
-            console.debug('useAuthByGoogleAccount()のcreateUser()でエラー発生')
+            // console.debug('useAuthByGoogleAccount()のcreateUser()でエラー発生')
             console.error(error)
         }
     }
@@ -74,7 +74,7 @@ export const useAuthByGoogleAccount = () => {
             navigateTo(`/${me.value?.slug}`)
         } catch (error) {
             alert('Googleアカウントによるサインインに失敗しました。')
-            console.debug('useAuthByGoogleAccount()のgoogleSignUp()でエラー発生')
+            // console.debug('useAuthByGoogleAccount()のgoogleSignUp()でエラー発生')
             console.error(error)
         }
     }
@@ -88,7 +88,7 @@ export const useAuthByGoogleAccount = () => {
             await firebaseSignOut(getAuth())
             me.value = null
         } catch (error) {
-            console.debug('useAuthByGoogleAccount()のsignOut()でエラー発生')
+            // console.debug('useAuthByGoogleAccount()のsignOut()でエラー発生')
             console.error(error)
         }
     }
@@ -137,7 +137,7 @@ export const useAuthByGoogleAccount = () => {
             // middlewareのre-authenticated.tsでURL入るときに参照
             reAuthenticated.value = true
         } catch (error) {
-            console.debug('useAuthByGoogleAccount()のreAuthenticate()でエラー発生')
+            // console.debug('useAuthByGoogleAccount()のreAuthenticate()でエラー発生')
             console.error(error)
         }
     }
@@ -153,7 +153,7 @@ export const useAuthByGoogleAccount = () => {
         try {
             await deleteUser(currentUser)
         } catch (error) {
-            console.debug('useAuthByGoogleAccount()のdeleteMe()でエラー発生')
+            // console.debug('useAuthByGoogleAccount()のdeleteMe()でエラー発生')
             console.error(error)
         }
     }

@@ -31,7 +31,6 @@
         "tailwindcss": "^3.2.4"
     },
     "dependencies": {
-        "@vueuse/components": "^9.13.0",
         "dayjs": "^1.11.7",
         "firebase": "^9.15.0"
     }

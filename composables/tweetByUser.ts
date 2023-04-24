@@ -96,7 +96,6 @@ export const useTweetsByUser = () => {
             // addする以前にツイートがそもそも0件
             if (tweets.value?.length === 0) { return }
 
-            // ツイートの参照を取得
             const currentOldestCreatedAt = tweets.value?.[tweets.value.length - 1].createdAt ?? null
             const tweetDocIds = await getTweetDocIds(uid, currentOldestCreatedAt)
             if (!tweetDocIds) {

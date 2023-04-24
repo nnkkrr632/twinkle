@@ -16,7 +16,7 @@ import { getRandomString } from '@/utils/helpers'
 
 // サインイン
 export const useAuthByGoogleAccount = () => {
-    // .vueのインポートでnullかもでうまく注意が出てしまう
+    // .vueのインポートでnullかもの注意が出てしまう
     // if (process.server) {
     //   return
     // }

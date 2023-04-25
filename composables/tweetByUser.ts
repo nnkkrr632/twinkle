@@ -42,7 +42,7 @@ export const useTweetsByUser = () => {
             })
             return tweetDocIds
         } catch (error) {
-            console.debug('useTweetsByUser()のgetTweetDocIds()でエラー発生')
+            // console.debug('useTweetsByUser()のgetTweetDocIds()でエラー発生')
             console.error(error)
         }
     }
@@ -71,7 +71,7 @@ export const useTweetsByUser = () => {
             const retouchedTweets = await getRetouchedTweets(tweetDocIds)
             return retouchedTweets
         } catch (error) {
-            console.debug('useTweetsByUser()のtweetsのuseAsyncData()でエラー発生')
+            // console.debug('useTweetsByUser()のtweetsのuseAsyncData()でエラー発生')
             console.error(error)
         }
     })
@@ -96,7 +96,6 @@ export const useTweetsByUser = () => {
             // addする以前にツイートがそもそも0件
             if (tweets.value?.length === 0) { return }
 
-            // ツイートの参照を取得
             const currentOldestCreatedAt = tweets.value?.[tweets.value.length - 1].createdAt ?? null
             const tweetDocIds = await getTweetDocIds(uid, currentOldestCreatedAt)
             if (!tweetDocIds) {
@@ -108,7 +107,7 @@ export const useTweetsByUser = () => {
                 tweets.value = [...tweets.value, ...retouchedTweets]
             }
         } catch (error) {
-            console.debug('useTweetsByUser()のaddOldTweets()でエラー発生')
+            // console.debug('useTweetsByUser()のaddOldTweets()でエラー発生')
             console.error(error)
         }
     }

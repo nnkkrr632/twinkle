@@ -22,7 +22,7 @@
                 <div class="py-6 px-4 flex flex-col">
                     <div class="py-[34px]" />
                     <!-- ユーザーID -->
-                    <span class="text-xl font-bold">@{{ $route.params.userSlug }}</span>
+                    <h1 class="text-xl font-bold">@{{ $route.params.userSlug }}</h1>
                 </div>
             </div>
             <!-- ツイートs -->

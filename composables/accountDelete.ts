@@ -72,7 +72,7 @@ export const useAccountDelete = () => {
             // 最後に全削除成功を知らせる return true
             return true
         } catch (error) {
-            console.debug('useAccountDelete()のdeleteAccount()でエラー発生')
+            // console.debug('useAccountDelete()のdeleteAccount()でエラー発生')
             console.error(error)
             return false
         }

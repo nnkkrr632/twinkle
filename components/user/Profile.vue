@@ -77,7 +77,7 @@ const props = defineProps<{ user: User }>()
             />
             <!-- ユーザー名 -->
             <div class="flex items-center gap-1">
-                <span class="text-xl font-bold">{{ user.displayName }}</span>
+                <h1 class="text-xl font-bold">{{ user.displayName }}</h1>
                 <span
                     v-if="user.type === 'official'"
                     class="official-badge material-symbols-outlined text-xl text-amber-500/90 pt-[2px]"

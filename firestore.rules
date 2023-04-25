@@ -69,10 +69,9 @@ service cloud.firestore {
         && request.auth.uid == uid
     }
 
-    // 自分だけが自分のusers/uidドキュメントに書き込むものに関しては、(1)(2)だけでよさそう
-    // (1)ログインしていること
-    // (2)uidがusers/uidと一致
 
+    // 【ツイート時】
+    // tweets/xxx
     function createTweetFieldsAreValid(tweet) {
       // ツイートとリツイート共通で持ってるフィールド
       return tweet.keys().hasAll(['createdAt', 'updatedAt', 'tweetDocId', 'body', 'imageFullPaths', 'imageUrls', 'type', 'userInfo'])
@@ -91,9 +90,6 @@ service cloud.firestore {
         && tweet.userInfo.iconImageUrl is string
         && tweet.userInfo.type in ['normal', 'official']
     }
-
-    // 【ツイート時】
-    // tweets/xxx
     match /tweets/{tweetDocId} {
       // ツイート
       allow create: if request.auth != null
@@ -121,7 +117,6 @@ service cloud.firestore {
     // (1)match /tweets/{tweetDocId} allow create:
     // (2)match /users/{uid}/myTweetsSubCollection/{tweetDocId} allow create:
     // リツイートもtypeフィールドが「retweet」なツイートであるため、セキュリティルールが共通となる。
-
     // retweetUsersSubCollection
     match /tweets/{tweetDocId}/retweetUsersSubCollection/{userSlug} {
       // リツイート

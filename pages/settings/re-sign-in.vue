@@ -55,7 +55,7 @@ useHead({
                 </div>
                 <!-- 文字 -->
                 <div class="flex flex-col flex-1 items-start pr-2">
-                    <span class="font-bold line-clamp-1">{{ me.displayName }}</span>
+                    <h1 class="font-bold line-clamp-1">{{ me.displayName }}</h1>
                     <span class="line-clamp-1">@{{ me.slug }}</span>
                 </div>
             </div>

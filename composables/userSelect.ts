@@ -12,7 +12,7 @@ export const useUserSelect = () => {
             }
             return retouchUser(user) as User
         } catch (error) {
-            console.debug('useUserSelect()のgetRetouchedUser()でエラー発生')
+            // console.debug('useUserSelect()のgetRetouchedUser()でエラー発生')
             console.error(error)
         }
     }
@@ -40,7 +40,7 @@ export const useUserSelect = () => {
             const userSnapshot = await getDoc(userDocRef)
             return userSnapshot.data()
         } catch (error) {
-            console.debug('useUserSelect()のgetUser()でエラー発生')
+            // console.debug('useUserSelect()のgetUser()でエラー発生')
             console.error(error)
         }
     }

@@ -58,7 +58,7 @@ export const useLike = () => {
             await batch.commit()
             return true
         } catch (error) {
-            console.debug('useLike()のstoreLike()でエラー発生')
+            // console.debug('useLike()のstoreLike()でエラー発生')
             console.error(error)
             alert('何かしらの理由によりいいねに失敗しました。')
             return false
@@ -101,7 +101,7 @@ export const useLike = () => {
             await batch.commit()
             return true
         } catch (error) {
-            console.debug('useLike()のdestroyLike()でエラー発生')
+            // console.debug('useLike()のdestroyLike()でエラー発生')
             console.error(error)
             alert('何かしらの理由によりいいねの取り消しに失敗しました。')
             return false

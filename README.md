@@ -3,7 +3,20 @@
 URL: https://nrpans-twinkle.vercel.app
 
 Nuxt と Firebase で作成した Twitterクローンサイトです。  
-よろしければお試しください😄(ツイートにはGoogleアカウントによるログインが必要です)
+よろしければお試しください😄(ツイートにはGoogleアカウントによるログインが必要です)  
+
+## 使用例
+### 概要
+<img src="https://user-images.githubusercontent.com/91203083/235321263-20c68ccf-550a-4faf-ba98-b9a401bd4836.gif" />
+
+### アカウント作成
+<img src="https://user-images.githubusercontent.com/91203083/235321316-410c2b52-3835-42da-8334-45619803e38a.gif" />
+
+### ツイート
+<img src="https://user-images.githubusercontent.com/91203083/235321269-98d290df-61a9-40f8-9ece-8b62f4a262f1.gif" />
+
+### アカウント削除
+<img src="https://user-images.githubusercontent.com/91203083/235321265-17a6ad31-fb5c-4180-a938-a693fb899700.gif" />
 
 | 主要パッケージ | バージョン(作成時) | 説明                                                           | 
 | -------------- | ------------------ | -------------------------------------------------------------- | 
@@ -27,7 +40,7 @@ Nuxt と Firebase で作成した Twitterクローンサイトです。
 - Authenticationの`uid`をFirestoreの`/users/uid`とした。
 - Authenticationの`uid`はセキュリティルールで参照したいため、適宜Firestoreのドキュメントフィールドに持たせた。
 ### Firestore
-<img src="https://user-images.githubusercontent.com/91203083/233821015-6dd0090c-67b9-40f5-8187-4a26a0e9d8a9.PNG" />
+<img src="https://user-images.githubusercontent.com/91203083/235321089-58b95268-69d8-4f0b-8b72-ac462a905826.PNG" />
 
 - ツイートは実データを`/tweets/xxx`のみに持たせ、`/users/uid/myTweetsSubCollection`には`tweetDocId`(=`xxx`)を持たせた。  
 リツイート(いいね)時に更新するドキュメントを`/tweets/xxx/retweetUsersSubCollection`(`/tweets/xxx/likeUsersSubCollection`)に限定し、他人のmyTweetsSubCollectionに触れないようにする目的。
